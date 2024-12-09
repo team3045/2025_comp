@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Camera;
@@ -16,7 +17,7 @@ import frc.robot.constants.CameraConstants;
 
 public class PhotonCameras extends SubsystemBase {
   /** Creates a new PhotonCamera. */
-  private static final Camera[] cameras = {new Camera(0), new Camera(1), new Camera(2)};
+  private static final Camera[] cameras = {new Camera(0, Pose3d.kZero), new Camera(1, Pose3d.kZero), new Camera(2, Pose3d.kZero)};
   
   public PhotonCameras() {
     
