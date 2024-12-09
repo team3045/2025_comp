@@ -43,4 +43,8 @@ public class Camera {
     public static Optional<EstimatedRobotPose> getLastEstimatedPose() {
         return lastEstimatedPose;
     }
+
+    public static Optional<Pose3d> getLastEstimatedPose3D() {
+        return Optional.ofNullable(lastEstimatedPose.get().estimatedPose);
+    }
 }
