@@ -123,7 +123,7 @@ public class GremlinApriltagVision extends SubsystemBase {
         // if it has a MultiTag result we prefer to use that
         boolean shouldUseMultiTag = unprocessedResult.getMultiTagResult().isPresent();
 
-        if (shouldUseMultiTag && !FieldConstants.isShopField) {
+        if (shouldUseMultiTag && false) {
           // TODO: think about adding processing to compare best and alt
           cameraPose = GeomUtil.transform3dToPose3d(unprocessedResult.getMultiTagResult().get().estimatedPose.best);
 
@@ -235,11 +235,15 @@ public class GremlinApriltagVision extends SubsystemBase {
     visionSystemSim = new VisionSystemSim("ApriltagVision");
     AprilTagFieldLayout layout;
     try {
-      layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+      layout = FieldConstants.isShopField ? FieldConstants. shopLayout : 
+        AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       visionSystemSim.addAprilTags(layout);
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    
+
     simCameras = new PhotonCameraSim[cameras.length];
     simCameraProperties = new SimCameraProperties[cameras.length];
 
@@ -247,8 +251,8 @@ public class GremlinApriltagVision extends SubsystemBase {
       simCameraProperties[i] = VisionConstants.getOV2311();
       simCameras[i] = new PhotonCameraSim(cameras[i].getPhotonCamera(), simCameraProperties[i]);
       simCameras[i].enableDrawWireframe(false);
-      simCameras[i].enableRawStream(false); // (http://localhost:1181 / 1182)
-      simCameras[i].enableProcessedStream(false);
+      simCameras[i].enableRawStream(true); // (http://localhost:1181 / 1182)
+      simCameras[i].enableProcessedStream(true);
       visionSystemSim.addCamera(simCameras[i], GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()));
     }
   }

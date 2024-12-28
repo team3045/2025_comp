@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commons.GremlinLogger;
 
 public class FieldConstants {
-        public static final boolean isShopField = false;
+        public static final boolean isShopField = true;
 
-        public static final double shopFieldLength = 4.68122;
-        public static final double shopFieldWidth = 7.89225625;
+        public static final double shopFieldLength = 7.89225625;
+        public static final double shopFieldWidth = 4.68122;
 
         public static final double compFieldLength = 16.451;
         public static final double compFieldWidth = 8.211;
@@ -24,7 +24,8 @@ public class FieldConstants {
         // AprilTag constants
         public static final double aprilTagWidth = Units.inchesToMeters(8.12500);
         public static final double wallOffset = 0.00635;
-        public static final double edgeToTag = Units.inchesToMeters(2);
+        public static final double edgeToTag = 0.0508; //2 inches
+        public static final double temp = 1.42160625 + edgeToTag;
         
         public static final List<AprilTag> shopTags = List.of(
                 new AprilTag(1, new Pose3d(

@@ -40,7 +40,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
         () -> drivetrain.getState().Pose, 
-        drivetrain::addVisionMeasurements);
+        (drivetrain::addVisionMeasurements));
 
     public RobotContainer() {
         configureBindings();
