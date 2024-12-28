@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commons.TimestampedVisionUpdate;
 
 
 /**
@@ -219,6 +221,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
+    }
+    
+    /**
+     * Adds a list of vision updates along with their timestamps and standard deviations
+     * 
+     * @param updates the vision updates to add
+     */
+    public void addVisionMeasurements(List<TimestampedVisionUpdate> updates){
+        for(int i = 0; i < updates.size(); i++){
+            addVisionMeasurement(updates.get(i).pose(), updates.get(i).timestamp(), updates.get(i).stdDevs());
+        }
     }
 
     /**

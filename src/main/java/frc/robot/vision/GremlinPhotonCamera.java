@@ -305,8 +305,7 @@ public class GremlinPhotonCamera implements AutoCloseable {
     }
 
     /**
-     * Get the 3d position of camera on robot. Likely not often called
-     * as the camera pose should be configured in limelight UI.
+     * Get the 3d position of camera on robot.
      * 
      * @return The 3d position of the the camera with robot center as origin
      */

@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.vision.GremlinApriltagVision;
+import frc.robot.vision.VisionConstants;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -36,6 +38,9 @@ public class RobotContainer {
     private final CommandPS4Controller joystick = new CommandPS4Controller(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
+        () -> drivetrain.getState().Pose, 
+        drivetrain::addVisionMeasurements);
 
     public RobotContainer() {
         configureBindings();
