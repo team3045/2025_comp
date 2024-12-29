@@ -100,7 +100,7 @@ public class GremlinLogger extends DogLog {
      * @param value
      */
     public static void logSD(String key, Pose3d value) {
-        log(key, value);
+        log(key,  value);
         SmartDashboard.putNumberArray(key, 
             new double[]{
                 value.getX(),value.getY(),value.getZ(),
