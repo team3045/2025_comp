@@ -4,6 +4,8 @@
 
 package frc.robot.commons;
 
+import java.util.List;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import dev.doglog.DogLog;
@@ -105,6 +107,20 @@ public class GremlinLogger extends DogLog {
                 value.getRotation().getX(),value.getRotation().getY(),value.getRotation().getZ()
             }
         );
+    }
+
+    /**
+     * Logs a Pose3d and also puts it on Smartdashboard
+     * 
+     * @param key
+     * @param value
+     */
+    public static void logSD(String key, List<Pose3d> values) {
+        int i =0;
+        for (Pose3d pose3d : values) {
+            i++;
+            logSD(key + "/Tag " + i, pose3d);
+        }
     }
 
     /**Logs a Transform3d and also puts it on Smartdashboard

@@ -69,20 +69,20 @@ public class VisionConstants {
         public static final Pose3d[] cameraPoses = {
                         new Pose3d( // Front Left
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886),
+                                                        -Units.inchesToMeters(10.886),
                                                         Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
-                                        new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(60))),
+                                        new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(-18))),
                         new Pose3d( // Front Right
                                         new Translation3d(
                                                         Units.inchesToMeters(10.886),
-                                                        -Units.inchesToMeters(9.362),
+                                                        Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(-60))),
+                                                        Units.degreesToRadians(18))),
                         new Pose3d( // Back Left
                                         new Translation3d(
-                                                        -Units.inchesToMeters(100.886),
+                                                        -Units.inchesToMeters(10.886),
                                                         Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
@@ -90,10 +90,10 @@ public class VisionConstants {
                         new Pose3d( // Back Right
                                         new Translation3d(
                                                         -Units.inchesToMeters(10.886),
-                                                        -Units.inchesToMeters(9.362),
+                                                        Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(-150))),
+                                                        Units.degreesToRadians(162))),
         };
 
         public static final GremlinPhotonCamera[] cameras = {

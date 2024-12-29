@@ -123,7 +123,7 @@ public class GremlinApriltagVision extends SubsystemBase {
         // if it has a MultiTag result we prefer to use that
         boolean shouldUseMultiTag = unprocessedResult.getMultiTagResult().isPresent();
 
-        if (shouldUseMultiTag && false) {
+        if (shouldUseMultiTag) {
           // TODO: think about adding processing to compare best and alt
           cameraPose = GeomUtil.transform3dToPose3d(unprocessedResult.getMultiTagResult().get().estimatedPose.best);
 
@@ -171,7 +171,6 @@ public class GremlinApriltagVision extends SubsystemBase {
 
           GremlinLogger.logSD(logPath + "/CameraPose (SingleTag)", cameraPose.toPose2d());
           GremlinLogger.logSD(logPath + "/Transform (Single Tag)", target.getBestCameraToTarget().inverse());
-          GremlinLogger.logSD(logPath + "/TagPose", tagPose);
         }
 
         if (cameraPose == null || calculatedRobotPose == null)
@@ -194,6 +193,8 @@ public class GremlinApriltagVision extends SubsystemBase {
         for (Pose3d tagPose : tagPose3ds) {
           totalDistance += tagPose.getTranslation().getDistance(cameraPose.getTranslation());
         }
+        GremlinLogger.logSD(logPath + "/Tag Poses", tagPose3ds);
+
         double avgDistance = totalDistance / tagPose3ds.size();
         double xyStdDev = 0.0;
         double thetaStdDev = 0.0;

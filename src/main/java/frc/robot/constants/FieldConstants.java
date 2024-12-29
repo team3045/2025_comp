@@ -22,9 +22,9 @@ public class FieldConstants {
 
 
         // AprilTag constants
-        public static final double aprilTagWidth = Units.inchesToMeters(8.12500);
+        public static final double aprilTagWidth = 165.1 / 1000;
         public static final double wallOffset = 0.00635;
-        public static final double edgeToTag = 0.0508; //2 inches
+        public static final double edgeToTag = 0.0508 + (aprilTagWidth / 2) ; //2 inches to edge and half of width to center
         public static final double temp = 1.42160625 + edgeToTag;
         
         public static final List<AprilTag> shopTags = List.of(
@@ -44,7 +44,7 @@ public class FieldConstants {
                         1.58511875  + edgeToTag,
                         new Rotation3d(0,0,0))),
                 new AprilTag(7, new Pose3d(
-                        4.70931875 + edgeToTag,
+                        4.71090625 + edgeToTag,
                         wallOffset,
                         0.650875 + edgeToTag,
                         new Rotation3d(0,0,Math.PI/2))),

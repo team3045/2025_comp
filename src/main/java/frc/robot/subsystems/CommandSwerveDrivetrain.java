@@ -229,9 +229,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * @param updates the vision updates to add
      */
     public void addVisionMeasurements(List<TimestampedVisionUpdate> updates){
-        // for(int i = 0; i < updates.size(); i++){
-        //     addVisionMeasurement(updates.get(i).pose(), updates.get(i).timestamp(), updates.get(i).stdDevs());
-        // }
+        for(int i = 0; i < updates.size(); i++){
+            addVisionMeasurement(updates.get(i).pose(), updates.get(i).timestamp(), updates.get(i).stdDevs());
+        }
     }
 
     /**
