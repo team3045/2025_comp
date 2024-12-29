@@ -46,6 +46,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;
@@ -233,10 +234,14 @@ public class GremlinApriltagVision extends SubsystemBase {
 
         camPosePublisher.set(cameraPose);
         calculatedPosePublisher.set(calculatedRobotPose);
-        tagPosesPublisher.set((Pose3d[]) tagPose3ds.toArray());
+        tagPosesPublisher.set(tagPose3ds.toArray(Pose3d[]::new));
         GremlinLogger.logSD(logPath + "/TagsUsed", tagPose3ds.size());
         GremlinLogger.logStdDevs(logPath + "/StdDevs", stdDevs);
       }
+
+      camPosePublisher.close();
+      calculatedPosePublisher.close();
+      tagPosesPublisher.close();
     }
   }
 

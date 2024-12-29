@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.List;
 import java.util.function.Supplier;
 
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
@@ -12,15 +13,19 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOptions;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -29,6 +34,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commons.TimestampedVisionUpdate;
+
+import static frc.robot.constants.DriveConstants.*;
 
 
 /**
@@ -73,6 +80,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     );
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
+    @SuppressWarnings("unused")
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,        // Use default ramp rate (1 V/s)
@@ -93,6 +101,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
      * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
      */
+    @SuppressWarnings("unused")
     private final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
         new SysIdRoutine.Config(
             /* This is in radians per second², but SysId only supports "volts per second" */
@@ -134,6 +143,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         configureAutoBuilder();
+        configurePathPlannerLogging();
     }
 
 
@@ -156,6 +166,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         configureAutoBuilder();
+        configurePathPlannerLogging();
     }
 
     /**
@@ -182,6 +193,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         configureAutoBuilder();
+        configurePathPlannerLogging();
     }
 
     private void configureAutoBuilder() {
@@ -197,12 +209,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                         .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                         .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
                 ),
-                new PPHolonomicDriveController(
-                    // PID constants for translation
-                    new PIDConstants(10, 0, 0),
-                    // PID constants for rotation
-                    new PIDConstants(7, 0, 0)
-                ),
+                pathFollowingController,
                 config,
                 // Assume the path needs to be flipped for Red vs Blue, this is normally the case
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
@@ -211,6 +218,23 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
+    }
+
+    public static final StructArrayPublisher<Pose2d> TELEOP_TRAJECTORY_PUBLISHER = 
+        NetworkTableInstance.getDefault().getStructArrayTopic(DRIVE_LOG_PATH + "Trajectory/Path", Pose2d.struct).publish();
+    public static final StructPublisher<Pose2d> TARGET_POSE_PUBLISHER = 
+        NetworkTableInstance.getDefault().getStructTopic(DRIVE_LOG_PATH + "Trajectory/Target Pose", Pose2d.struct).publish();
+
+    private void configurePathPlannerLogging(){
+        // Logging callback for target robot pose
+        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+            TARGET_POSE_PUBLISHER.set(pose);
+        });
+
+        // Logging callback for the active path, this is sent as a list of poses
+        PathPlannerLogging.setLogActivePathCallback((poses) -> {
+            TELEOP_TRAJECTORY_PUBLISHER.set(poses.toArray(Pose2d[]::new));
+        });
     }
 
     /**
@@ -230,7 +254,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      */
     public void addVisionMeasurements(List<TimestampedVisionUpdate> updates){
         for(int i = 0; i < updates.size(); i++){
-            addVisionMeasurement(updates.get(i).pose(), updates.get(i).timestamp(), updates.get(i).stdDevs());
+            addVisionMeasurement(updates.get(i).pose(), Utils.fpgaToCurrentTime(updates.get(i).timestamp()), updates.get(i).stdDevs());
         }
     }
 
@@ -276,6 +300,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+    }
+
+
+    public Command driveToPose(Pose2d desiredPose){
+        return AutoBuilder.pathfindToPose(desiredPose, pathFollowingConstraints);
     }
 
     private void startSimThread() {

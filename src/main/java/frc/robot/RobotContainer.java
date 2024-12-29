@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -72,6 +73,8 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        joystick.square().whileTrue(drivetrain.driveToPose(new Pose2d(3,2,new Rotation2d())));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
