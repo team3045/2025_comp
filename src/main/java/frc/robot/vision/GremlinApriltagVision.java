@@ -18,6 +18,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
 
+import dev.doglog.DogLog;
+
 import static frc.robot.constants.FieldConstants.compFieldLength;
 import static frc.robot.constants.FieldConstants.compFieldWidth;
 import static frc.robot.constants.FieldConstants.compLayout;
@@ -46,7 +48,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;

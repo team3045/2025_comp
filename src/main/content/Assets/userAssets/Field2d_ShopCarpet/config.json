@@ -1,0 +1,9 @@
+{
+    "name": "Shop Carpet", 
+    "source": "",
+    "topLeft": [83, 27], 
+    "bottomRight": [1327, 774], 
+    "widthInches": 310.7185039, 
+    "heightInches": 184.29134, 
+    "defaultOrigin": "blue" 
+}
