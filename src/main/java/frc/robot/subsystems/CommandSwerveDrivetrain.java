@@ -14,16 +14,19 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOptions;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -63,11 +66,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
+    /*Swerve Setpoint Generator */
+    private SwerveSetpointGenerator setpointGenerator;
+    private SwerveSetpoint previousSetpoint;
+
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
+    @SuppressWarnings("unused")
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         new SysIdRoutine.Config(
-            null,        // Use default ramp rate (1 V/s)
-            Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
+            Volts.of(1.5).per(Seconds),        // Use default ramp rate (1 V/s)
+            Volts.of(5), // Reduce dynamic step voltage to 4 V to prevent brownout
             null,        // Use default timeout (10 s)
             // Log state with SignalLogger class
             state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())
@@ -125,7 +133,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     );
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineRotation;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -144,6 +152,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         configureAutoBuilder();
         configurePathPlannerLogging();
+        configureSetpointGenerator();
     }
 
 
@@ -167,6 +176,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         configureAutoBuilder();
         configurePathPlannerLogging();
+        configureSetpointGenerator();
     }
 
     /**
@@ -194,6 +204,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         configureAutoBuilder();
         configurePathPlannerLogging();
+        configureSetpointGenerator();
     }
 
     private void configureAutoBuilder() {
@@ -219,7 +230,25 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
     }
+    
+    private void configureSetpointGenerator(){
+        RobotConfig config;
+        try {
+            config = RobotConfig.fromGUISettings();
 
+            setpointGenerator = new SwerveSetpointGenerator(
+            config, 
+            MAX_STEER_VELOCITY);
+
+            // Initialize the previous setpoint to the robot's current speeds & module states
+            ChassisSpeeds currentSpeeds = getState().Speeds; // Method to get current robot-relative chassis speeds
+            SwerveModuleState[] currentStates = getState().ModuleStates; // Method to get the current swerve module states
+            previousSetpoint = new SwerveSetpoint(currentSpeeds, currentStates, DriveFeedforwards.zeros(config.numModules));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static final StructArrayPublisher<Pose2d> TELEOP_TRAJECTORY_PUBLISHER = 
         NetworkTableInstance.getDefault().getStructArrayTopic(DRIVE_LOG_PATH + "Trajectory/Path", Pose2d.struct).publish();
     public static final StructPublisher<Pose2d> TARGET_POSE_PUBLISHER = 
@@ -258,6 +287,31 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
     }
 
+    public Command driveToPose(Pose2d desiredPose){
+        return AutoBuilder.pathfindToPose(desiredPose, pathFollowingConstraints);
+    }
+
+     /**
+     * This method will take in desired robot-relative chassis speeds,
+     * generate a swerve setpoint, then set the target state for each module
+     *
+     * @param speeds The desired robot-relative speeds
+     */
+    public void driveRobotRelative(ChassisSpeeds speeds) {
+        // Note: it is important to not discretize speeds before or after
+        // using the setpoint generator, as it will discretize them for you
+        previousSetpoint = setpointGenerator.generateSetpoint(
+            previousSetpoint, // The previous setpoint
+            speeds, // The desired target speeds
+            0.02 // The loop time of the robot code, in seconds
+        );
+        setControl(m_pathApplyRobotSpeeds
+            .withSpeeds(previousSetpoint.robotRelativeSpeeds())
+            .withWheelForceFeedforwardsX(previousSetpoint.feedforwards().robotRelativeForcesXNewtons())
+            .withWheelForceFeedforwardsY(previousSetpoint.feedforwards().robotRelativeForcesYNewtons())
+        ); // Method that will drive the robot given target module states
+    }
+
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -266,7 +320,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * @return Command to run
      */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.quasistatic(direction);
+        return m_sysIdRoutineToApply.quasistatic(direction);//.finallyDo(() -> applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
     }
 
     /**
@@ -277,7 +331,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * @return Command to run
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.dynamic(direction);
+        return m_sysIdRoutineToApply.dynamic(direction);//.finallyDo(() -> applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
     }
 
 
@@ -300,11 +354,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-    }
-
-
-    public Command driveToPose(Pose2d desiredPose){
-        return AutoBuilder.pathfindToPose(desiredPose, pathFollowingConstraints);
     }
 
     private void startSimThread() {

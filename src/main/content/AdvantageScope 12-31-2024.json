@@ -13,17 +13,22 @@
             "/VISION/CAMERAS",
             "/VISION/CAMERAS/backRight/Tag Poses",
             "/VISION/CAMERAS/frontRight/Tag Poses",
-            "/SmartDashboard/VISION",
-            "/DriveState",
-            "/SmartDashboard",
             "/SmartDashboard/VISION/CAMERAS",
-            "/SmartDashboard/VISION/CAMERAS/frontRight",
             "/SmartDashboard/VISION/CAMERAS/frontRight/StdDevs/Stddevs",
-            "/DriveState/Trajectory"
+            "/DriveState/Trajectory",
+            "/SmartDashboard/VISION/CAMERAS/backRight/StdDevs",
+            "/SmartDashboard/VISION/CAMERAS/backRight/StdDevs/Stddevs",
+            "/SmartDashboard/VISION/CAMERAS/frontLeft/StdDevs/Stddevs",
+            "/SmartDashboard",
+            "/SmartDashboard/VISION/CAMERAS/frontRight",
+            "/CameraPublisher",
+            "/CameraPublisher/photonvision_Port_1184_Output_MJPEG_Server/streams",
+            "/DriveState",
+            "/DriveState/Pose"
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 2,
           "tabs": [
             {
               "type": 0,
@@ -61,12 +66,20 @@
               "type": 2,
               "title": "Odometry",
               "controller": {
-                "sources": [],
-                "game": "2024 Field",
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/DriveState/Pose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "game": "Shop Carpet",
                 "bumpers": "auto",
                 "origin": "blue",
-                "orientation": 0,
-                "size": 30
+                "orientation": 2,
+                "size": 24
               },
               "controllerUUID": "55s34z08zfbkorsz6emplsj1t79fto85",
               "renderer": null,
@@ -225,9 +238,9 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  5.350783931809648,
-                  12.225610041584968,
-                  -0.9637793544120727
+                  3.88275589162148,
+                  5.197535423707835,
+                  3.7871178070312173
                 ],
                 "cameraTarget": [
                   8.229599999999998,
@@ -236,6 +249,61 @@
                 ]
               },
               "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/VISION/CAMERAS/frontRight/StdDevs/Stddevs/XY",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/VISION/CAMERAS/backRight/StdDevs/Stddevs/XY",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/VISION/CAMERAS/frontLeft/StdDevs/Stddevs/XY",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "w98g9gj484hcl078tg8vywe11frfeujh",
+              "renderer": null,
+              "controlsHeight": 200
             }
           ]
         }
@@ -243,5 +311,5 @@
     }
   ],
   "satellites": [],
-  "version": "4.0.0-beta-4"
+  "version": "4.0.0"
 }

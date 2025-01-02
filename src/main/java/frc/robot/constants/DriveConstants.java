@@ -21,11 +21,13 @@ public class DriveConstants {
     public static final double MAX_ANGULAR_ACCEL = Math.PI; //Radians per Second Squared
     public static final double MAX_ANGULAR_ACCEL_AUTO = MAX_ANGULAR_ACCEL * 0.75;
 
+    public static final double MAX_STEER_VELOCITY = 10; //radians per second
+
     public static final PPHolonomicDriveController pathFollowingController = new PPHolonomicDriveController(
         // PID constants for translation
-        new PIDConstants(6, 0, 0),
+        new PIDConstants(3, 0, 0),
         // PID constants for rotation
-        new PIDConstants(8, 0, 0)
+        new PIDConstants(9, 0, 0)
     );
 
     public static final PathConstraints pathFollowingConstraints = new PathConstraints(

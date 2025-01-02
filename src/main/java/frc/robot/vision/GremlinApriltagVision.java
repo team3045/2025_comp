@@ -18,8 +18,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
 
-import dev.doglog.DogLog;
-
 import static frc.robot.constants.FieldConstants.compFieldLength;
 import static frc.robot.constants.FieldConstants.compFieldWidth;
 import static frc.robot.constants.FieldConstants.compLayout;
@@ -34,7 +32,7 @@ import static frc.robot.vision.VisionConstants.THETA_STDDEV_MODEL;
 import static frc.robot.vision.VisionConstants.XY_STDDEV_MODEL;
 import static frc.robot.vision.VisionConstants.maxChangeDistance;
 import static frc.robot.vision.VisionConstants.multiTagModifier;
-import static frc.robot.vision.VisionConstants.regressionModifier;
+import static frc.robot.vision.VisionConstants.stabilityModifier;
 import static frc.robot.vision.VisionConstants.thetaModifier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -69,7 +67,8 @@ public class GremlinApriltagVision extends SubsystemBase {
 
   // Will be the function in drivetrain that adds vision estimate to pose
   // estimation
-  private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (visionUpdates) -> {};
+  private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (visionUpdates) -> {
+  };
   // Will be the function in driveTrain that supplies current pose estimate
   private Supplier<Pose2d> poseSupplier = () -> new Pose2d();
 
@@ -105,12 +104,6 @@ public class GremlinApriltagVision extends SubsystemBase {
     // loop through all cameras
     for (int i = 0; i < cameras.length; i++) {
       String logPath = CAMERA_LOG_PATH + cameras[i].getName();
-      StructPublisher<Pose3d> camPosePublisher = NetworkTableInstance.getDefault()
-          .getStructTopic(logPath + "/Camera Pose", Pose3d.struct).publish();
-      StructPublisher<Pose2d> calculatedPosePublisher = NetworkTableInstance.getDefault()
-          .getStructTopic(logPath + "/Calculated Pose", Pose2d.struct).publish();
-      StructArrayPublisher<Pose3d> tagPosesPublisher = NetworkTableInstance.getDefault()
-          .getStructArrayTopic(logPath + "/Tag Poses", Pose3d.struct).publish();
 
       Pose3d cameraPose;
 
@@ -211,11 +204,11 @@ public class GremlinApriltagVision extends SubsystemBase {
         double thetaStdDev = 0.0;
 
         if (shouldUseMultiTag) {
-          xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * regressionModifier * multiTagModifier;
-          thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * regressionModifier * multiTagModifier;
+          xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * stabilityModifier * multiTagModifier;
+          thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * stabilityModifier * multiTagModifier;
         } else {
-          xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * regressionModifier;
-          thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * regressionModifier;
+          xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * stabilityModifier;
+          thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * stabilityModifier;
         }
 
         Vector<N3> stdDevs = VecBuilder.fill(
@@ -233,16 +226,61 @@ public class GremlinApriltagVision extends SubsystemBase {
                 timestamp,
                 stdDevs));
 
-        camPosePublisher.set(cameraPose);
-        calculatedPosePublisher.set(calculatedRobotPose);
-        tagPosesPublisher.set(tagPose3ds.toArray(Pose3d[]::new));
+        logPoses(i, cameraPose, calculatedRobotPose, tagPose3ds.toArray(Pose3d[]::new));
         GremlinLogger.logSD(logPath + "/TagsUsed", tagPose3ds.size());
         GremlinLogger.logStdDevs(logPath + "/StdDevs", stdDevs);
       }
+    }
+  }
 
-      camPosePublisher.close();
-      calculatedPosePublisher.close();
-      tagPosesPublisher.close();
+  private static final StructPublisher<Pose3d> FLcamPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "frontLeft" + "/Camera Pose", Pose3d.struct).publish();
+  private static final StructPublisher<Pose2d> FLcalculatedPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "frontLeft" + "/Calculated Pose", Pose2d.struct).publish();
+  private static final StructArrayPublisher<Pose3d> FLtagPosesPublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic(CAMERA_LOG_PATH + "frontLeft" + "/Tag Poses", Pose3d.struct).publish();
+  private static final StructPublisher<Pose3d> FRcamPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "frontRight" + "/Camera Pose", Pose3d.struct).publish();
+  private static final StructPublisher<Pose2d> FRcalculatedPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "frontRight" + "/Calculated Pose", Pose2d.struct).publish();
+  private static final StructArrayPublisher<Pose3d> FRtagPosesPublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic(CAMERA_LOG_PATH + "frontRight" + "/Tag Poses", Pose3d.struct).publish();
+  private static final StructPublisher<Pose3d> BLcamPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "backLeft" + "/Camera Pose", Pose3d.struct).publish();
+  private static final StructPublisher<Pose2d> BLcalculatedPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "backLeft" + "/Calculated Pose", Pose2d.struct).publish();
+  private static final StructArrayPublisher<Pose3d> BLtagPosesPublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic(CAMERA_LOG_PATH + "backLeft" + "/Tag Poses", Pose3d.struct).publish();
+  private static final StructPublisher<Pose3d> BRcamPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "backRight" + "/Camera Pose", Pose3d.struct).publish();
+  private static final StructPublisher<Pose2d> BRcalculatedPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "backRight" + "/Calculated Pose", Pose2d.struct).publish();
+  private static final StructArrayPublisher<Pose3d> BRtagPosesPublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic(CAMERA_LOG_PATH + "backRight" + "/Tag Poses", Pose3d.struct).publish();
+
+  /**
+   * Log the CamPose, Calculated Pose, and TagPose
+   * 
+   * @param camID
+   */
+  private void logPoses(int camID, Pose3d camPose, Pose2d calculatedPose, Pose3d[] tagPoses) {
+    switch (camID) {
+      case 0:
+        FLcamPosePublisher.set(camPose);
+        FLcalculatedPosePublisher.set(calculatedPose);
+        FLtagPosesPublisher.set(tagPoses);
+      case 1:
+        FRcamPosePublisher.set(camPose);
+        FRcalculatedPosePublisher.set(calculatedPose);
+        FRtagPosesPublisher.set(tagPoses);
+      case 2:
+        BLcamPosePublisher.set(camPose);
+        BLcalculatedPosePublisher.set(calculatedPose);
+        BLtagPosesPublisher.set(tagPoses);
+      case 3:
+        BRcamPosePublisher.set(camPose);
+        BRcalculatedPosePublisher.set(calculatedPose);
+        BRtagPosesPublisher.set(tagPoses);
     }
   }
 
