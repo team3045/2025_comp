@@ -25,8 +25,8 @@ public class TunerConstants {
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     private static final Slot0Configs steerGains = new Slot0Configs()
-        .withKP(120).withKI(0).withKD(0.2)
-        .withKS(0).withKV(1.5).withKA(0);
+        .withKP(100).withKI(0).withKD(0.2)
+        .withKS(0).withKV(1.8).withKA(0);
     //When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     private static final Slot0Configs driveGains = new Slot0Configs()
@@ -121,7 +121,7 @@ public class TunerConstants {
     private static final int kFrontLeftDriveMotorId = 7;
     private static final int kFrontLeftSteerMotorId = 8;
     private static final int kFrontLeftEncoderId = 12;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.413330);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.381104);
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftCANcoderInverted = false;
 

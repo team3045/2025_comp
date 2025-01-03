@@ -349,6 +349,14 @@ public class GremlinPS4Controller extends GremlinCommandGenericHID {
     return m_hid.getLeftX() * -1;
   }
 
+  /**Get the square of the X axis value on the left side of the controlller
+   * 
+   * @return
+   */
+  public double getLeftXSquared() {
+    return Math.copySign(m_hid.getLeftX()*m_hid.getLeftX(), m_hid.getLeftX());
+  }
+
   /**
    * Get the X axis value of right side of the controller.
    *
@@ -365,6 +373,14 @@ public class GremlinPS4Controller extends GremlinCommandGenericHID {
    */
   public double getRightXReversed() {
     return m_hid.getRightX() * -1;
+  }
+
+  /**Get the square of the X axis value on the right side of the controlller
+   * 
+   * @return
+   */
+  public double getRightXSquared() {
+    return Math.copySign(m_hid.getRightX()*m_hid.getRightX(), m_hid.getRightX());
   }
 
   /**
@@ -385,6 +401,14 @@ public class GremlinPS4Controller extends GremlinCommandGenericHID {
     return m_hid.getLeftY() * -1;
   }
 
+  /**Get the square of the Y axis value on the left side of the controlller
+   * 
+   * @return
+   */
+  public double getLeftYSquared() {
+    return Math.copySign(m_hid.getLeftY()*m_hid.getLeftY(), m_hid.getLeftY());
+  }
+
   /**
    * Get the Y axis value of right side of the controller.
    *
@@ -392,6 +416,23 @@ public class GremlinPS4Controller extends GremlinCommandGenericHID {
    */
   public double getRightY() {
     return m_hid.getRightY();
+  }
+
+  /**
+   * Get the Y axis value of left side of the controller times negative one.
+   *
+   * @return the axis value times negative one.
+   */
+  public double getRightYReversed(){
+    return m_hid.getRightY() * -1;
+  }
+
+  /**Get the square of the Y axis value on the left side of the controlller
+   * 
+   * @return
+   */
+  public double getRightYSquared() {
+    return Math.copySign(m_hid.getRightY()*m_hid.getRightY(), m_hid.getRightY());
   }
 
   /**
