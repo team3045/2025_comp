@@ -10,6 +10,24 @@ public class GremlinUtil {
     private GremlinUtil() {
     }
 
+    /** Square Driver input retaining sign. 
+     * 
+     * @param input
+     * @return input squared
+     */
+    public static double squareDriverInput(double input){
+        return Math.copySign(input*input, input);
+    }
+
+    /** cube Driver input retaining sign. 
+     * 
+     * @param input
+     * @return input cubed
+     */
+    public static double cubeDriverInput(double input){
+        return Math.copySign(input*input*input, input);
+    }
+
     /**
      * Converts from pound inches squared to kilogram meters squared.
      * These units are for moment of Inertia.

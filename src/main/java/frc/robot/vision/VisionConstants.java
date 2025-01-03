@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.photonvision.simulation.SimCameraProperties;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -49,9 +50,9 @@ public class VisionConstants {
                         new double[] { 0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068 },
                         1);
 
-        public static final double thetaModifier = 40;
+        public static final double thetaModifier = 100;
         public static final double multiTagModifier = 0.6;
-        public static final double regressionModifier = 3;
+        public static final double stabilityModifier = 7.5;
         public static final double maxChangeDistance = 1; // m
 
         public static SimCameraProperties getOV2311() {
@@ -101,5 +102,5 @@ public class VisionConstants {
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
-        };
+        };    
 }
