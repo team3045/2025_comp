@@ -42,7 +42,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.vision.oakD.ObjectDetConstants;
 
 import static frc.robot.constants.DriveConstants.*;
 
@@ -73,8 +72,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /*Swerve Setpoint Generator */
     private SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
-
-    private TimeInterpolatableBuffer<Pose2d> robotPoseBuffer = TimeInterpolatableBuffer.createBuffer(ObjectDetConstants.timeThreshold);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -324,22 +321,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         ); // Method that will drive the robot given target module states
     }
 
-    /** Get the position of the robot from some time in the past
-     * 
-     * @param timestamp the time from which you want the pose of the robot
-     * @return If the time is too far back then an empty is returned,
-     * otherwise the position of the robot at the timestamp is returned
-     */
-    public Optional<Pose2d> getPoseFromTime(double timestamp){
-        // Step 0: If this measurement is old enough to be outside the pose buffer's timespan, skip.
-        if (robotPoseBuffer.getInternalBuffer().isEmpty()
-            || robotPoseBuffer.getInternalBuffer().lastKey() - ObjectDetConstants.timeThreshold
-                > timestamp) {
-        return Optional.empty();}
-
-        return robotPoseBuffer.getSample(timestamp);
-    }
-
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -381,8 +362,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-
-        robotPoseBuffer.addSample(Timer.getFPGATimestamp(), getState().Pose);
     }
 
     private void startSimThread() {
