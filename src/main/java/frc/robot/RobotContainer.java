@@ -21,8 +21,11 @@ import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.vision.GremlinApriltagVision;
-import frc.robot.vision.VisionConstants;
+import frc.robot.vision.apriltag.GremlinApriltagVision;
+import frc.robot.vision.apriltag.VisionConstants;
+import frc.robot.vision.oakD.GremlinOakD;
+import frc.robot.vision.oakD.GremlinObjectDetection;
+import frc.robot.vision.oakD.ObjectDetConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;
@@ -44,6 +47,9 @@ public class RobotContainer {
     public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
         () -> drivetrain.getState().Pose, 
         (drivetrain::addVisionMeasurements));
+    
+    public final GremlinOakD OakD = new GremlinOakD("OakD", ObjectDetConstants.OakDPose, time -> drivetrain.getPoseFromTime(time));
+    public final GremlinObjectDetection objectDetection = new GremlinObjectDetection(OakD);
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());

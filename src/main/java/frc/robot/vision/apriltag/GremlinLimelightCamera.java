@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.vision;
+package frc.robot.vision.apriltag;
 
 import org.photonvision.common.hardware.VisionLEDMode;
 
@@ -10,7 +10,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.vision.LimelightHelpers.PoseEstimate;
+import frc.robot.vision.apriltag.LimelightHelpers.PoseEstimate;
 
 /** Add your docs here. */
 public class GremlinLimelightCamera implements AutoCloseable {
@@ -184,6 +184,15 @@ public class GremlinLimelightCamera implements AutoCloseable {
      */
     public Pose3d getCameraPose() {
         return cameraPose;
+    }
+
+    /** Whether or not the limelight is detecting something. 
+     * Could be an object or tag or anything else that it is configured to detect.
+     * 
+     * @return whether or not limelight detects object. 
+     */
+    public boolean seesObject(){
+        return LimelightHelpers.getTV(name);
     }
 
     /**

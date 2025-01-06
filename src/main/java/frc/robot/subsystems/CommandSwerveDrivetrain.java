@@ -3,17 +3,19 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
-
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
@@ -22,6 +24,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -33,32 +36,33 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commons.TimestampedVisionUpdate;
+import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.vision.oakD.ObjectDetConstants;
 
 import static frc.robot.constants.DriveConstants.*;
-
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
  */
-public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
-    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.fromDegrees(0);
+    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
-    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.fromDegrees(180);
-    
+    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
 
-    // Swerve request applied during path following for path planner
+    /** Swerve request to apply during robot-centric path following */
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     /* Swerve requests to apply during SysId characterization */
@@ -70,8 +74,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
 
+    private TimeInterpolatableBuffer<Pose2d> robotPoseBuffer = TimeInterpolatableBuffer.createBuffer(ObjectDetConstants.timeThreshold);
+
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
-    @SuppressWarnings("unused")
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,        // Use default ramp rate (1 V/s)
@@ -88,7 +93,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     );
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
-    @SuppressWarnings("unused")
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,        // Use default ramp rate (1 V/s)
@@ -109,7 +113,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
      * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
      */
-    @SuppressWarnings("unused")
     private final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
         new SysIdRoutine.Config(
             /* This is in radians per second², but SysId only supports "volts per second" */
@@ -133,19 +136,22 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     );
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineRotation;
+    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
      * <p>
      * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them
-     * through getters in the classes.
+     * the devices themselves. If they need the devices, they can access them through
+     * getters in the classes.
      *
      * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
      * @param modules             Constants for each specific module
      */
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants... modules) {
+    public CommandSwerveDrivetrain(
+        SwerveDrivetrainConstants drivetrainConstants,
+        SwerveModuleConstants<?, ?, ?>... modules
+    ) {
         super(drivetrainConstants, modules);
         if (Utils.isSimulation()) {
             startSimThread();
@@ -155,13 +161,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         configureSetpointGenerator();
     }
 
-
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
      * <p>
      * This constructs the underlying hardware devices, so users should not construct
-     * the devices themselves. If they need the devices, they can access them
-     * through getters in the classes.
+     * the devices themselves. If they need the devices, they can access them through
+     * getters in the classes.
      *
      * @param drivetrainConstants        Drivetrain-wide constants for the swerve drive
      * @param odometryUpdateFrequency    The frequency to run the odometry loop. If
@@ -169,8 +174,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      *                                   CAN FD, and 100 Hz on CAN 2.0.
      * @param modules                    Constants for each specific module
      */
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
-        super(drivetrainConstants, OdometryUpdateFrequency, modules);
+    public CommandSwerveDrivetrain(
+        SwerveDrivetrainConstants drivetrainConstants,
+        double odometryUpdateFrequency,
+        SwerveModuleConstants<?, ?, ?>... modules
+    ) {
+        super(drivetrainConstants, odometryUpdateFrequency, modules);
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -191,13 +200,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      *                                   unspecified or set to 0 Hz, this is 250 Hz on
      *                                   CAN FD, and 100 Hz on CAN 2.0.
      * @param odometryStandardDeviation  The standard deviation for odometry calculation
-     * @param visionStandardDeviation    The standard deviation for vision calculation
+     *                                  in the form [x, y, theta]ᵀ, with units in meters
+     *                                  and radians
+     * @param visionStandardDeviation   The standard deviation for vision calculation
+     *                                  in the form [x, y, theta]ᵀ, with units in meters
+     *                                  and radians
      * @param modules                    Constants for each specific module
      */
     public CommandSwerveDrivetrain(
-            SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency,
-            Matrix<N3, N1> odometryStandardDeviation, Matrix<N3, N1> visionStandardDeviation,
-            SwerveModuleConstants... modules) {
+        SwerveDrivetrainConstants drivetrainConstants,
+        double odometryUpdateFrequency,
+        Matrix<N3, N1> odometryStandardDeviation,
+        Matrix<N3, N1> visionStandardDeviation,
+        SwerveModuleConstants<?, ?, ?>... modules
+    ) {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
         if (Utils.isSimulation()) {
             startSimThread();
@@ -230,7 +246,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
     }
-    
+
     private void configureSetpointGenerator(){
         RobotConfig config;
         try {
@@ -248,7 +264,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             e.printStackTrace();
         }
     }
-    
+
     public static final StructArrayPublisher<Pose2d> TELEOP_TRAJECTORY_PUBLISHER = 
         NetworkTableInstance.getDefault().getStructArrayTopic(DRIVE_LOG_PATH + "Trajectory/Path", Pose2d.struct).publish();
     public static final StructPublisher<Pose2d> TARGET_POSE_PUBLISHER = 
@@ -275,7 +291,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
     }
-    
+
     /**
      * Adds a list of vision updates along with their timestamps and standard deviations
      * 
@@ -287,11 +303,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
     }
 
-    public Command driveToPose(Pose2d desiredPose){
-        return AutoBuilder.pathfindToPose(desiredPose, pathFollowingConstraints);
-    }
-
-     /**
+    /**
      * This method will take in desired robot-relative chassis speeds,
      * generate a swerve setpoint, then set the target state for each module
      *
@@ -312,6 +324,22 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         ); // Method that will drive the robot given target module states
     }
 
+    /** Get the position of the robot from some time in the past
+     * 
+     * @param timestamp the time from which you want the pose of the robot
+     * @return If the time is too far back then an empty is returned,
+     * otherwise the position of the robot at the timestamp is returned
+     */
+    public Optional<Pose2d> getPoseFromTime(double timestamp){
+        // Step 0: If this measurement is old enough to be outside the pose buffer's timespan, skip.
+        if (robotPoseBuffer.getInternalBuffer().isEmpty()
+            || robotPoseBuffer.getInternalBuffer().lastKey() - ObjectDetConstants.timeThreshold
+                > timestamp) {
+        return Optional.empty();}
+
+        return robotPoseBuffer.getSample(timestamp);
+    }
+
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -320,7 +348,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * @return Command to run
      */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.quasistatic(direction);//.finallyDo(() -> applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+        return m_sysIdRoutineToApply.quasistatic(direction);
     }
 
     /**
@@ -331,9 +359,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * @return Command to run
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutineToApply.dynamic(direction);//.finallyDo(() -> applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+        return m_sysIdRoutineToApply.dynamic(direction);
     }
-
 
     @Override
     public void periodic() {
@@ -354,6 +381,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        robotPoseBuffer.addSample(Timer.getFPGATimestamp(), getState().Pose);
     }
 
     private void startSimThread() {

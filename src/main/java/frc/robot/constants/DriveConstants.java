@@ -8,15 +8,13 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
-import frc.robot.generated.TunerConstants;
-
 import static edu.wpi.first.units.Units.*;
 
 /** Add your docs here. */
 public class DriveConstants {
     public static final String DRIVE_LOG_PATH = "DriveState/";
 
-    public static double MaxSpeed = 3;//TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    public static double MaxSpeed = 3; //TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     public static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);//RotationsPerSecond.of(1.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     public static final double MAX_VELOCITY = 4; //Meters per Second
