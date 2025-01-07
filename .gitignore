@@ -182,3 +182,10 @@ ctre_sim/
 # clangd
 /.cache
 compile_commands.json
+
+# Eclipse generated file for annotation processors
+.factorypath
+
+#Our own Ignores
+.gradle/8.11/checksums/checksums.lock
+.gradle/8.11/checksums/checksums.lock

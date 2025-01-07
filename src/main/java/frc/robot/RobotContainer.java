@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.DriveConstants.deadband;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -21,8 +20,8 @@ import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.vision.GremlinApriltagVision;
-import frc.robot.vision.VisionConstants;
+import frc.robot.vision.apriltag.GremlinApriltagVision;
+import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;

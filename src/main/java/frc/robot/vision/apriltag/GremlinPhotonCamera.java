@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package frc.robot.vision;
+package frc.robot.vision.apriltag;
 
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;

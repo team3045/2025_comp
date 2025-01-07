@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.vision;
+package frc.robot.vision.apriltag;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,16 +24,16 @@ import static frc.robot.constants.FieldConstants.compLayout;
 import static frc.robot.constants.FieldConstants.shopFieldLength;
 import static frc.robot.constants.FieldConstants.shopFieldWidth;
 import static frc.robot.constants.FieldConstants.shopLayout;
-import static frc.robot.vision.VisionConstants.CAMERA_LOG_PATH;
-import static frc.robot.vision.VisionConstants.EXCLUDED_TAG_IDS;
-import static frc.robot.vision.VisionConstants.FIELD_BORDER_MARGIN;
-import static frc.robot.vision.VisionConstants.MAX_AMBIGUITY;
-import static frc.robot.vision.VisionConstants.THETA_STDDEV_MODEL;
-import static frc.robot.vision.VisionConstants.XY_STDDEV_MODEL;
-import static frc.robot.vision.VisionConstants.maxChangeDistance;
-import static frc.robot.vision.VisionConstants.multiTagModifier;
-import static frc.robot.vision.VisionConstants.stabilityModifier;
-import static frc.robot.vision.VisionConstants.thetaModifier;
+import static frc.robot.vision.apriltag.VisionConstants.CAMERA_LOG_PATH;
+import static frc.robot.vision.apriltag.VisionConstants.EXCLUDED_TAG_IDS;
+import static frc.robot.vision.apriltag.VisionConstants.FIELD_BORDER_MARGIN;
+import static frc.robot.vision.apriltag.VisionConstants.MAX_AMBIGUITY;
+import static frc.robot.vision.apriltag.VisionConstants.THETA_STDDEV_MODEL;
+import static frc.robot.vision.apriltag.VisionConstants.XY_STDDEV_MODEL;
+import static frc.robot.vision.apriltag.VisionConstants.maxChangeDistance;
+import static frc.robot.vision.apriltag.VisionConstants.multiTagModifier;
+import static frc.robot.vision.apriltag.VisionConstants.stabilityModifier;
+import static frc.robot.vision.apriltag.VisionConstants.thetaModifier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
