@@ -20,19 +20,28 @@ public class Elevator extends SubsystemBase {
   private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
   private CANcoder heightCancoder = new CANcoder(cancoderId, canbus);
 
-  private double targetHeight;
+  private double targetHeight = minimumHeight;
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
 
   /** Creates a new Elevator. */
   public Elevator() {
-    targetHeight = getHeight();
+    configDevices();
+    targetHeight = getHeight(); //This should go after configDevices to make sure that the elevator is zeroed
   }
 
   /**
    * Configure the Can devices for this subsystem
+   * Also Resets position to zero
    */
-  public void configDevices(){}
+  public void configDevices(){
+    rightMotor.getConfigurator().apply(motorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted)));
+    leftMotor.getConfigurator().apply(motorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted)));
+
+    //We assume elevator starts at lowest position
+    rightMotor.setPosition(0); 
+    leftMotor.setPosition(0);
+  }
 
   /** 
    * Get the Height of the elevator from the rotations of the Encoder.
