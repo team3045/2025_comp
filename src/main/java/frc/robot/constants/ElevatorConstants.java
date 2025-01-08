@@ -4,8 +4,11 @@
 
 package frc.robot.constants;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.CustomParamsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -14,15 +17,16 @@ import com.ctre.phoenix6.hardware.core.CoreCANcoder;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
 public class ElevatorConstants {
-    public static final int rightMotorId = 0;
-    public static final int leftMotorId = 1;
-    public static final int cancoderId = 2;
+    public static final int rightMotorId = 15;
+    public static final int leftMotorId = 16;
+    public static final int cancoderId = 21;
     public static final String canbus = "Canivore 3045";
 
     public static final double numStages = 4;
@@ -31,13 +35,13 @@ public class ElevatorConstants {
     public static final double thirdStageLength = Units.inchesToMeters(24); //m
     public static final double fourthStageLength = Units.inchesToMeters(24); //m
 
-    public static final double rotorToSensorRatio = 1;
+    //Cancoder is 1:1 with drum so rotorToSensor is equivalent to the total gear ratio
+    public static final double rotorToSensorRatio = 80; 
     public static final double sensorToMechanismRatio = 1;
 
-    public static final double rotationToLengthRatio = 0.1; //1 rotation = 0.1m
-    public static final double minimumHeight = 0.15; //m
+    public static final double minimumHeight = fourthStageLength; //m
 
-    public static final double maxHeight = 1.5; // m
+    public static final double maxHeight = firstStageLength + secondStageLength + thirdStageLength + fourthStageLength; // m
 
     public static final double heightTolerance = 0.03; //3cm
 
@@ -48,17 +52,27 @@ public class ElevatorConstants {
     public static final boolean statorCurrentLimitEnable = true;
     public static final boolean supplyCurrentLimitEnable = true;
 
-    public static final double maxAccelerationLinear = 1; //m per sec^2
+    /*Simulation */
+    public static final double carriageMass = 4.53592 * 2; //kg, 9kg = 20lbs
+    public static final double drumRadius = .2; //m
+    public static final double canvasWidth = 2; //m
+    public static final double canvasHeight = 6; //m
+
+
+    //Rotation of the output shaft. To get rotations of motor to the height of elevator we need to multiply by the gear ratio
+    public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot
+
+    public static final double maxAccelerationLinear = 2; //m per sec^2
     public static final double maxVelocityLinear = 1; //m per sec
     public static final double maxAccelerationRotations =  maxAccelerationLinear / rotationToLengthRatio; //rot per sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; //rot per sec
 
     public static final double timesyncFrequency = 200; //Hz aka every 5 ms
 
-    public static final InvertedValue leftInverted = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue leftInverted = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
 
-    public static final double kP = 0;
+    public static final double kP = 200;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0;
@@ -66,7 +80,7 @@ public class ElevatorConstants {
     public static final double kA = 0;
     public static final double kV = 0;
 
-
+    /*Configuration */
     public static final CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs()
         .withStatorCurrentLimit(statorCurrentLimit)
         .withSupplyCurrentLimit(supplyCurrentLimit)
@@ -82,8 +96,7 @@ public class ElevatorConstants {
 
     public static final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
         .withMotionMagicAcceleration(maxAccelerationRotations)
-        .withMotionMagicCruiseVelocity(maxVelocityRotations)
-        .withMotionMagicExpo_kA(cancoderId);
+        .withMotionMagicCruiseVelocity(maxVelocityRotations); //Consider adding jerk or making it expo
 
     public static final MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs()
         .withControlTimesyncFreqHz(timesyncFrequency)
@@ -106,4 +119,11 @@ public class ElevatorConstants {
         .withMotionMagic(motionMagicConfigs)
         .withMotorOutput(motorOutputConfigs)
         .withSlot0(slot0Configs);
+    
+    public static final CANcoderConfiguration cancoderConfig = new CANcoderConfiguration()
+        .withMagnetSensor(new MagnetSensorConfigs()
+            .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+            .withAbsoluteSensorDiscontinuityPoint(1) //Absolute sensor is [0,1] unsigned
+            .withMagnetOffset(0) //We are using relative not absolute so dont really care
+        ); 
 }

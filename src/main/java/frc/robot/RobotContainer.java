@@ -20,6 +20,7 @@ import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.vision.apriltag.GremlinApriltagVision;
 import frc.robot.vision.apriltag.VisionConstants;
 
@@ -43,6 +44,7 @@ public class RobotContainer {
     public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
         () -> drivetrain.getState().Pose, 
         (drivetrain::addVisionMeasurements));
+    public final Elevator elevator = new Elevator();
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
@@ -79,11 +81,9 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
-        // reset the field-centric heading on left bumper press
-        joystick.L1().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
-        //joystick.square().whileTrue(drivetrain.driveToPose(new Pose2d(3,2,new Rotation2d())));
-
+        joystick.R1().onTrue(elevator.increaseHeight());
+        joystick.L1().onTrue(elevator.decreaseHeight());
+        
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
