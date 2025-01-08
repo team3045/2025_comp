@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,15 +21,12 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commons.GremlinUtil;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.ElevatorConstants.*;
-
-import java.nio.channels.Pipe.SourceChannel;
 
 /* */
 public class Elevator extends SubsystemBase {
@@ -43,6 +41,11 @@ public class Elevator extends SubsystemBase {
   /** Creates a new Elevator. */
   public Elevator() {
     configDevices();
+
+    if(Utils.isSimulation()){
+      configSim();
+    }
+
     targetHeight = getHeight(); //This should go after configDevices to make sure that the elevator is zeroed
   }
 
