@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,6 +16,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.util.datalog.FloatLogEntry;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -35,7 +37,6 @@ import java.util.function.DoubleSupplier;
 public class Elevator extends SubsystemBase {
   private TalonFX rightMotor = new TalonFX(rightMotorId,canbus);
   private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
-  private CANcoder heightCancoder = new CANcoder(cancoderId, canbus);
 
   private double targetHeight = minimumHeight;
 
@@ -59,32 +60,28 @@ public class Elevator extends SubsystemBase {
   public void configDevices(){
     rightMotor.getConfigurator().apply(motorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted)));
     leftMotor.getConfigurator().apply(motorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted)));
-    heightCancoder.getConfigurator().apply(cancoderConfig);
 
     //Clear Sticky faults
     rightMotor.clearStickyFaults();
     leftMotor.clearStickyFaults();
-    heightCancoder.clearStickyFaults();
 
     //We assume elevator starts at lowest position
     rightMotor.setPosition(0);
     leftMotor.setPosition(0);
-    heightCancoder.setPosition(0);
 
     BaseStatusSignal.setUpdateFrequencyForAll(200, 
       rightMotor.getPosition(),
-      leftMotor.getPosition(),
-      heightCancoder.getPosition());
+      leftMotor.getPosition());
   }
 
   /** 
-   * Get the Height of the elevator from the rotations of the Encoder.
+   * Get the Height of the elevator from the rotations of the Right Motor Encoder.
    * Elevator should be zeroes so that zero rotations is minimum height. 
    * 
    * @return the height of the carriage of the elevator in meters
    */
   public double getHeight(){
-    return heightCancoder.getPosition().getValueAsDouble() * rotationToLengthRatio + minimumHeight;
+    return rightMotor.getPosition().getValueAsDouble() * rotationToLengthRatio + minimumHeight;
   }
 
   /**
@@ -132,9 +129,10 @@ public class Elevator extends SubsystemBase {
 
     MotionMagicVoltage request = new MotionMagicVoltage(targetRotations)
       .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); //every  1 ms
+    Follower followerRequest = new Follower(rightMotorId, rightInverted != leftInverted);
 
     rightMotor.setControl(request);
-    leftMotor.setControl(request);
+    leftMotor.setControl(followerRequest);
   }
 
   /**
@@ -164,7 +162,7 @@ public class Elevator extends SubsystemBase {
   /*SIMULATION*/
   private final ElevatorSim elevatorSim = new ElevatorSim(
     DCMotor.getKrakenX60Foc(2), 
-    rotorToSensorRatio,   
+    totalGearing,   
     carriageMass, 
     drumRadius, 
     minimumHeight, 
@@ -174,7 +172,6 @@ public class Elevator extends SubsystemBase {
   
   private TalonFXSimState rightMotorSim;
   private TalonFXSimState leftMotorSim;
-  private CANcoderSimState heightCancoderSim;
 
   //These dimensions are arbitrary but we'll standardize to meters
   private Mechanism2d elevatorMechanism = new Mechanism2d(canvasWidth, canvasHeight);
@@ -218,10 +215,8 @@ public class Elevator extends SubsystemBase {
   public void configSim(){
     rightMotorSim = rightMotor.getSimState();
     leftMotorSim = leftMotor.getSimState();
-    heightCancoderSim = heightCancoder.getSimState();
 
     rightMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
-    heightCancoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
     leftMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
     elevatorSim.setState(minimumHeight, 0);
@@ -232,12 +227,10 @@ public class Elevator extends SubsystemBase {
     //Update sim states
     rightMotorSim = rightMotor.getSimState();
     leftMotorSim = leftMotor.getSimState();
-    heightCancoderSim = heightCancoder.getSimState();
 
     //update with latest simulated supply voltage
     rightMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     leftMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-    heightCancoderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     //get output voltage for motors, we assume both output same amount 
     //since they are identical just two different sides
@@ -251,12 +244,10 @@ public class Elevator extends SubsystemBase {
     //Since Talonfx use cancoder as remote sensor this should also apply to the motors
     //If directly applying to motors note that motors require rotor position/velocity (before gear ratio), but
     //DCMotorSim returns mechanism position/velocity (after gear ratio)
-    heightCancoderSim.setRawPosition(convertHeightToRotations(elevatorSim.getPositionMeters() * sensorToMechanismRatio));
-    heightCancoderSim.setVelocity(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond() * sensorToMechanismRatio));
-    rightMotorSim.setRawRotorPosition(convertHeightToRotations(elevatorSim.getPositionMeters()) * rotorToSensorRatio);
-    leftMotorSim.setRawRotorPosition(convertHeightToRotations(elevatorSim.getPositionMeters()) * rotorToSensorRatio);
-    rightMotorSim.setRotorVelocity(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * rotorToSensorRatio);
-    leftMotorSim.setRawRotorPosition(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * rotorToSensorRatio);
+    rightMotorSim.setRawRotorPosition(convertHeightToRotations(elevatorSim.getPositionMeters()) * totalGearing);
+    leftMotorSim.setRawRotorPosition(convertHeightToRotations(elevatorSim.getPositionMeters()) * totalGearing);
+    rightMotorSim.setRotorVelocity(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * totalGearing);
+    leftMotorSim.setRawRotorPosition(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * totalGearing);
 
     updateMechanism2d();
   }

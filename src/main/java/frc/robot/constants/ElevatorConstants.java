@@ -4,20 +4,16 @@
 
 package frc.robot.constants;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.CustomParamsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.core.CoreCANcoder;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.util.Units;
@@ -26,7 +22,6 @@ import edu.wpi.first.math.util.Units;
 public class ElevatorConstants {
     public static final int rightMotorId = 15;
     public static final int leftMotorId = 16;
-    public static final int cancoderId = 21;
     public static final String canbus = "Canivore 3045";
 
     public static final double numStages = 4;
@@ -36,8 +31,9 @@ public class ElevatorConstants {
     public static final double fourthStageLength = Units.inchesToMeters(24); //m
 
     //Cancoder is 1:1 with drum so rotorToSensor is equivalent to the total gear ratio
-    public static final double rotorToSensorRatio = 80; 
-    public static final double sensorToMechanismRatio = 1;
+    public static final double rotorToSensorRatio = 1; 
+    public static final double sensorToMechanismRatio = (686.0 / 27.0);
+    public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
     public static final double minimumHeight = fourthStageLength; //m
 
@@ -90,7 +86,7 @@ public class ElevatorConstants {
         .withSupplyCurrentLowerLimit(supplyCurrentLimitLowerLimit);
 
     public static final FeedbackConfigs feedbackConfigs = new FeedbackConfigs()
-        .withFusedCANcoder(new CoreCANcoder(cancoderId, canbus))
+        .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
         .withRotorToSensorRatio(rotorToSensorRatio)
         .withSensorToMechanismRatio(sensorToMechanismRatio);
 
@@ -119,11 +115,4 @@ public class ElevatorConstants {
         .withMotionMagic(motionMagicConfigs)
         .withMotorOutput(motorOutputConfigs)
         .withSlot0(slot0Configs);
-    
-    public static final CANcoderConfiguration cancoderConfig = new CANcoderConfiguration()
-        .withMagnetSensor(new MagnetSensorConfigs()
-            .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
-            .withAbsoluteSensorDiscontinuityPoint(1) //Absolute sensor is [0,1] unsigned
-            .withMagnetOffset(0) //We are using relative not absolute so dont really care
-        ); 
 }
