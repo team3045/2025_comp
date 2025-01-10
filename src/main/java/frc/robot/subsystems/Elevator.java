@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -27,6 +28,8 @@ import frc.robot.commons.GremlinUtil;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.ElevatorConstants.*;
+
+import java.util.function.DoubleSupplier;
 
 /* */
 public class Elevator extends SubsystemBase {
@@ -67,6 +70,11 @@ public class Elevator extends SubsystemBase {
     rightMotor.setPosition(0);
     leftMotor.setPosition(0);
     heightCancoder.setPosition(0);
+
+    BaseStatusSignal.setUpdateFrequencyForAll(200, 
+      rightMotor.getPosition(),
+      leftMotor.getPosition(),
+      heightCancoder.getPosition());
   }
 
   /** 
@@ -118,13 +126,12 @@ public class Elevator extends SubsystemBase {
    * @param targetHeight the desired height in meters
    */
   private void setHeightTarget(double targetHeight){
-    System.out.println(targetHeight);
     this.targetHeight = GremlinUtil.clampWithLogs(maxHeight, minimumHeight, targetHeight);
 
     double targetRotations = convertHeightToRotations(targetHeight);
 
     MotionMagicVoltage request = new MotionMagicVoltage(targetRotations)
-      .withEnableFOC(true).withSlot(0).withUpdateFreqHz(50); //every 2 ms
+      .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); //every  1 ms
 
     rightMotor.setControl(request);
     leftMotor.setControl(request);
@@ -137,16 +144,16 @@ public class Elevator extends SubsystemBase {
    * @param desiredHeight the desired height in meters
    * @return a command directing this subsytem to go to desiredheight
    */
-  public Command goToHeight(double desiredHeight){
-    return this.run(() -> setHeightTarget(desiredHeight));
+  public Command goToHeight(DoubleSupplier desiredHeight){
+    return this.runOnce(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
   }
 
   public Command increaseHeight(){
-    return goToHeight(getHeight() + 0.5);
+    return goToHeight(() -> getHeight() + 0.2);
   }
 
   public Command decreaseHeight(){
-    return goToHeight(getHeight() - 0.1);
+    return goToHeight(() -> getHeight() - 0.2);
   }
 
   @Override
@@ -173,35 +180,39 @@ public class Elevator extends SubsystemBase {
   private Mechanism2d elevatorMechanism = new Mechanism2d(canvasWidth, canvasHeight);
 
   //(0,0) is bottom left
-  // private MechanismRoot2d stage1Left = elevatorMechanism.getRoot("1Left", 0.2, 0); 
-  // private MechanismRoot2d stage1Right = elevatorMechanism.getRoot("1Right", 1.8, 0); 
-  // private MechanismRoot2d stage2Left = elevatorMechanism.getRoot("2Left", 0.4, 0); 
-  // private MechanismRoot2d stage2Right = elevatorMechanism.getRoot("2Right", 1.6, 0); 
-  // private MechanismRoot2d stage3Left = elevatorMechanism.getRoot("3Left", 0.6, 0); 
-  // private MechanismRoot2d stage3Right = elevatorMechanism.getRoot("3Right", 1.4, 0); 
-  // private MechanismRoot2d stage4Left = elevatorMechanism.getRoot("4Left", 0.8, 0); 
-  // private MechanismRoot2d stage4Right = elevatorMechanism.getRoot("4Right", 1.2, 0); 
+  private MechanismRoot2d stage1Left = elevatorMechanism.getRoot("1Left", 0.2, 0); 
+  private MechanismRoot2d stage1Right = elevatorMechanism.getRoot("1Right", 1.8, 0); 
+  private MechanismRoot2d stage2Left = elevatorMechanism.getRoot("2Left", 0.4, 0); 
+  private MechanismRoot2d stage2Right = elevatorMechanism.getRoot("2Right", 1.6, 0); 
+  private MechanismRoot2d stage3Left = elevatorMechanism.getRoot("3Left", 0.6, 0); 
+  private MechanismRoot2d stage3Right = elevatorMechanism.getRoot("3Right", 1.4, 0); 
+  private MechanismRoot2d stage4Left = elevatorMechanism.getRoot("4Left", 0.8, 0); 
+  private MechanismRoot2d stage4Right = elevatorMechanism.getRoot("4Right", 1.2, 0); 
 
-  // private MechanismLigament2d stage1LeftLigament = stage1Left.append(
-  //   new MechanismLigament2d("Stage1Left", firstStageLength, 90));
-  // private MechanismLigament2d stage1RightLigament = stage1Right.append(
-  //   new MechanismLigament2d("Stage1Right", firstStageLength, 90));
-  // private MechanismLigament2d stage2LeftLigament = stage2Left.append(
-  //   new MechanismLigament2d("Stage2Left", secondStageLength, 90));
-  // private MechanismLigament2d stage2RightLigament = stage2Right.append(
-  //   new MechanismLigament2d("Stage2Right", secondStageLength, 90));
-  // private MechanismLigament2d stage3LeftLigament = stage3Left.append(
-  //   new MechanismLigament2d("Stage3Left", thirdStageLength, 90));
-  // private MechanismLigament2d stage3RightLigament = stage3Right.append(
-  //   new MechanismLigament2d("Stage3Right", thirdStageLength, 90));
-  // private MechanismLigament2d stage4LeftLigament = stage4Left.append(
-  //   new MechanismLigament2d("Stage4Left", firstStageLength, 90));
-  // private MechanismLigament2d stage4RightLigament = stage4Right.append(
-  //   new MechanismLigament2d("Stage4Right", firstStageLength, 90));
-
-  private MechanismRoot2d testingRoot = elevatorMechanism.getRoot("root", 1, 0);
-  private MechanismLigament2d ligament = testingRoot.append(new MechanismLigament2d(
-    "ligament", minimumHeight, 90));
+  @SuppressWarnings("unused")
+  private MechanismLigament2d stage1LeftLigament = stage1Left.append(
+    new MechanismLigament2d("Stage1Left", firstStageLength, 90));
+  @SuppressWarnings("unused")
+  private MechanismLigament2d stage1RightLigament = stage1Right.append(
+    new MechanismLigament2d("Stage1Right", firstStageLength, 90));
+  @SuppressWarnings("unused")
+  private MechanismLigament2d stage2LeftLigament = stage2Left.append(
+    new MechanismLigament2d("Stage2Left", secondStageLength, 90));
+  @SuppressWarnings("unused")
+  private MechanismLigament2d stage2RightLigament = stage2Right.append(
+    new MechanismLigament2d("Stage2Right", secondStageLength, 90));
+    @SuppressWarnings("unused")
+  private MechanismLigament2d stage3LeftLigament = stage3Left.append(
+    new MechanismLigament2d("Stage3Left", thirdStageLength, 90));
+  @SuppressWarnings("unused")
+  private MechanismLigament2d stage3RightLigament = stage3Right.append(
+    new MechanismLigament2d("Stage3Right", thirdStageLength, 90));
+  @SuppressWarnings("unused")
+  private MechanismLigament2d stage4LeftLigament = stage4Left.append(
+    new MechanismLigament2d("Stage4Left", firstStageLength, 90));
+  @SuppressWarnings("unused")
+  private MechanismLigament2d stage4RightLigament = stage4Right.append(
+    new MechanismLigament2d("Stage4Right", firstStageLength, 90));
   
 
   public void configSim(){
@@ -247,15 +258,6 @@ public class Elevator extends SubsystemBase {
     rightMotorSim.setRotorVelocity(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * rotorToSensorRatio);
     leftMotorSim.setRawRotorPosition(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * rotorToSensorRatio);
 
-    // System.out.println("Voltage Output: " + motorOutputvoltage.in(Volts));
-    // System.out.println("Elevator Height: " + elevatorSim.getPositionMeters());
-    // System.out.println("Elevator Velocity: " + elevatorSim.getVelocityMetersPerSecond());
-    System.out.println("Cancoder Applied Position: " + convertHeightToRotations(elevatorSim.getPositionMeters() * sensorToMechanismRatio));
-    // System.out.println("Right Motor Target: " + rightMotor.getClosedLoopReference().getValueAsDouble());
-    // System.out.println("Right Motor Position: " + rightMotor.getRotorPosition().getValueAsDouble());
-    System.out.println("CanCoder Position: " + heightCancoder.getPosition().getValueAsDouble());
-    // System.out.println("Right Motor Error: " + rightMotor.getClosedLoopError().getValueAsDouble());
-
     updateMechanism2d();
   }
 
@@ -266,41 +268,36 @@ public class Elevator extends SubsystemBase {
   public void updateMechanism2d(){
     double currentHeight = getHeight();
 
-    // if(currentHeight >= maxHeight){
-    //   System.out.println("First if statement");
-    //   stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
-    //   stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
-    //   stage3Left.setPosition(0.6, currentHeight - fourthStageLength - thirdStageLength);
-    //   stage3Right.setPosition(1.4, currentHeight - fourthStageLength - thirdStageLength);
-    //   stage2Left.setPosition(0.4, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
-    //   stage2Right.setPosition(1.6, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
-    // } else if (currentHeight > firstStageLength + secondStageLength + thirdStageLength) {
-    //   System.out.println("Second if statement");
-    //   stage4Left.setPosition(0.8, currentHeight);
-    //   stage4Right.setPosition(1.2, currentHeight);
-    //   stage3Left.setPosition(0.6, currentHeight - fourthStageLength);
-    //   stage3Right.setPosition(1.4, currentHeight - fourthStageLength);
-    //   stage2Left.setPosition(0.4, currentHeight - fourthStageLength - thirdStageLength);
-    //   stage2Right.setPosition(1.6, currentHeight - fourthStageLength - thirdStageLength);
-    // } else if (currentHeight > firstStageLength + secondStageLength ){
-    //   System.out.println("third if statement");
-    //   stage4Left.setPosition(0.8, currentHeight);
-    //   stage4Right.setPosition(1.2, currentHeight);
-    //   stage3Left.setPosition(0.6, currentHeight - fourthStageLength);
-    //   stage3Right.setPosition(1.4, currentHeight - fourthStageLength);
-    //   stage2Left.setPosition(0.4, 0);
-    //   stage2Right.setPosition(1.6, 0);
-    // } else {
-    //   System.out.println("4th if statement");
-    //   stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
-    //   stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
-    //   stage3Left.setPosition(0.6, 0);
-    //   stage3Right.setPosition(1.4, 0);
-    //   stage2Left.setPosition(0.4, 0);
-    //   stage2Right.setPosition(1.6, 0);
-    // } 
-
-    ligament.setLength(currentHeight);
+    //Logic to determine the height of each elevator length
+    if(currentHeight >= maxHeight){
+      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
+      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
+      stage3Left.setPosition(0.6, currentHeight - fourthStageLength - thirdStageLength);
+      stage3Right.setPosition(1.4, currentHeight - fourthStageLength - thirdStageLength);
+      stage2Left.setPosition(0.4, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
+      stage2Right.setPosition(1.6, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
+    } else if (currentHeight > firstStageLength + secondStageLength + thirdStageLength) {
+      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
+      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
+      stage3Left.setPosition(0.6, currentHeight - fourthStageLength - thirdStageLength);
+      stage3Right.setPosition(1.4, currentHeight - fourthStageLength - thirdStageLength);
+      stage2Left.setPosition(0.4, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
+      stage2Right.setPosition(1.6, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
+    } else if (currentHeight > firstStageLength + secondStageLength ){
+      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
+      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
+      stage3Left.setPosition(0.6, currentHeight - fourthStageLength - thirdStageLength);
+      stage3Right.setPosition(1.4, currentHeight - fourthStageLength - thirdStageLength);
+      stage2Left.setPosition(0.4, 0);
+      stage2Right.setPosition(1.6, 0);
+    } else {
+      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
+      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
+      stage3Left.setPosition(0.6, 0);
+      stage3Right.setPosition(1.4, 0);
+      stage2Left.setPosition(0.4, 0);
+      stage2Right.setPosition(1.6, 0);
+    } 
 
     SmartDashboard.putData("Elevator Mech2d", elevatorMechanism);
     SmartDashboard.putNumber("Elevator Height", currentHeight);
