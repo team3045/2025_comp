@@ -20,7 +20,7 @@ import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.vision.apriltag.GremlinApriltagVision;
 import frc.robot.vision.apriltag.VisionConstants;
 
@@ -44,7 +44,7 @@ public class RobotContainer {
     public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
         () -> drivetrain.getState().Pose, 
         (drivetrain::addVisionMeasurements));
-    public final Elevator elevator = new Elevator();
+    public final ElevatorPivot elevatorPivot = new ElevatorPivot();
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
@@ -81,8 +81,8 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
-        joystick.R1().whileTrue(elevator.increaseHeight().repeatedly());
-        joystick.L1().whileTrue(elevator.decreaseHeight().repeatedly());
+        joystick.R1().whileTrue(elevatorPivot.increaseAngle().repeatedly());
+        joystick.L1().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

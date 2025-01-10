@@ -15,10 +15,12 @@ import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.datalog.FloatLogEntry;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -26,24 +28,29 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Robot;
 import frc.robot.commons.GremlinUtil;
 
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.constants.ElevatorConstants.*;
+import static frc.robot.constants.ElevatorPivotConstants.*;
 
 import java.util.function.DoubleSupplier;
 
 /* */
-public class Elevator extends SubsystemBase {
+public class ElevatorPivot extends SubsystemBase {
   private TalonFX rightMotor = new TalonFX(rightMotorId,canbus);
   private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
+  private TalonFX pivotMotor = new TalonFX(pivorMotorId, canbus);
+  private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
 
-  private double targetHeight = minimumHeight;
+  private double targetHeight;
+  private double targetRotationDegrees;
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
+  public Trigger atTargetAngle = new Trigger(() -> atTargetAngle());
 
   /** Creates a new Elevator. */
-  public Elevator() {
+  public ElevatorPivot() {
     configDevices();
 
     if(Utils.isSimulation()){
@@ -51,6 +58,7 @@ public class Elevator extends SubsystemBase {
     }
 
     targetHeight = getHeight(); //This should go after configDevices to make sure that the elevator is zeroed
+    targetRotationDegrees = getPivotAngleDegrees();
   }
 
   /**
@@ -58,12 +66,16 @@ public class Elevator extends SubsystemBase {
    * Also Resets position to zero
    */
   public void configDevices(){
-    rightMotor.getConfigurator().apply(motorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted)));
-    leftMotor.getConfigurator().apply(motorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted)));
+    rightMotor.getConfigurator().apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted)));
+    leftMotor.getConfigurator().apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted)));
+    pivotMotor.getConfigurator().apply(pivotMotorConfig);
+    pivotCancoder.getConfigurator().apply(pivotCancoderConfig);
+
 
     //Clear Sticky faults
     rightMotor.clearStickyFaults();
     leftMotor.clearStickyFaults();
+    pivotMotor.clearStickyFaults();
 
     //We assume elevator starts at lowest position
     rightMotor.setPosition(0);
@@ -71,7 +83,9 @@ public class Elevator extends SubsystemBase {
 
     BaseStatusSignal.setUpdateFrequencyForAll(200, 
       rightMotor.getPosition(),
-      leftMotor.getPosition());
+      leftMotor.getPosition(),
+      pivotMotor.getPosition(),
+      pivotCancoder.getPosition());
   }
 
   /** 
@@ -84,6 +98,33 @@ public class Elevator extends SubsystemBase {
     return rightMotor.getPosition().getValueAsDouble() * rotationToLengthRatio + minimumHeight;
   }
 
+  /** Get the Angle of pivot in Rotations.
+   * 0 is defined as when the pivot is horizontal to the ground facing forward.
+   * Will return a positive number between 0 - 1 
+   * @return the current angle of the pivot in Rotations as a positve number between 0 - 1
+   */
+  public double getPivotAngleRotations(){
+    return pivotCancoder.getPosition().getValueAsDouble();
+  }
+
+  /** Get the Angle of pivot in Degrees.
+   * 0 is defined as when the pivot is horizontal to the ground facing forward.
+   * Will return a positive number between 0 - 360 
+   * @return the current angle of the pivot in Rotations as a positve number between 0 - 360
+   */
+  public double getPivotAngleDegrees(){
+    return Units.rotationsToDegrees(pivotCancoder.getPosition().getValueAsDouble());
+  }
+
+  /** Get the Angle of pivot in Radians.
+   * 0 is defined as when the pivot is horizontal to the ground facing forward.
+   * Will return a positive number between 0 - 2pi 
+   * @return the current angle of the pivot in Rotations as a positve number between 0 - 2pi
+   */
+  public double getPivotAngleRadians(){
+    return Units.rotationsToRadians(pivotCancoder.getPosition().getValueAsDouble());
+  }
+
   /**
    * Determine whether our current height is at the currently
    * set target height. If it is within a constant threshold than it is considered
@@ -93,6 +134,17 @@ public class Elevator extends SubsystemBase {
    */
   public boolean atTargetHeight(){
     return Math.abs(getHeight() - targetHeight) < heightTolerance;
+  }
+
+   /**
+   * Determine whether our current Angle is at the currently
+   * set target angle. If it is within a constant threshold than it is considered
+   * at the target angle
+   * 
+   * @return whether the current angle of the pivot is at the target
+   */
+  public boolean atTargetAngle(){
+    return Math.abs(getPivotAngleDegrees() - targetRotationDegrees) < angleToleranceDegrees;
   }
 
   /** 
@@ -135,6 +187,22 @@ public class Elevator extends SubsystemBase {
     leftMotor.setControl(followerRequest);
   }
 
+  private void setAngleTargetDegrees(double targetAngleDegrees){
+    this.targetRotationDegrees = targetAngleDegrees;
+
+    double targetAngleRotations = Units.degreesToRotations(targetAngleDegrees);
+
+    MotionMagicVoltage request = new MotionMagicVoltage(targetAngleRotations)
+      .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); //every 1 ms
+    
+    pivotMotor.setControl(request);
+  }
+
+  private void setHeightAndAngle(double heightMeters, double angleDegrees){
+    setHeightTarget(heightMeters);
+    setAngleTargetDegrees(angleDegrees);
+  }
+
   /**
    * The public command we expose to direct the elevator to a height.
    * All subsystem actions should be controlled through commands not direct functions. 
@@ -146,12 +214,47 @@ public class Elevator extends SubsystemBase {
     return this.runOnce(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
   }
 
+  /**
+   * The public command we expose to direct the pivot to an angle.
+   * All subsystem actions should be controlled through commands not direct functions. 
+   * 
+   * @param desiredAngle the desired angle in degrees
+   * @return a command directing this subsytem to go to desiredAngle
+   */
+  public Command goToAngleDegrees(DoubleSupplier desiredAngle){
+    return this.runOnce(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
+  }
+
+  /**
+   * The public command we expose to direct the elevator to a position;
+   * A Position includes both a height and a pivot Angle;
+   * All subsystem actions should be controlled through commands not direct functions. 
+   * 
+   * @param desiredAngle the desired angle in degrees
+   * @param desiredHeight the desired height in meters
+   * @return a command directing this subsytem to go to the desired position
+   */
+  public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
+    return this.runOnce(() -> {
+      setAngleTargetDegrees(desiredAngle.getAsDouble());
+      setHeightTarget(desiredHeight.getAsDouble());
+    }).until(atTargetAngle.and(atTargetHeight));
+  }
+
   public Command increaseHeight(){
     return goToHeight(() -> getHeight() + 0.2);
   }
 
   public Command decreaseHeight(){
     return goToHeight(() -> getHeight() - 0.2);
+  }
+
+  public Command increaseAngle(){
+    return goToAngleDegrees(() -> getPivotAngleDegrees() + 2);
+  }
+
+  public Command decreaseAngle(){
+    return goToAngleDegrees(() -> getPivotAngleDegrees() - 2);
   }
 
   @Override
@@ -169,12 +272,25 @@ public class Elevator extends SubsystemBase {
     maxHeight, 
     true, 
     minimumHeight);
+
+  private final SingleJointedArmSim armSim = new SingleJointedArmSim(
+    DCMotor.getKrakenX60(1), 
+    pivotTotalGearing,
+    pivotMOI, 
+    pivotArmLength, 
+    Units.degreesToRadians(minAngleDegrees), 
+    Units.degreesToRadians(maxAngleDegrees), 
+    true, 
+    Units.degreesToRadians(minAngleDegrees));
   
   private TalonFXSimState rightMotorSim;
   private TalonFXSimState leftMotorSim;
+  private TalonFXSimState pivotSim;
+  private CANcoderSimState pivotCancoderSim;
 
   //These dimensions are arbitrary but we'll standardize to meters
   private Mechanism2d elevatorMechanism = new Mechanism2d(canvasWidth, canvasHeight);
+  private Mechanism2d pivotMechanism = new Mechanism2d(canvasHeight, canvasHeight);
 
   //(0,0) is bottom left
   private MechanismRoot2d stage1Left = elevatorMechanism.getRoot("1Left", 0.2, 0); 
@@ -210,16 +326,26 @@ public class Elevator extends SubsystemBase {
   @SuppressWarnings("unused")
   private MechanismLigament2d stage4RightLigament = stage4Right.append(
     new MechanismLigament2d("Stage4Right", firstStageLength, 90));
+
+  private MechanismRoot2d pivotRoot = pivotMechanism.getRoot("pivotRoot", 2, 3);
+  private MechanismLigament2d pivotLigament = pivotRoot.append(
+    new MechanismLigament2d("pivotLigament", pivotArmLength, minAngleDegrees)
+  );
   
 
   public void configSim(){
     rightMotorSim = rightMotor.getSimState();
     leftMotorSim = leftMotor.getSimState();
+    pivotSim = pivotMotor.getSimState();
+    pivotCancoderSim = pivotCancoder.getSimState();
 
     rightMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
     leftMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
+    pivotSim.Orientation = ChassisReference.CounterClockwise_Positive;
+    pivotCancoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
     elevatorSim.setState(minimumHeight, 0);
+    armSim.setState(Units.degreesToRadians(minAngleDegrees), 0);
   }
 
   @Override
@@ -227,18 +353,26 @@ public class Elevator extends SubsystemBase {
     //Update sim states
     rightMotorSim = rightMotor.getSimState();
     leftMotorSim = leftMotor.getSimState();
+    pivotSim = pivotMotor.getSimState();
+    pivotCancoderSim = pivotCancoder.getSimState();
 
     //update with latest simulated supply voltage
     rightMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     leftMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    pivotSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    pivotCancoderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     //get output voltage for motors, we assume both output same amount 
     //since they are identical just two different sides
     Voltage motorOutputvoltage = rightMotorSim.getMotorVoltageMeasure();
+    
+    Voltage pivotMotorOutputVoltage = pivotSim.getMotorVoltageMeasure();
 
     //Update physics sim, assuming 20 ms default loop time
     elevatorSim.setInputVoltage(motorOutputvoltage.in(Volts));
     elevatorSim.update(0.020); 
+    armSim.setInputVoltage(pivotMotorOutputVoltage.in(Volts));
+    armSim.update(0.020);
 
     //Apply the elevator sims calculations to the cancoder
     //Since Talonfx use cancoder as remote sensor this should also apply to the motors
@@ -248,6 +382,11 @@ public class Elevator extends SubsystemBase {
     leftMotorSim.setRawRotorPosition(convertHeightToRotations(elevatorSim.getPositionMeters()) * totalGearing);
     rightMotorSim.setRotorVelocity(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * totalGearing);
     leftMotorSim.setRawRotorPosition(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * totalGearing);
+    
+    pivotCancoderSim.setRawPosition(Units.radiansToRotations(armSim.getAngleRads() * pivotSensorToMechanismRatio));
+    pivotCancoderSim.setVelocity(Units.radiansToRotations(armSim.getVelocityRadPerSec() * pivotSensorToMechanismRatio));
+    pivotSim.setRawRotorPosition(Units.radiansToRotations(armSim.getAngleRads() * totalGearing));
+    pivotSim.setRotorVelocity(Units.radiansToRotations(armSim.getVelocityRadPerSec() * totalGearing));
 
     updateMechanism2d();
   }
@@ -258,6 +397,7 @@ public class Elevator extends SubsystemBase {
    */
   public void updateMechanism2d(){
     double currentHeight = getHeight();
+    double currentAngle = getPivotAngleDegrees();
 
     //Logic to determine the height of each elevator length
     if(currentHeight >= maxHeight){
@@ -290,6 +430,9 @@ public class Elevator extends SubsystemBase {
       stage2Right.setPosition(1.6, 0);
     } 
 
+    pivotLigament.setAngle(currentAngle);
+
+    SmartDashboard.putData("Pivot Mech2d", pivotMechanism);
     SmartDashboard.putData("Elevator Mech2d", elevatorMechanism);
     SmartDashboard.putNumber("Elevator Height", currentHeight);
     SmartDashboard.putNumber("Target Heght", targetHeight);
