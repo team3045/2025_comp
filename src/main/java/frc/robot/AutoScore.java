@@ -86,7 +86,7 @@ public class AutoScore extends Command {
       AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
     );
 
-    m_PathfindingCommand.execute();
+    m_PathfindingCommand.schedule();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -109,7 +109,7 @@ public class AutoScore extends Command {
               AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
             );
 
-            m_PathfindingCommand.execute();
+            m_PathfindingCommand.schedule();
           }
         }
       } else {
