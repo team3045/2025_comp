@@ -4,18 +4,14 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.commons.AutoScoreState;
-import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.AutoScoreConstants;
 
 import static frc.robot.constants.DriveConstants.*;
@@ -38,10 +34,6 @@ public class AutoScore extends Command {
     m_PathConstraints,
     AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
   );
-
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-    .withDeadband(0).withRotationalDeadband(0) // Add a 5% deadband
-    .withDriveRequestType(DriveRequestType.Velocity); // Use close-loop control for drive motors
 
   public AutoScore(AutoScoreState scoreState, CommandSwerveDrivetrain drivetrainRef, ElevatorPivot elevatorRef) {
     m_ScoreState = scoreState;
