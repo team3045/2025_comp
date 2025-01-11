@@ -84,6 +84,8 @@ public class RobotContainer {
         joystick.R1().whileTrue(elevatorPivot.increasePosition().repeatedly());
         joystick.L1().whileTrue(elevatorPivot.decreasePosition().repeatedly());
         
+       
+        
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
