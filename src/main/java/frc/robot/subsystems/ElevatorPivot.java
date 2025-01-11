@@ -14,11 +14,16 @@ import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.datalog.FloatLogEntry;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -34,6 +39,7 @@ import frc.robot.commons.GremlinUtil;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.ElevatorPivotConstants.*;
 
+import java.util.TooManyListenersException;
 import java.util.function.DoubleSupplier;
 
 /* */
@@ -46,8 +52,13 @@ public class ElevatorPivot extends SubsystemBase {
   private double targetHeight;
   private double targetAngleDegrees;
 
+  private boolean travellingUpward;
+
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
   public Trigger atTargetAngle = new Trigger(() -> atTargetAngle());
+
+  private final Timer upwardsTimer = new Timer();
+  private final Timer downwardsTimer = new Timer();
 
   /** Creates a new Elevator. */
   public ElevatorPivot() {
@@ -59,6 +70,7 @@ public class ElevatorPivot extends SubsystemBase {
 
     targetHeight = getHeight(); //This should go after configDevices to make sure that the elevator is zeroed
     targetAngleDegrees = getPivotAngleDegrees();
+    travellingUpward = true;
   }
 
   /**
@@ -89,13 +101,33 @@ public class ElevatorPivot extends SubsystemBase {
   }
 
   /** 
-   * Get the Height of the elevator from the rotations of the Right Motor Encoder.
+   * Get the Height of the top of the elevator carriage from the rotations of the Right Motor Encoder.
    * Elevator should be zeroes so that zero rotations is minimum height. 
    * 
    * @return the height of the carriage of the elevator in meters
    */
   public double getHeight(){
     return rightMotor.getPosition().getValueAsDouble() * rotationToLengthRatio + minimumHeight;
+  }
+
+  /**
+   * Get the velocity of the elevator from the rotations of the Right Motor Encoder.
+   * Units are meters per second, upwards is positive, downwards is negative. 
+   * 
+   * @return the velocity of the elevator in meters per second
+   */
+  public double getVerticalVelocity(){
+    return rightMotor.getVelocity().getValueAsDouble() * rotationToLengthRatio;
+  }
+
+  /**Returns whether or not the elevator is traveling upwards,
+   * defined as whether its velocity is positive or negative. 
+   * Positive velocity is upwards.
+   * 
+   * @return whether or not the elevator is travelling upwards.
+   */
+  public boolean travelingUpwards(){
+    return travellingUpward;
   }
 
   /** Get the Angle of pivot in Rotations.
@@ -190,6 +222,8 @@ public class ElevatorPivot extends SubsystemBase {
   private void setAngleTargetDegrees(double targetAngleDegrees){
     this.targetAngleDegrees = targetAngleDegrees;
 
+    //TODO: add check if travelling downwards then make sure the pivot wont hit the next stage bar
+
     double targetAngleRotations = Units.degreesToRotations(targetAngleDegrees);
 
     MotionMagicVoltage request = new MotionMagicVoltage(targetAngleRotations)
@@ -236,8 +270,7 @@ public class ElevatorPivot extends SubsystemBase {
    */
   public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
     return this.runOnce(() -> {
-      setAngleTargetDegrees(desiredAngle.getAsDouble());
-      setHeightTarget(desiredHeight.getAsDouble());
+      setHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
     }).until(atTargetAngle.and(atTargetHeight));
   }
 
@@ -267,7 +300,26 @@ public class ElevatorPivot extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    //if zero retain last value basically
+    // if(getVerticalVelocity() > 0) {
+    //   upwardsTimer.start();
+    //   downwardsTimer.stop();
+    //   downwardsTimer.reset();
+    //   if (upwardsTimer.hasElapsed(verticalTimerThreshold)) {
+    //     travellingUpward = true;
+    //   }
+    // }
+    // else if (getVerticalVelocity() < 0) {
+    //   upwardsTimer.stop();
+    //   upwardsTimer.reset();
+    //   downwardsTimer.start();
+    //   if(downwardsTimer.hasElapsed(verticalTimerThreshold)){
+    //     travellingUpward = false;
+    //   }
+    // } 
+
+    if(getVerticalVelocity() > 0.2) travellingUpward = true;
+    else if(getVerticalVelocity() < -0.2) travellingUpward = false;
   } 
 
   /*SIMULATION*/
@@ -296,44 +348,14 @@ public class ElevatorPivot extends SubsystemBase {
   private TalonFXSimState pivotMotorSim;
   private CANcoderSimState pivotCancoderSim;
 
-  //These dimensions are arbitrary but we'll standardize to meters
-  private Mechanism2d elevatorMechanism = new Mechanism2d(canvasWidth, canvasHeight);
-  private Mechanism2d pivotMechanism = new Mechanism2d(canvasHeight, canvasHeight);
+  private Mechanism2d pivotMechanism = new Mechanism2d(canvasWidth, canvasHeight);
 
-  //(0,0) is bottom left
-  private MechanismRoot2d stage1Left = elevatorMechanism.getRoot("1Left", 0.2, 0); 
-  private MechanismRoot2d stage1Right = elevatorMechanism.getRoot("1Right", 1.8, 0); 
-  private MechanismRoot2d stage2Left = elevatorMechanism.getRoot("2Left", 0.4, 0); 
-  private MechanismRoot2d stage2Right = elevatorMechanism.getRoot("2Right", 1.6, 0); 
-  private MechanismRoot2d stage3Left = elevatorMechanism.getRoot("3Left", 0.6, 0); 
-  private MechanismRoot2d stage3Right = elevatorMechanism.getRoot("3Right", 1.4, 0); 
-  private MechanismRoot2d stage4Left = elevatorMechanism.getRoot("4Left", 0.8, 0); 
-  private MechanismRoot2d stage4Right = elevatorMechanism.getRoot("4Right", 1.2, 0); 
-
-  @SuppressWarnings("unused")
-  private MechanismLigament2d stage1LeftLigament = stage1Left.append(
-    new MechanismLigament2d("Stage1Left", firstStageLength, 90));
-  @SuppressWarnings("unused")
-  private MechanismLigament2d stage1RightLigament = stage1Right.append(
-    new MechanismLigament2d("Stage1Right", firstStageLength, 90));
-  @SuppressWarnings("unused")
-  private MechanismLigament2d stage2LeftLigament = stage2Left.append(
-    new MechanismLigament2d("Stage2Left", secondStageLength, 90));
-  @SuppressWarnings("unused")
-  private MechanismLigament2d stage2RightLigament = stage2Right.append(
-    new MechanismLigament2d("Stage2Right", secondStageLength, 90));
-    @SuppressWarnings("unused")
-  private MechanismLigament2d stage3LeftLigament = stage3Left.append(
-    new MechanismLigament2d("Stage3Left", thirdStageLength, 90));
-  @SuppressWarnings("unused")
-  private MechanismLigament2d stage3RightLigament = stage3Right.append(
-    new MechanismLigament2d("Stage3Right", thirdStageLength, 90));
-  @SuppressWarnings("unused")
-  private MechanismLigament2d stage4LeftLigament = stage4Left.append(
-    new MechanismLigament2d("Stage4Left", firstStageLength, 90));
-  @SuppressWarnings("unused")
-  private MechanismLigament2d stage4RightLigament = stage4Right.append(
-    new MechanismLigament2d("Stage4Right", firstStageLength, 90));
+  private StructPublisher<Pose3d> stage2Publisher = NetworkTableInstance.getDefault().getTable(elevatorTable)
+    .getStructTopic("stage2Pose3d", Pose3d.struct).publish();
+  private StructPublisher<Pose3d> stage3Publisher = NetworkTableInstance.getDefault().getTable(elevatorTable)
+    .getStructTopic("stage3Pose3d", Pose3d.struct).publish();
+  private StructPublisher<Pose3d> carriagePublisher = NetworkTableInstance.getDefault().getTable(elevatorTable)
+    .getStructTopic("carriagePose3d", Pose3d.struct).publish();
 
   private MechanismRoot2d pivotRoot = pivotMechanism.getRoot("pivotRoot", 2, 3);
   private MechanismLigament2d pivotLigament = pivotRoot.append(
@@ -404,45 +426,48 @@ public class ElevatorPivot extends SubsystemBase {
    * Updates the mechanism2d which visualizes our mechanism in SmartDashboard, generally used for simulation
    */
   public void updateMechanism2d(){
-    double currentHeight = getHeight();
+    double carriageHeight = getHeight();
     double currentAngle = getPivotAngleDegrees();
 
-    //Logic to determine the height of each elevator length
-    if(currentHeight >= maxHeight){
-      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
-      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
-      stage3Left.setPosition(0.6, currentHeight - fourthStageLength - thirdStageLength);
-      stage3Right.setPosition(1.4, currentHeight - fourthStageLength - thirdStageLength);
-      stage2Left.setPosition(0.4, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
-      stage2Right.setPosition(1.6, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
-    } else if (currentHeight > firstStageLength + secondStageLength + thirdStageLength) {
-      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
-      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
-      stage3Left.setPosition(0.6, currentHeight - fourthStageLength - thirdStageLength);
-      stage3Right.setPosition(1.4, currentHeight - fourthStageLength - thirdStageLength);
-      stage2Left.setPosition(0.4, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
-      stage2Right.setPosition(1.6, currentHeight - fourthStageLength - thirdStageLength - secondStageLength);
-    } else if (currentHeight > firstStageLength + secondStageLength ){
-      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
-      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
-      stage3Left.setPosition(0.6, currentHeight - fourthStageLength - thirdStageLength);
-      stage3Right.setPosition(1.4, currentHeight - fourthStageLength - thirdStageLength);
-      stage2Left.setPosition(0.4, 0);
-      stage2Right.setPosition(1.6, 0);
+    boolean travellingUpwards = travelingUpwards();
+
+    double carriageZ = carriageHeight - carriageToGround; //Same no matter what
+    double stage3Z = 0;
+    double stage2Z = 0;
+
+    if(travellingUpwards){
+      if(carriageHeight >= stage2MotionPoint + carriageToGround){
+        stage3Z = carriageHeight - carriageToGround - stage3MotionPoint;
+        stage2Z = carriageHeight - carriageToGround - stage2MotionPoint;
+      } else if (carriageHeight >= stage3MotionPoint + carriageToGround){
+        stage3Z = carriageHeight - carriageToGround - stage3MotionPoint;
+        stage2Z = 0;
+      } else {
+        stage3Z = 0;
+        stage2Z = 0;
+      }
     } else {
-      stage4Left.setPosition(0.8, currentHeight - fourthStageLength);
-      stage4Right.setPosition(1.2, currentHeight - fourthStageLength);
-      stage3Left.setPosition(0.6, 0);
-      stage3Right.setPosition(1.4, 0);
-      stage2Left.setPosition(0.4, 0);
-      stage2Right.setPosition(1.6, 0);
-    } 
+      if(carriageHeight <= stage3MotionPoint + carriageToGround){
+        stage3Z = carriageHeight - carriageToGround;
+        stage2Z = carriageHeight - carriageToGround;
+      } else if (carriageHeight <= stage2MotionPoint + carriageToGround){
+        stage2Z = maxHeight - stage2MotionPoint - carriageToGround;
+        stage3Z = carriageHeight - carriageToGround;
+      } else {
+        stage2Z = maxHeight - stage2MotionPoint - carriageToGround;
+        stage3Z = maxHeight - stage3MotionPoint - carriageToGround;
+      }
+    }
 
     pivotLigament.setAngle(180 - currentAngle);
 
+    stage2Publisher.set(new Pose3d(0,0,stage2Z, new Rotation3d(0, 0, 0)));
+    stage3Publisher.set(new Pose3d(0,0, stage3Z, new Rotation3d(0, 0, 0)));
+    carriagePublisher.set(new Pose3d(0,0, carriageZ, new Rotation3d()));
+
+
     SmartDashboard.putData("Pivot Mech2d", pivotMechanism);
-    SmartDashboard.putData("Elevator Mech2d", elevatorMechanism);
-    SmartDashboard.putNumber("Elevator Height", currentHeight);
+    SmartDashboard.putNumber("Elevator Height", carriageHeight);
     SmartDashboard.putNumber("Target Heght", targetHeight);
     SmartDashboard.putNumber("Arm Target", targetAngleDegrees);
     SmartDashboard.putNumber("Arm Angle", currentAngle);

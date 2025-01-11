@@ -30,6 +30,9 @@ public class ElevatorPivotConstants {
     public static final int pivotCancoderId = 18;
     public static final String canbus = "Canivore 3045";
 
+    public static final String elevatorTable = "elevator";
+    public static final String pivotTable = "pivot";
+
     public static final double numStages = 4;
     public static final double firstStageLength = Units.inchesToMeters(24); //m
     public static final double secondStageLength = Units.inchesToMeters(24); //m
@@ -49,9 +52,10 @@ public class ElevatorPivotConstants {
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
-    public static final double minimumHeight = fourthStageLength; //m
+    public static final double carriageToGround = Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
+    public static final double minimumHeight = carriageToGround; //m
 
-    public static final double maxHeight = firstStageLength + secondStageLength + thirdStageLength + fourthStageLength; // m
+    public static final double maxHeight = Units.inchesToMeters(57) + carriageToGround; // m
 
     public static final double heightTolerance = 0.03; //3cm
     public static final double angleToleranceDegrees = 0.5; //0.5 degree tolerance
@@ -76,7 +80,11 @@ public class ElevatorPivotConstants {
     public static final double drumRadius = .2; //m
     public static final double canvasWidth = 2; //m
     public static final double canvasHeight = 6; //m
-    public static final double pivotMOI = 1; //moment of inertia jKg * m^2
+    public static final double pivotMOI = 0.02347363; //moment of inertia Kg * m^2
+
+    public static final double stage3MotionPoint = Units.inchesToMeters(19);
+    public static final double stage2MotionPoint = stage3MotionPoint + Units.inchesToMeters(20);
+    public static final double verticalTimerThreshold = 0.5;
 
 
     //Rotation of the output shaft. To get rotations of motor to the height of elevator we need to multiply by the gear ratio
