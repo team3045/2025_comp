@@ -21,9 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.util.datalog.FloatLogEntry;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -33,13 +31,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Robot;
 import frc.robot.commons.GremlinUtil;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.ElevatorPivotConstants.*;
 
-import java.util.TooManyListenersException;
 import java.util.function.DoubleSupplier;
 
 /* */
@@ -56,9 +52,6 @@ public class ElevatorPivot extends SubsystemBase {
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
   public Trigger atTargetAngle = new Trigger(() -> atTargetAngle());
-
-  private final Timer upwardsTimer = new Timer();
-  private final Timer downwardsTimer = new Timer();
 
   /** Creates a new Elevator. */
   public ElevatorPivot() {
@@ -301,23 +294,6 @@ public class ElevatorPivot extends SubsystemBase {
   @Override
   public void periodic() {
     //if zero retain last value basically
-    // if(getVerticalVelocity() > 0) {
-    //   upwardsTimer.start();
-    //   downwardsTimer.stop();
-    //   downwardsTimer.reset();
-    //   if (upwardsTimer.hasElapsed(verticalTimerThreshold)) {
-    //     travellingUpward = true;
-    //   }
-    // }
-    // else if (getVerticalVelocity() < 0) {
-    //   upwardsTimer.stop();
-    //   upwardsTimer.reset();
-    //   downwardsTimer.start();
-    //   if(downwardsTimer.hasElapsed(verticalTimerThreshold)){
-    //     travellingUpward = false;
-    //   }
-    // } 
-
     if(getVerticalVelocity() > 0.2) travellingUpward = true;
     else if(getVerticalVelocity() < -0.2) travellingUpward = false;
   } 
