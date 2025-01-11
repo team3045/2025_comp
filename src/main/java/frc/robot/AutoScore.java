@@ -5,14 +5,19 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.commons.AutoScoreState;
 import frc.robot.constants.AutoScoreConstants;
+import frc.robot.constants.DriveConstants;
 
 import static frc.robot.constants.DriveConstants.*;
 
@@ -27,11 +32,9 @@ public class AutoScore extends Command {
   private ElevatorPivot m_ElevatorRef;
   private boolean m_Scored = false;
 
-  private PathConstraints m_PathConstraints = new PathConstraints(MaxSpeed, AutoScoreConstants.kMaxAccel, MaxAngularRate, AutoScoreConstants.kMaxAngularAccel);
-
   private Command m_PathfindingCommand = AutoBuilder.pathfindToPose(
     Pose2d.kZero,
-    m_PathConstraints,
+    DriveConstants.pathFollowingConstraints,
     AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
   );
 
@@ -39,6 +42,29 @@ public class AutoScore extends Command {
     m_ScoreState = scoreState;
     m_DrivetrainRef = drivetrainRef;
     m_ElevatorRef = elevatorRef;
+
+    RobotConfig config = new RobotConfig(0, 0, null, Translation2d.kZero);
+    try {
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      e.printStackTrace(); //if this doesn't load then the entire path planner system is screwed
+    }
+    
+    AutoBuilder.configure(
+      () -> {return m_DrivetrainRef.getState().Pose;},
+      (Pose2d pose) -> {m_DrivetrainRef.resetPose(pose);},
+      () -> {return m_DrivetrainRef.getState().Speeds;},
+      (ChassisSpeeds speeds, DriveFeedforwards feedForward) -> {drivetrainRef.driveRobotRelative(speeds);},
+      pathFollowingController,
+      config,
+      () -> {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+          return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+      },
+      m_DrivetrainRef);
   }
 
   // Called when the command is initially scheduled.
@@ -59,7 +85,7 @@ public class AutoScore extends Command {
 
       m_PathfindingCommand = AutoBuilder.pathfindToPose(
         poseTarget,
-        m_PathConstraints,
+        DriveConstants.pathFollowingConstraints,
         AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
       );
 
