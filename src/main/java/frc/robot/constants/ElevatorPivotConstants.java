@@ -45,7 +45,7 @@ public class ElevatorPivotConstants {
     public static final double sensorToMechanismRatio = (686.0 / 27.0);
     public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
-    public static final double pivotRotorToSensorRatio = 10; 
+    public static final double pivotRotorToSensorRatio = 50; 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
@@ -104,7 +104,7 @@ public class ElevatorPivotConstants {
     public static final double kA = 0;
     public static final double kV = 0;
 
-    public static final double pivotKP = 20;
+    public static final double pivotKP = 100;
     public static final double pivotKI = 0;
     public static final double pivotKD = 0;
     public static final double pivotKG = 0;
@@ -178,7 +178,6 @@ public class ElevatorPivotConstants {
         .withInverted(pivotInvert);
 
     public static final Slot0Configs pivotSlot0Configs = new Slot0Configs()
-        .withGravityType(GravityTypeValue.Elevator_Static)
         .withKA(pivotKA)
         .withKD(pivotKD)
         .withKG(pivotKG)
@@ -192,9 +191,9 @@ public class ElevatorPivotConstants {
     public static final TalonFXConfiguration pivotMotorConfig = new TalonFXConfiguration()
         .withCurrentLimits(pivotCurrentLimits)
         .withFeedback(pivotFeedbackConfigs)
-        .withMotionMagic(motionMagicConfigs)
-        .withMotorOutput(motorOutputConfigs)
-        .withSlot0(slot0Configs);
+        .withMotionMagic(pivotMotionMagicConfigs)
+        .withMotorOutput(pivotMotorOutputConfigs)
+        .withSlot0(pivotSlot0Configs);
 
     public static final CANcoderConfiguration pivotCancoderConfig = new CANcoderConfiguration()
         .withMagnetSensor(new MagnetSensorConfigs()
