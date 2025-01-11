@@ -7,4 +7,7 @@ public class AutoScoreConstants {
     public static final double kElevatorHeights[] = {0, 0, 0, 0};
     public static final double kPivotAngles[] = {0, 0, 0, 0};
     public static final double kMaxVelError = 0.1;
+    public static final double kElevatorResetHeight = 0;
+    public static final double kPivotResetAngle = 0;
+    public static final double kBackUpDist = 0.1;
 }

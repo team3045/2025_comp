@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.commons.AutoScoreState;
+import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 
@@ -31,6 +32,8 @@ public class AutoScore extends Command {
   private CommandSwerveDrivetrain m_DrivetrainRef;
   private ElevatorPivot m_ElevatorRef;
   private boolean m_Scored = false;
+  private boolean m_Reset = false;
+  private Pose2d m_TargetPose;
 
   private Command m_PathfindingCommand = AutoBuilder.pathfindToPose(
     Pose2d.kZero,
@@ -69,37 +72,51 @@ public class AutoScore extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    //Going to target (kinda shitty gotta figure out how to use path planner)
+    m_TargetPose = Pose2d.kZero;
+    if (m_ScoreState.m_PoseIDX.isEmpty()) {
+      m_TargetPose = m_DrivetrainRef.getState().Pose.nearest(Arrays.asList(AutoScoreConstants.kAllScorePoses));
+    } else {
+      m_TargetPose = AutoScoreConstants.kAllScorePoses[m_ScoreState.m_PoseIDX.get()];
+    }
+
+    m_PathfindingCommand = AutoBuilder.pathfindToPose(
+      m_TargetPose,
+      DriveConstants.pathFollowingConstraints,
+      AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
+    );
+
+    m_PathfindingCommand.execute();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!m_PathfindingCommand.isFinished()) {
-      //Going to target (kinda shitty gotta figure out how to use path planner)
-      Pose2d poseTarget = Pose2d.kZero;
-      if (m_ScoreState.m_PoseIDX.isEmpty()) {
-        poseTarget = m_DrivetrainRef.getState().Pose.nearest(Arrays.asList(AutoScoreConstants.kAllScorePoses));
-      } else {
-        poseTarget = AutoScoreConstants.kAllScorePoses[m_ScoreState.m_PoseIDX.get()];
-      }
+    if (m_PathfindingCommand.isFinished()) {
+      if (m_Scored == false) {
+        //Scoring
+        m_ElevatorRef.goToHeight(() -> {return AutoScoreConstants.kElevatorHeights[m_ScoreState.m_ScoreLevel];}); //Going to the target height
+        if (m_ElevatorRef.atTargetHeight()) {
+          //Pivot and score
+          m_ElevatorRef.goToAngleDegrees(() -> {return AutoScoreConstants.kPivotAngles[m_ScoreState.m_ScoreLevel];});
+          if (m_ElevatorRef.atTargetAngle()) {
+            //Eject coral, scoring is done
+            m_Scored = true;
 
-      m_PathfindingCommand = AutoBuilder.pathfindToPose(
-        poseTarget,
-        DriveConstants.pathFollowingConstraints,
-        AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
-      );
+            m_PathfindingCommand = AutoBuilder.pathfindToPose(
+              GremlinUtil.movePoseForward(m_TargetPose, AutoScoreConstants.kBackUpDist),
+              DriveConstants.pathFollowingConstraints,
+              AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
+            );
 
-      m_PathfindingCommand.execute();
-    } else {
-      //Scoring
-      m_ElevatorRef.goToHeight(() -> {return AutoScoreConstants.kElevatorHeights[m_ScoreState.m_ScoreLevel];}); //Going to the target height
-      if (m_ElevatorRef.atTargetHeight()) {
-        //Pivot and score
-        m_ElevatorRef.goToAngleDegrees(() -> {return AutoScoreConstants.kPivotAngles[m_ScoreState.m_ScoreLevel];});
-        if (m_ElevatorRef.atTargetAngle()) {
-          //Eject coral, scoring is done
-          m_Scored = true;
+            m_PathfindingCommand.execute();
+          }
         }
+      } else {
+        m_ElevatorRef.goToAngleDegrees(() -> {return AutoScoreConstants.kPivotResetAngle;});
+        m_ElevatorRef.goToHeight(() -> {return AutoScoreConstants.kElevatorResetHeight;});
+        m_Reset = true;
       }
     }
   }
@@ -111,6 +128,6 @@ public class AutoScore extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_Scored;
+    return m_Reset;
   }
 }
