@@ -33,7 +33,6 @@ public class AutoScore extends Command {
   private ElevatorPivot m_ElevatorRef;
   private boolean m_Scored = false;
   private boolean m_Reset = false;
-  private Pose2d m_TargetPose;
 
   private Command m_PathfindingCommand = AutoBuilder.pathfindToPose(
     Pose2d.kZero,
@@ -74,15 +73,15 @@ public class AutoScore extends Command {
   @Override
   public void initialize() {
     //Going to target (kinda shitty gotta figure out how to use path planner)
-    m_TargetPose = Pose2d.kZero;
+    Pose2d targetPose = Pose2d.kZero;
     if (m_ScoreState.m_PoseIDX.isEmpty()) {
-      m_TargetPose = m_DrivetrainRef.getState().Pose.nearest(Arrays.asList(AutoScoreConstants.kAllScorePoses));
+      targetPose = m_DrivetrainRef.getState().Pose.nearest(Arrays.asList(AutoScoreConstants.kAllScorePoses));
     } else {
-      m_TargetPose = AutoScoreConstants.kAllScorePoses[m_ScoreState.m_PoseIDX.get()];
+      targetPose = AutoScoreConstants.kAllScorePoses[m_ScoreState.m_PoseIDX.get()];
     }
 
     m_PathfindingCommand = AutoBuilder.pathfindToPose(
-      m_TargetPose,
+      targetPose,
       DriveConstants.pathFollowingConstraints,
       AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
     );
@@ -105,7 +104,7 @@ public class AutoScore extends Command {
             m_Scored = true;
 
             m_PathfindingCommand = AutoBuilder.pathfindToPose(
-              GremlinUtil.movePoseForward(m_TargetPose, AutoScoreConstants.kBackUpDist),
+              GremlinUtil.movePoseForward(m_DrivetrainRef.getState().Pose, AutoScoreConstants.kBackUpDist),
               DriveConstants.pathFollowingConstraints,
               AutoScoreConstants.kMaxVelError // Goal end velocity in meters/sec
             );
