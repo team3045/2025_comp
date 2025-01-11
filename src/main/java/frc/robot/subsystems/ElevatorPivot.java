@@ -356,6 +356,8 @@ public class ElevatorPivot extends SubsystemBase {
     .getStructTopic("stage3Pose3d", Pose3d.struct).publish();
   private StructPublisher<Pose3d> carriagePublisher = NetworkTableInstance.getDefault().getTable(elevatorTable)
     .getStructTopic("carriagePose3d", Pose3d.struct).publish();
+  private StructPublisher<Pose3d> pivotPublisher = NetworkTableInstance.getDefault().getTable(elevatorTable)
+    .getStructTopic("pivotPose3d", Pose3d.struct).publish();
 
   private MechanismRoot2d pivotRoot = pivotMechanism.getRoot("pivotRoot", 2, 3);
   private MechanismLigament2d pivotLigament = pivotRoot.append(
@@ -464,6 +466,7 @@ public class ElevatorPivot extends SubsystemBase {
     stage2Publisher.set(new Pose3d(0,0,stage2Z, new Rotation3d(0, 0, 0)));
     stage3Publisher.set(new Pose3d(0,0, stage3Z, new Rotation3d(0, 0, 0)));
     carriagePublisher.set(new Pose3d(0,0, carriageZ, new Rotation3d()));
+    pivotPublisher.set(new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ + pivotOffsetZ, new Rotation3d(0,-getPivotAngleRadians(),0)));
 
 
     SmartDashboard.putData("Pivot Mech2d", pivotMechanism);

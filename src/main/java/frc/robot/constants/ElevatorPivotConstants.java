@@ -86,6 +86,10 @@ public class ElevatorPivotConstants {
     public static final double stage2MotionPoint = stage3MotionPoint + Units.inchesToMeters(20);
     public static final double verticalTimerThreshold = 0.5;
 
+    public static final double pivotOffsetX = Units.inchesToMeters(8.250);
+    public static final double pivotOffsetY = 0;
+    public static final double pivotOffsetZ = Units.inchesToMeters(15.502224);
+
 
     //Rotation of the output shaft. To get rotations of motor to the height of elevator we need to multiply by the gear ratio
     public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot
