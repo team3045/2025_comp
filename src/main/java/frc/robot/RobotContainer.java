@@ -81,8 +81,8 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
-        joystick.R1().whileTrue(elevatorPivot.increaseAngle().repeatedly());
-        joystick.L1().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
+        joystick.R1().whileTrue(elevatorPivot.increasePosition().repeatedly());
+        joystick.L1().whileTrue(elevatorPivot.decreasePosition().repeatedly());
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

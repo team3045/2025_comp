@@ -257,6 +257,14 @@ public class ElevatorPivot extends SubsystemBase {
     return goToAngleDegrees(() -> getPivotAngleDegrees() - 5);
   }
 
+  public Command increasePosition(){
+    return goToPosition(() -> getHeight() + 0.2, () -> getPivotAngleDegrees() + 5);
+  }
+
+  public Command decreasePosition(){
+    return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees() - 5);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
