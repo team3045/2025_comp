@@ -348,6 +348,10 @@ public class ElevatorPivot extends SubsystemBase {
   private TalonFXSimState pivotMotorSim;
   private CANcoderSimState pivotCancoderSim;
 
+  private double stage3Height = carriageToGround;
+  private double stage2Height = carriageToGround;
+  private double carriageHeight = carriageToGround;
+
   private Mechanism2d pivotMechanism = new Mechanism2d(canvasWidth, canvasHeight);
 
   private StructPublisher<Pose3d> stage2Publisher = NetworkTableInstance.getDefault().getTable(elevatorTable)
@@ -378,6 +382,10 @@ public class ElevatorPivot extends SubsystemBase {
 
     elevatorSim.setState(minimumHeight, 0);
     armSim.setState(Units.degreesToRadians(minAngleDegrees), 0);
+
+    stage3Height = carriageToGround;
+    stage2Height = carriageToGround;
+    carriageHeight = carriageToGround;
   }
 
   @Override
@@ -428,38 +436,46 @@ public class ElevatorPivot extends SubsystemBase {
    * Updates the mechanism2d which visualizes our mechanism in SmartDashboard, generally used for simulation
    */
   public void updateMechanism2d(){
-    double carriageHeight = getHeight();
+    carriageHeight = getHeight();
     double currentAngle = getPivotAngleDegrees();
 
     boolean travellingUpwards = travelingUpwards();
 
-    double carriageZ = carriageHeight - carriageToGround; //Same no matter what
-    double stage3Z = 0;
-    double stage2Z = 0;
+    //Update the max Heights
+    double stage3Top = stage3Height + stage3StageLength;
+    double stage2Top = stage2Height + stage2StageLength - stage3StageLength; 
 
+    //Logic to handle the position of the elevator stages
     if(travellingUpwards){
-      if(carriageHeight >= stage2MotionPoint + carriageToGround){
-        stage3Z = carriageHeight - carriageToGround - stage3MotionPoint;
-        stage2Z = carriageHeight - carriageToGround - stage2MotionPoint;
-      } else if (carriageHeight >= stage3MotionPoint + carriageToGround){
-        stage3Z = carriageHeight - carriageToGround - stage3MotionPoint;
-        stage2Z = 0;
+      if(carriageHeight < stage3Top){
+          //Do Nothing, carriageHeight is just carriage Height
+      } else if (carriageHeight >= stage3Top && stage3Height < stage2Top) {
+          stage3Height = carriageHeight - stage3StageLength;
+          //Stage2Height remains the same
+      } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top){
+          stage3Height = carriageHeight - stage3StageLength;
+          stage2Height = carriageHeight - stage2StageLength;
       } else {
-        stage3Z = 0;
-        stage2Z = 0;
+        try {
+          throw new Exception("Something weird happened with the elevator sim heights");
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
     } else {
-      if(carriageHeight <= stage3MotionPoint + carriageToGround){
-        stage3Z = carriageHeight - carriageToGround;
-        stage2Z = carriageHeight - carriageToGround;
-      } else if (carriageHeight <= stage2MotionPoint + carriageToGround){
-        stage2Z = maxHeight - stage2MotionPoint - carriageToGround;
-        stage3Z = carriageHeight - carriageToGround;
-      } else {
-        stage2Z = maxHeight - stage2MotionPoint - carriageToGround;
-        stage3Z = maxHeight - stage3MotionPoint - carriageToGround;
+      if(carriageHeight > stage3Height){
+          //Do nothing, hasnt hit the bottom yet
+      } else if (carriageHeight <= stage3Height && stage3Height > stage2Height) {
+          stage3Height = carriageHeight;
+      } else if (carriageHeight <= stage3Height && stage3Height <= stage2Height){
+          stage3Height = carriageHeight;
+          stage2Height = carriageHeight;
       }
     }
+
+    double carriageZ = carriageHeight - carriageToGround; //Same no matter what
+    double stage3Z = stage3Height - carriageToGround; //The heights of our stages are not the same as their z positions
+    double stage2Z = stage2Height - carriageToGround;
 
     pivotLigament.setAngle(180 - currentAngle);
 

@@ -82,8 +82,8 @@ public class ElevatorPivotConstants {
     public static final double canvasHeight = 6; //m
     public static final double pivotMOI = 0.02347363; //moment of inertia Kg * m^2
 
-    public static final double stage3MotionPoint = Units.inchesToMeters(19);
-    public static final double stage2MotionPoint = stage3MotionPoint + Units.inchesToMeters(20);
+    public static final double stage3StageLength = Units.inchesToMeters(19);
+    public static final double stage2StageLength = stage3StageLength + Units.inchesToMeters(20);
     public static final double verticalTimerThreshold = 0.5;
 
     public static final double pivotOffsetX = Units.inchesToMeters(8.250);
