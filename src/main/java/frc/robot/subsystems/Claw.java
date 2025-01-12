@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -12,18 +13,22 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commons.GremlinUtil;
+
 import static frc.robot.constants.ClawConstants.*;
 
 public class Claw extends SubsystemBase {
-
     private TalonFX clawMotor = new TalonFX(clawID,canbus); 
-    // add beam break when caden decides 
+    private CANrange distanceSensor = new CANrange(canRangeId, canbus);
     private double targetSpeed;
   
     private static final FlywheelSim CLAW_MOTOR_SIM = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(1), flywheelMOI, gearing),
         DCMotor.getKrakenX60(1));
     
+    public final Trigger hasObject = new Trigger(() -> hasObject());
+    public final Trigger atSpeed = new Trigger(() -> atSpeed());
     
     public Claw(){
         configDevices();
@@ -35,6 +40,7 @@ public class Claw extends SubsystemBase {
 
     public void configDevices(){
         clawMotor.getConfigurator().apply(motorConfig);
+        distanceSensor.getConfigurator().apply(canRangeConfig);
     }
 
     public void setTargetSpeed(double speedRPS){
@@ -59,6 +65,14 @@ public class Claw extends SubsystemBase {
 
     public Command hold(){
         return this.runOnce(() -> setTargetSpeed(holdSpeed));
+    }
+
+    public boolean hasObject(){
+        return distanceSensor.getIsDetected(true).getValue();
+    }
+
+    public boolean atSpeed(){
+        return GremlinUtil.withinTolerance(targetSpeed, clawMotor.getVelocity().getValueAsDouble(), speedTolerance);
     }
 
     public void stopRunnable(){
