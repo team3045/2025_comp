@@ -16,6 +16,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.FullAutoScore;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.generated.TunerConstants;
@@ -47,6 +48,8 @@ public class RobotContainer {
         (drivetrain::addVisionMeasurements));
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
+
+    public final Command autoScoreCommand = new FullAutoScore(drivetrain, elevatorPivot, claw);
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
@@ -84,8 +87,7 @@ public class RobotContainer {
         // );
 
         
-        joystick.L1().OnPressTwice(claw.clawIntake(), claw.stop());
-        joystick.R1().OnPressTwice(claw.clawOutake(), claw.stop());
+        joystick.L1().whileTrue(new FullAutoScore(drivetrain, elevatorPivot, claw));
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

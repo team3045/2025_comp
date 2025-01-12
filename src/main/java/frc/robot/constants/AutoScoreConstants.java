@@ -3,6 +3,7 @@ package frc.robot.constants;
 import java.util.HashMap;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class AutoScoreConstants {
     public static final double kElevatorHeights[] = {0, 0, 0, 0};
@@ -26,25 +27,25 @@ public class AutoScoreConstants {
     public static HashMap<Integer, Double> kScoreAngleMap = new HashMap<Integer, Double>();
 
     static{
-        kScorePoseMap.put(1, Pose2d.kZero);
-        kScorePoseMap.put(2, Pose2d.kZero);
-        kScorePoseMap.put(3, Pose2d.kZero);
-        kScorePoseMap.put(4, Pose2d.kZero);
-        kScorePoseMap.put(5, Pose2d.kZero);
-        kScorePoseMap.put(6, Pose2d.kZero);
-        kScorePoseMap.put(7, Pose2d.kZero);
-        kScorePoseMap.put(8, Pose2d.kZero);
-        kScorePoseMap.put(9, Pose2d.kZero);
-        kScorePoseMap.put(10, Pose2d.kZero);
-        kScorePoseMap.put(11, Pose2d.kZero);
-        kScorePoseMap.put(12, Pose2d.kZero);
+        kScorePoseMap.put(1, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(2, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(3, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(4, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(5, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(6, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(7, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(8, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(9, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(10, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(11, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(12, new Pose2d(2,7,new Rotation2d()));
 
         kScoreHeightMap.put(1, ElevatorPivotConstants.minimumHeight);
-        kScoreHeightMap.put(2, ElevatorPivotConstants.minimumHeight);
-        kScoreHeightMap.put(3, ElevatorPivotConstants.minimumHeight);
+        kScoreHeightMap.put(2, ElevatorPivotConstants.maxHeight);
+        kScoreHeightMap.put(3, ElevatorPivotConstants.maxHeight);
 
         kScoreAngleMap.put(1, 0.0);
-        kScoreAngleMap.put(2, 0.0);
-        kScoreAngleMap.put(3, 0.0);
+        kScoreAngleMap.put(2, 45.0);
+        kScoreAngleMap.put(3, 90.0);
     }
 }

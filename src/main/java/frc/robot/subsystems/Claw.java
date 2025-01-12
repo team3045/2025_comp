@@ -51,8 +51,6 @@ public class Claw extends SubsystemBase {
             .withUpdateFreqHz(1000);
 
         clawMotor.setControl(request);
-        System.out.println(clawMotor.getClosedLoopReference().getValueAsDouble());
-        System.out.println(speedRPS);
     }
 
     public Command clawIntake(){

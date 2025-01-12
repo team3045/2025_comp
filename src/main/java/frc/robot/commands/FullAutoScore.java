@@ -48,6 +48,7 @@ public class FullAutoScore extends SequentialCommandGroup {
 
   public Command getPathFindCommand(){
     if(poleNumberSub.get() == 0){
+      System.out.println("Hi");
       return Commands.none();
     }
 
@@ -61,12 +62,20 @@ public class FullAutoScore extends SequentialCommandGroup {
   }
 
   public Command getPrecisePidCommand(){
+    if(poleNumberSub.get() == 0){
+      return Commands.none();
+    }
+
     Pose2d targetPose = kScorePoseMap.get((int) poleNumberSub.get());
 
     return drivetrain.preciseTargetPose(targetPose);
   }
 
   public Command setElevatorHeight(){
+    if(poleNumberSub.get() == 0){
+      return Commands.none();
+    }
+
     double targetHeight = kScoreHeightMap.get((int) heightSub.get());
     double targetAngle = kScoreAngleMap.get((int) heightSub.get());
 
