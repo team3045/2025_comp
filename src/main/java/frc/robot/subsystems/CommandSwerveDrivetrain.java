@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -57,7 +58,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /** Swerve request to apply during robot-centric path following */
-    private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+    public final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -303,7 +304,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      *
      * @param speeds The desired robot-relative speeds
      */
-    public void driveRobotRelative(ChassisSpeeds speeds) {
+    public SwerveRequest.ApplyRobotSpeeds driveRobotRelative(ChassisSpeeds speeds) {
         // Note: it is important to not discretize speeds before or after
         // using the setpoint generator, as it will discretize them for you
         previousSetpoint = setpointGenerator.generateSetpoint(
@@ -311,11 +312,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             speeds, // The desired target speeds
             0.02 // The loop time of the robot code, in seconds
         );
-        setControl(m_pathApplyRobotSpeeds
+        return m_pathApplyRobotSpeeds
             .withSpeeds(previousSetpoint.robotRelativeSpeeds())
             .withWheelForceFeedforwardsX(previousSetpoint.feedforwards().robotRelativeForcesXNewtons())
-            .withWheelForceFeedforwardsY(previousSetpoint.feedforwards().robotRelativeForcesYNewtons())
-        ); // Method that will drive the robot given target module states
+            .withWheelForceFeedforwardsY(previousSetpoint.feedforwards().robotRelativeForcesYNewtons()); // Method that will drive the robot given target module states
+    }
+
+    public Command preciseTargetPose(Pose2d targetPose){
+        double xApplied = preciseTranslationController.calculate(
+            getState().Pose.getX(), targetPose.getX());
+        double yApplied = preciseTranslationController.calculate(
+            getState().Pose.getY(), targetPose.getY());
+        double omegaApplied = preciseRotationController.calculate(
+            getState().Pose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+        
+        ChassisSpeeds speeds = new ChassisSpeeds(xApplied, yApplied, omegaApplied);
+
+        return applyRequest(() -> driveRobotRelative(speeds)).until(
+            () -> GeomUtil.isNearPose(targetPose, getState().Pose, preciseTranslationTolerance)
+        );
     }
 
     /**

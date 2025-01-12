@@ -8,6 +8,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.controller.PIDController;
+
 import static edu.wpi.first.units.Units.*;
 
 /** Add your docs here. */
@@ -36,6 +38,18 @@ public class DriveConstants {
         // PID constants for rotation
         new PIDConstants(9, 0, 0)
     );
+
+    public static final double preciseTranslationkP = 8;
+    public static final double preciseTranslationkI = 0;
+    public static final double preciseTranslationkD = 0;
+    public static final double preciseRotationkP = 8;
+    public static final double preciseRotationkI = 0;
+    public static final double preciseRotationkD = 0;
+
+    public static final double preciseTranslationTolerance = 0.1;
+
+    public static final PIDController preciseTranslationController = new PIDController(preciseTranslationkP, preciseTranslationkI, preciseTranslationkD);
+    public static final PIDController preciseRotationController = new PIDController(preciseRotationkP, preciseRotationkI, preciseRotationkD);
 
     public static final PathConstraints pathFollowingConstraints = new PathConstraints(
         MAX_VELOCITY_AUTO, 

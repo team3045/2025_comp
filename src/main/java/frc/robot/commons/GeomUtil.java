@@ -152,4 +152,16 @@ public class GeomUtil {
   public static Transform3d translation3dToTransform(Translation3d translation) {
     return new Transform3d(translation, new Rotation3d());
   }
+
+  /** Check if poses are close to each other
+   * Currently only checks their translations
+   * 
+   * @param targetPose Targetted Pose
+   * @param actualPose Actual Pose
+   * @param tolerance tolerance to be considered close enough
+   * @return whether or not the poses are near each other
+   */
+  public static boolean isNearPose(Pose2d targetPose, Pose2d actualPose, double tolerance){
+    return targetPose.getTranslation().getDistance(actualPose.getTranslation()) < tolerance;
+  }
 }
