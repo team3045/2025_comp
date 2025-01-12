@@ -12,9 +12,11 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commons.GremlinUtil;
+import frc.robot.constants.ClawConstants;
 
 import static frc.robot.constants.ClawConstants.*;
 
@@ -65,6 +67,14 @@ public class Claw extends SubsystemBase {
 
     public Command hold(){
         return this.runOnce(() -> setTargetSpeed(holdSpeed));
+    }
+
+    public Command runAndHold() {
+        return clawIntake().until(() -> {return !hasObject();}).andThen(hold()).withTimeout(ClawConstants.timeoutSeconds);
+    }
+
+    public Command outputAndStop() {
+        return clawOutake().until(() -> {return !hasObject();}).andThen(Commands.waitSeconds(ClawConstants.outputWaitTime)).andThen(stop()).withTimeout(ClawConstants.timeoutSeconds);
     }
 
     public boolean hasObject(){
