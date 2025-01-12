@@ -14,8 +14,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
 
-import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
-
 
 public class ClawConstants {
     public static final int clawID = 19;
