@@ -100,5 +100,8 @@ public class GremlinUtil {
             return new Pose2d(seedPose.getTranslation().minus(forwardTranslation), seedPose.getRotation());
         }
     }
+    public static boolean withinTolerance(double target, double actual, double tolerance){
+        return Math.abs(target - actual) < tolerance;
+    }
 
 }
