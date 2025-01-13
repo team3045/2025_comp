@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.List;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -12,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -35,6 +37,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -68,6 +71,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /*Swerve Setpoint Generator */
     private SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
+    private RobotConfig config;
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -220,7 +224,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void configureAutoBuilder() {
         try {
-            var config = RobotConfig.fromGUISettings();
+            config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
                 () -> getState().Pose,   // Supplier of current robot pose
                 this::resetPose,         // Consumer for seeding pose against auto
@@ -331,6 +335,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return applyRequest(() -> driveRobotRelative(speeds)).until(
             () -> GeomUtil.isNearPose(targetPose, getState().Pose, preciseTranslationTolerance)
         );
+    }
+
+    /**Returns a command that will drive robot to supplied targetPose using Pathplanner Pathfind
+     * 
+     * @param targetPoseSup A supplier of the desired pose to drive to
+     * @param desiredEndVelocitySup A supplier of the desired end velocity
+     * @return A command to drive robot to desired Pose
+     */
+    public Command pathFindToPose(Supplier<Pose2d> targetPoseSup, DoubleSupplier desiredEndVelocitySup){
+        return new DynamicPathfindCommand(targetPoseSup, desiredEndVelocitySup, pathFollowingConstraints);
     }
 
     /**

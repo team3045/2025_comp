@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -18,6 +20,11 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
     m_robotContainer.drivetrain.resetPose(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+  }
+
+  @Override
+  public void robotInit() {
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   @Override

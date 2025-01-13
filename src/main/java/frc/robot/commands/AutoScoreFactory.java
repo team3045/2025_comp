@@ -19,12 +19,15 @@ import frc.robot.subsystems.ElevatorPivot;
 
 import static frc.robot.constants.AutoScoreConstants.*;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class FullAutoScore extends SequentialCommandGroup {
+public class AutoScoreFactory{
   private CommandSwerveDrivetrain drivetrain;
   private ElevatorPivot elevatorPivot;
   private Claw claw;
@@ -37,48 +40,49 @@ public class FullAutoScore extends SequentialCommandGroup {
 
 
   /** Creates a new FullAutoScore. */
-  public FullAutoScore(CommandSwerveDrivetrain drivetrain, ElevatorPivot elevatorPivot, Claw clawRef) {
+  public AutoScoreFactory(CommandSwerveDrivetrain drivetrain, ElevatorPivot elevatorPivot, Claw clawRef) {
     this.drivetrain = drivetrain;
     this.elevatorPivot = elevatorPivot;
     this.claw = clawRef;
-
-    addCommands(getPathFindCommand(), getPrecisePidCommand(), setElevatorHeight(), claw.clawOutake().withTimeout(0.3));
   }
 
 
-  public Command getPathFindCommand(){
-    if(poleNumberSub.get() == 0){
-      System.out.println("Hi");
-      return Commands.none();
-    }
+  public Command getPathFindCommand(Supplier<Integer> poleNumberSupplier){
+    // if(poleNumberSub.get() == 0){
+    //   return Commands.none();
+    // }
 
     //Get values from GUI application
-    Pose2d targetPose = kScorePoseMap.get((int) poleNumberSub.get());
     return AutoBuilder.pathfindToPose(
-      targetPose, 
+      kScorePoseMap.get(poleNumberSupplier.get()), 
       DriveConstants.pathFollowingConstraints, 
       AutoScoreConstants.kMaxVelError).until( //TODO: change target velocity to the predicted PID value
-        () -> GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, kMaxPathFindTranslationError)); 
+        () -> GeomUtil.isNearPose(kScorePoseMap.get(poleNumberSupplier.get()), 
+        drivetrain.getState().Pose, kMaxPathFindTranslationError)); 
   }
 
-  public Command getPrecisePidCommand(){
-    if(poleNumberSub.get() == 0){
-      return Commands.none();
-    }
+  public Command getPrecisePidCommand(Supplier<Integer> poleNumberSupplier){
+    // if(poleNumberSub.get() == 0){
+    //   return Commands.none();
+    // }
 
-    Pose2d targetPose = kScorePoseMap.get((int) poleNumberSub.get());
+    // Pose2d targetPose = kScorePoseMap.get((int) poleNumberSub.get());
 
-    return drivetrain.preciseTargetPose(targetPose);
+    // return drivetrain.preciseTargetPose(targetPose);
+    int kScorePoleNumber = poleNumberSupplier.get();
+    return Commands.print("Precise PID Pole Number: " + kScorePoleNumber);
   }
 
-  public Command setElevatorHeight(){
-    if(poleNumberSub.get() == 0){
-      return Commands.none();
-    }
+  public Command setElevatorHeight(Supplier<Integer> heightSupplier){
+    // if(poleNumberSub.get() == 0){
+    //   return Commands.none();
+    // }
 
-    double targetHeight = kScoreHeightMap.get((int) heightSub.get());
-    double targetAngle = kScoreAngleMap.get((int) heightSub.get());
+    // double targetHeight = kScoreHeightMap.get((int) heightSub.get());
+    // double targetAngle = kScoreAngleMap.get((int) heightSub.get());
 
-    return elevatorPivot.goToPosition(() -> targetHeight, () -> targetAngle);
+    // return elevatorPivot.goToPosition(() -> targetHeight, () -> targetAngle);
+    int kHeightValue = heightSupplier.get();
+    return Commands.print("Elevator Height Number: " + kHeightValue);
   }
 }

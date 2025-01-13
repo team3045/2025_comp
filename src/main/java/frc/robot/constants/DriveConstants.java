@@ -47,6 +47,7 @@ public class DriveConstants {
     public static final double preciseRotationkD = 0;
 
     public static final double preciseTranslationTolerance = 0.1;
+    public static final double kMaxPathFindTranslationError = 0.2;
 
     public static final PIDController preciseTranslationController = new PIDController(preciseTranslationkP, preciseTranslationkI, preciseTranslationkD);
     public static final PIDController preciseRotationController = new PIDController(preciseRotationkP, preciseRotationkI, preciseRotationkD);

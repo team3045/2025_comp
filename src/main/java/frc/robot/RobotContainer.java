@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.constants.DriveConstants.deadband;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import dev.doglog.DogLog;
@@ -14,11 +15,16 @@ import dev.doglog.DogLogOptions;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.FullAutoScore;
+import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
+import frc.robot.constants.AutoScoreConstants;
+import frc.robot.constants.DriveConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -49,7 +55,12 @@ public class RobotContainer {
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
 
-    public final Command autoScoreCommand = new FullAutoScore(drivetrain, elevatorPivot, claw);
+    /*Auto Score Stuff */
+    public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
+    private IntegerSubscriber poleNumberSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
+    .getIntegerTopic("Pole").subscribe(0);
+    private IntegerSubscriber heightSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
+    .getIntegerTopic("Height").subscribe(0);
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
@@ -87,12 +98,16 @@ public class RobotContainer {
         // );
 
         
-        joystick.L1().whileTrue(new FullAutoScore(drivetrain, elevatorPivot, claw));
+        joystick.L1().onTrue(drivetrain.pathFindToPose(
+            () -> AutoScoreConstants.kScorePoseMap.get((int) poleNumberSub.get()), 
+            () -> 0
+        ));
+        joystick.R1().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(2,7, Rotation2d.kZero),DriveConstants.pathFollowingConstraints));
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("Curvy Square");
+        return AutoBuilder.buildAuto("Curvy Square");
     }
 }
