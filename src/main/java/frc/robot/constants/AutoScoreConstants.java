@@ -40,12 +40,12 @@ public class AutoScoreConstants {
         kScorePoseMap.put(11, new Pose2d(5.900,3.830,Rotation2d.k180deg));
         kScorePoseMap.put(12, new Pose2d(5.900,4.163,Rotation2d.k180deg));
 
-        kScoreHeightMap.put(1, ElevatorPivotConstants.minimumHeight);
-        kScoreHeightMap.put(2, ElevatorPivotConstants.maxHeight);
-        kScoreHeightMap.put(3, ElevatorPivotConstants.maxHeight);
+        kScoreHeightMap.put(1, ElevatorPivotConstants.HeightPositions.L2.getHeight());
+        kScoreHeightMap.put(2, ElevatorPivotConstants.HeightPositions.L3.getHeight());
+        kScoreHeightMap.put(3, ElevatorPivotConstants.HeightPositions.L4.getHeight());
 
-        kScoreAngleMap.put(1, 0.0);
-        kScoreAngleMap.put(2, 45.0);
-        kScoreAngleMap.put(3, 90.0);
+        kScoreAngleMap.put(1, ElevatorPivotConstants.AnglePositions.L2.getAngle());
+        kScoreAngleMap.put(2, ElevatorPivotConstants.AnglePositions.L3.getAngle());
+        kScoreAngleMap.put(3, ElevatorPivotConstants.AnglePositions.L4.getAngle());
     }
 }

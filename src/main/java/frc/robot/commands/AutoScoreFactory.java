@@ -17,6 +17,7 @@ import frc.robot.subsystems.ElevatorPivot;
 
 import static frc.robot.constants.AutoScoreConstants.*;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -56,16 +57,9 @@ public class AutoScoreFactory{
       () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose));
   }
 
-  public Command setElevatorHeight(Supplier<Integer> heightSupplier){
-    // if(poleNumberSub.get() == 0){
-    //   return Commands.none();
-    // }
-
-    // double targetHeight = kScoreHeightMap.get((int) heightSub.get());
-    // double targetAngle = kScoreAngleMap.get((int) heightSub.get());
-
-    // return elevatorPivot.goToPosition(() -> targetHeight, () -> targetAngle);
-    int kHeightValue = heightSupplier.get();
-    return Commands.print("Elevator Height Number: " + kHeightValue);
+  public Command setElevatorHeight(){
+    return elevatorPivot.goToPosition(
+      () -> AutoScoreConstants.kScoreHeightMap.getOrDefault((int) heightSub.get(), elevatorPivot.getHeight()),
+      () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightSub.get(), elevatorPivot.getPivotAngleDegrees()));
   }
 }

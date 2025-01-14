@@ -55,5 +55,5 @@ public class FieldConstants {
                 shopTags, 
                 shopFieldLength, 
                 shopFieldWidth);
-        public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+        public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 }

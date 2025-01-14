@@ -90,8 +90,14 @@ public class RobotContainer {
         // );
 
         
-        joystick.L1().whileTrue(autoScoreFactory.getPathFindCommand());
-        joystick.R1().whileTrue(autoScoreFactory.getPrecisePidCommand());
+        joystick.square().whileTrue(
+            autoScoreFactory.getPathFindCommand()
+            .andThen(autoScoreFactory.getPrecisePidCommand())
+            .andThen(autoScoreFactory.setElevatorHeight()));
+        joystick.L1().whileTrue(elevatorPivot.decreaseHeight().repeatedly());
+        joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
+        joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
+        joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

@@ -127,6 +127,36 @@ public class ElevatorPivotConstants {
     public static final double magnetOffset = 0;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
+    public enum HeightPositions{
+        L4(1.673),
+        L3(0.88),
+        L2(0.584);
+
+        private final double height;
+        HeightPositions(double height){
+            this.height = height;
+        }
+
+        public double getHeight(){
+            return height;
+        }
+    }
+
+    public enum AnglePositions{
+        L4(41),
+        L3(41),
+        L2(41);
+
+        private final double angle;
+        AnglePositions(double angle){
+            this.angle = angle;
+        }
+
+        public double getAngle(){
+            return angle;
+        }
+    }
+
     /*Configuration */
     public static final CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs()
         .withStatorCurrentLimit(statorCurrentLimit)
