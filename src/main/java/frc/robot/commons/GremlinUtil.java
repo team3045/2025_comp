@@ -83,4 +83,8 @@ public class GremlinUtil {
         }
     }
 
+    public static boolean withinTolerance(double target, double actual, double tolerance){
+        return Math.abs(target - actual) < tolerance;
+    }
+
 }
