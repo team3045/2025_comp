@@ -27,18 +27,18 @@ public class AutoScoreConstants {
     public static HashMap<Integer, Double> kScoreAngleMap = new HashMap<Integer, Double>();
 
     static{
-        kScorePoseMap.put(1, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(2, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(3, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(4, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(5, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(6, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(7, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(8, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(9, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(10, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(11, new Pose2d(2,7,new Rotation2d()));
-        kScorePoseMap.put(12, new Pose2d(2,7,new Rotation2d()));
+        kScorePoseMap.put(1, new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
+        kScorePoseMap.put(2, new Pose2d(5.071,5.302,Rotation2d.fromDegrees(-121.25)));
+        kScorePoseMap.put(3, new Pose2d(3.964,5.317,Rotation2d.fromDegrees(-62.25)));
+        kScorePoseMap.put(4, new Pose2d(3.673,5.139,Rotation2d.fromDegrees(-62.25)));
+        kScorePoseMap.put(5, new Pose2d(3.104,4.163,Rotation2d.kZero));
+        kScorePoseMap.put(6, new Pose2d(3.104,3.830,Rotation2d.kZero));
+        kScorePoseMap.put(7, new Pose2d(3.633,2.930,Rotation2d.fromDegrees(58.75)));
+        kScorePoseMap.put(8, new Pose2d(3.935,2.747,Rotation2d.fromDegrees(58.75)));
+        kScorePoseMap.put(9, new Pose2d(5.023,2.737,Rotation2d.fromDegrees(119.75)));
+        kScorePoseMap.put(10, new Pose2d(5.327,2.914,Rotation2d.fromDegrees(119.75)));
+        kScorePoseMap.put(11, new Pose2d(5.900,3.830,Rotation2d.k180deg));
+        kScorePoseMap.put(12, new Pose2d(5.900,4.163,Rotation2d.k180deg));
 
         kScoreHeightMap.put(1, ElevatorPivotConstants.minimumHeight);
         kScoreHeightMap.put(2, ElevatorPivotConstants.maxHeight);

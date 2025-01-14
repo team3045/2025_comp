@@ -13,7 +13,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -37,6 +36,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
@@ -322,19 +322,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             .withWheelForceFeedforwardsY(previousSetpoint.feedforwards().robotRelativeForcesYNewtons()); // Method that will drive the robot given target module states
     }
 
-    public Command preciseTargetPose(Pose2d targetPose){
-        double xApplied = preciseTranslationController.calculate(
-            getState().Pose.getX(), targetPose.getX());
-        double yApplied = preciseTranslationController.calculate(
-            getState().Pose.getY(), targetPose.getY());
-        double omegaApplied = preciseRotationController.calculate(
-            getState().Pose.getRotation().getRadians(), targetPose.getRotation().getRadians());
-        
-        ChassisSpeeds speeds = new ChassisSpeeds(xApplied, yApplied, omegaApplied);
-
-        return applyRequest(() -> driveRobotRelative(speeds)).until(
-            () -> GeomUtil.isNearPose(targetPose, getState().Pose, preciseTranslationTolerance)
-        );
+    public Command preciseTargetPose(Supplier<Pose2d> targetPose){
+        return new DriveToPose(
+            this, 
+            targetPose, 
+            preciseTranslationController, 
+            preciseRotationController, 
+            preciseTranslationTolerance, 
+            preciseRotationTolerance);
     }
 
     /**Returns a command that will drive robot to supplied targetPose using Pathplanner Pathfind
@@ -344,7 +339,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return A command to drive robot to desired Pose
      */
     public Command pathFindToPose(Supplier<Pose2d> targetPoseSup, DoubleSupplier desiredEndVelocitySup){
-        return new DynamicPathfindCommand(targetPoseSup, desiredEndVelocitySup, pathFollowingConstraints);
+        return new DynamicPathfindCommand(targetPoseSup, desiredEndVelocitySup, pathFollowingConstraints, this);
     }
 
     /**

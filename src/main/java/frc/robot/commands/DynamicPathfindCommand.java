@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class DynamicPathfindCommand extends Command {
     private final Supplier<Pose2d> targetPoseSupplier;
@@ -18,10 +19,13 @@ public class DynamicPathfindCommand extends Command {
     public DynamicPathfindCommand(
             Supplier<Pose2d> targetPoseSupplier,
             DoubleSupplier desiredEndVelocitySupplier,
-            PathConstraints constraints) {
+            PathConstraints constraints,
+            CommandSwerveDrivetrain drivetrain) {
         this.targetPoseSupplier = targetPoseSupplier;
         this.desiredEndVelocitySupplier = desiredEndVelocitySupplier;
         this.constraints = constraints;
+
+        addRequirements(drivetrain);
     }
 
     @Override
@@ -29,7 +33,10 @@ public class DynamicPathfindCommand extends Command {
         updatePathfindCommand();
         if (currentPathfindCommand != null) {
             currentPathfindCommand.initialize();
-        }
+        } 
+
+        //TODO: add a check to make sure we're within field bounds, 
+        //as well as the target pose is within field bounds other wise pathPlanner will fail I think
     }
 
     @Override
@@ -37,7 +44,6 @@ public class DynamicPathfindCommand extends Command {
         if (currentPathfindCommand != null) {
             currentPathfindCommand.execute();
         }
-        System.out.println("DynamicPathfindCommand execute");
     }
 
     @Override
@@ -49,7 +55,7 @@ public class DynamicPathfindCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return currentPathfindCommand != null && currentPathfindCommand.isFinished();
+        return currentPathfindCommand == null || currentPathfindCommand.isFinished();
     }
 
     private void updatePathfindCommand() {

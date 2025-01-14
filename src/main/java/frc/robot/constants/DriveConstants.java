@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
@@ -19,6 +21,8 @@ public class DriveConstants {
     public static double MaxSpeed = 3; //TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     public static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);//RotationsPerSecond.of(1.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
+    public static final double deadband = 0.05; //5% deadband
+
     public static final double MAX_VELOCITY = 4; //Meters per Second
     public static final double MAX_VELOCITY_AUTO = MAX_VELOCITY*0.75; 
     public static final double MAX_ACCEL = 3; //Meters per Second Squared
@@ -28,9 +32,14 @@ public class DriveConstants {
     public static final double MAX_ANGULAR_ACCEL = Math.PI; //Radians per Second Squared
     public static final double MAX_ANGULAR_ACCEL_AUTO = MAX_ANGULAR_ACCEL * 0.75;
 
-    public static final double MAX_STEER_VELOCITY = 10; //radians per second
+    /* Setting up bindings for necessary control of the swerve drive platform */
+    public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 5% deadband
+            .withDriveRequestType(DriveRequestType.Velocity); // Use close-loop control for drive motors
+    public static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    public static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    public static final double deadband = 0.05; //5% deadband
+    public static final double MAX_STEER_VELOCITY = 10; //radians per second
 
     public static final PPHolonomicDriveController pathFollowingController = new PPHolonomicDriveController(
         // PID constants for translation
@@ -39,7 +48,7 @@ public class DriveConstants {
         new PIDConstants(9, 0, 0)
     );
 
-    public static final double preciseTranslationkP = 8;
+    public static final double preciseTranslationkP = 100;
     public static final double preciseTranslationkI = 0;
     public static final double preciseTranslationkD = 0;
     public static final double preciseRotationkP = 8;
@@ -47,6 +56,7 @@ public class DriveConstants {
     public static final double preciseRotationkD = 0;
 
     public static final double preciseTranslationTolerance = 0.1;
+    public static final double preciseRotationTolerance = 1;
     public static final double kMaxPathFindTranslationError = 0.2;
 
     public static final PIDController preciseTranslationController = new PIDController(preciseTranslationkP, preciseTranslationkI, preciseTranslationkD);

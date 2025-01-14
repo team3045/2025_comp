@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
 public class FieldConstants {
-        public static final boolean isShopField = true;
+        public static final boolean isShopField = false;
 
         public static final double shopFieldLength = 7.89225625;
         public static final double shopFieldWidth = 4.68122;

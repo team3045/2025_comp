@@ -8,7 +8,6 @@ import static frc.robot.constants.DriveConstants.deadband;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
@@ -37,13 +36,6 @@ import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
 public class RobotContainer {
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 5% deadband
-            .withDriveRequestType(DriveRequestType.Velocity); // Use close-loop control for drive motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final GremlinPS4Controller joystick = new GremlinPS4Controller(0);
@@ -73,15 +65,15 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(GremlinUtil.squareDriverInput(joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
+                DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(GremlinUtil.squareDriverInput(joystick.getLeftX()) * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
-        joystick.triangle().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.triangle().whileTrue(drivetrain.applyRequest(() -> DriveConstants.brake));
         joystick.circle().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+            DriveConstants.point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
         // Run SysId routines when holding back/start and X/Y.
@@ -98,11 +90,8 @@ public class RobotContainer {
         // );
 
         
-        joystick.L1().onTrue(drivetrain.pathFindToPose(
-            () -> AutoScoreConstants.kScorePoseMap.get((int) poleNumberSub.get()), 
-            () -> 0
-        ));
-        joystick.R1().whileTrue(AutoBuilder.pathfindToPose(new Pose2d(2,7, Rotation2d.kZero),DriveConstants.pathFollowingConstraints));
+        joystick.L1().whileTrue(autoScoreFactory.getPathFindCommand());
+        joystick.R1().whileTrue(autoScoreFactory.getPrecisePidCommand());
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

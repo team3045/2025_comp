@@ -316,5 +316,7 @@ public class GremlinApriltagVision extends SubsystemBase {
     debugField.getRobotObject().setPose(poseSupplier.get());
 
     processVisionUpdates();
+    visionConsumer.accept(visionUpdates);
+    GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
   }
 }

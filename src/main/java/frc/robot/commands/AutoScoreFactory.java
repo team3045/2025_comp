@@ -4,12 +4,10 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commons.GeomUtil;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
@@ -19,7 +17,6 @@ import frc.robot.subsystems.ElevatorPivot;
 
 import static frc.robot.constants.AutoScoreConstants.*;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -47,30 +44,16 @@ public class AutoScoreFactory{
   }
 
 
-  public Command getPathFindCommand(Supplier<Integer> poleNumberSupplier){
-    // if(poleNumberSub.get() == 0){
-    //   return Commands.none();
-    // }
-
+  public Command getPathFindCommand(){
     //Get values from GUI application
-    return AutoBuilder.pathfindToPose(
-      kScorePoseMap.get(poleNumberSupplier.get()), 
-      DriveConstants.pathFollowingConstraints, 
-      AutoScoreConstants.kMaxVelError).until( //TODO: change target velocity to the predicted PID value
-        () -> GeomUtil.isNearPose(kScorePoseMap.get(poleNumberSupplier.get()), 
-        drivetrain.getState().Pose, kMaxPathFindTranslationError)); 
+    return drivetrain.pathFindToPose(
+      () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), 
+      () -> 0); 
   }
 
-  public Command getPrecisePidCommand(Supplier<Integer> poleNumberSupplier){
-    // if(poleNumberSub.get() == 0){
-    //   return Commands.none();
-    // }
-
-    // Pose2d targetPose = kScorePoseMap.get((int) poleNumberSub.get());
-
-    // return drivetrain.preciseTargetPose(targetPose);
-    int kScorePoleNumber = poleNumberSupplier.get();
-    return Commands.print("Precise PID Pole Number: " + kScorePoleNumber);
+  public Command getPrecisePidCommand(){
+    return drivetrain.preciseTargetPose(
+      () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose));
   }
 
   public Command setElevatorHeight(Supplier<Integer> heightSupplier){
