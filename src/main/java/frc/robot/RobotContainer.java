@@ -19,7 +19,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AutoScoreFactory;
+import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.AutoScoreConstants;
@@ -53,6 +55,10 @@ public class RobotContainer {
     .getIntegerTopic("Pole").subscribe(0);
     private IntegerSubscriber heightSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
     .getIntegerTopic("Height").subscribe(0);
+
+    /* intake sequence */
+    public final IntakeSequenceFactory intakeSequenceFactory = new IntakeSequenceFactory(drivetrain, elevatorPivot, claw);
+
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
@@ -89,6 +95,13 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
+        joystick.cross().whileTrue(
+            intakeSequenceFactory.getPathFindCommand()
+            .andThen(intakeSequenceFactory.setElevatorPivotPosition())
+            .andThen(Commands.waitSeconds(1))
+            .andThen(intakeSequenceFactory.moveElevatorAndIntake()) 
+        );
+
         
         joystick.square().whileTrue(
             autoScoreFactory.getPathFindCommand()
@@ -98,6 +111,7 @@ public class RobotContainer {
         joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
         joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
         joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
+
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }
