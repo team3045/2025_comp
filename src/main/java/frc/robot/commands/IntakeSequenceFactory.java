@@ -47,7 +47,7 @@ public class IntakeSequenceFactory {
 
     public Command moveElevatorAndIntake(){
         return 
-            elevatorPivot.goToHeight(IntakeSequenceConstants.intakingHeight) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
+            elevatorPivot.goToHeight((IntakeSequenceConstants.intakingHeight)) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
             .alongWith(claw.clawIntake())
             .andThen(Commands.waitUntil(claw.hasObject))
                 .withTimeout(IntakeSequenceConstants.timeOutTime) //TODO: only do this if sim

@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -44,6 +46,7 @@ public class ElevatorPivotConstants {
     public static final double minAngleDegrees = -90;
     public static final double maxAngleDegrees = 90;
     public static final double stowAngle = maxAngleDegrees;
+    public static final double intakingAngle = -90;
 
     
     public static final double rotorToSensorRatio = 1; 
@@ -57,6 +60,7 @@ public class ElevatorPivotConstants {
     public static final double carriageToGround = Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
     public static final double minimumHeight = carriageToGround; //m
     public static final double stowHeight = minimumHeight;
+    public static final double intakingReadyHeight = 0.75; 
 
     public static final double maxHeight = Units.inchesToMeters(57) + carriageToGround; // m
 

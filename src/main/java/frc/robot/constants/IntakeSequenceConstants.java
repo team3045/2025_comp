@@ -11,11 +11,10 @@ public class IntakeSequenceConstants {
     public static final DoubleSupplier intakeReadyHeight = () -> 1.5; 
     public static final DoubleSupplier intakeReadyAngle = () -> 45.0;
 
-    public static final DoubleSupplier intakingHeight = () -> 1.5; 
-
     public static final DoubleSupplier stowHeight = () -> 0;
     public static final DoubleSupplier stowAngle = () -> 0;
 
+    public static final DoubleSupplier intakingHeight = () -> 1.5; 
     
     public static final DoubleSupplier desiredEndVelocity = () -> 0;
 

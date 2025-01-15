@@ -107,7 +107,8 @@ public class RobotContainer {
             autoScoreFactory.getPathFindCommand()
             .andThen(autoScoreFactory.getPrecisePidCommand())
             .andThen(autoScoreFactory.setElevatorHeight()));
-        joystick.PS().onTrue(elevatorPivot.stowArm());
+        joystick.share().onTrue(elevatorPivot.stowArm());
+        joystick.options().onTrue(elevatorPivot.goToIntakeReady());
         joystick.L1().whileTrue(elevatorPivot.decreaseHeight().repeatedly());
         joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
         joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());

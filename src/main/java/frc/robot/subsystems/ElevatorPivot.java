@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commons.GremlinUtil;
@@ -37,6 +39,7 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.constants.ElevatorPivotConstants.*;
 
 import java.util.function.DoubleSupplier;
+
 
 /* */
 public class ElevatorPivot extends SubsystemBase {
@@ -306,7 +309,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredheight
    */
   public Command goToHeight(DoubleSupplier desiredHeight){
-    return this.runOnce(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
+    return this.run(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
   }
 
   /**
@@ -318,7 +321,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredAngle
    */
   public Command goToAngleDegrees(DoubleSupplier desiredAngle){
-    return this.runOnce(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
+    return this.run(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
   }
 
   /**
@@ -332,26 +335,32 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to the desired position
    */
   public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
-    return this.runOnce(() -> {
+    return this.run(() -> {
       setHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
     }).until(atTargetAngle.and(atTargetHeight));
   }
 
-  /**Stows the arm, making sure that the arm doesnt hit the bottom of the elevator
+  /**Stows the arm, making sure that the arm doesnt hit the bottom of the elevator.
+   * Ends when both height and angle are within tolerance.
    * 
    * @return a command to stow the arm
    */
   public Command stowArm(){
-    return this.runOnce(() -> {
-      setAngleTargetDegrees(stowAngle);
-
-      while(getPivotAngleDegrees() < 0){
-        //just wait
-      }
-
-      setHeightAndAngle(minimumHeight, stowAngle);
-    }).until(atTargetAngle.and(atTargetHeight));
+    return goToAngleDegrees(() -> stowAngle).until(() -> getPivotAngleDegrees() > 0)
+      .andThen(goToPosition(() -> stowHeight, () -> stowAngle));
   }
+
+  /**Send the elevatorPivot to the intaking height and angle.
+   * First goes down then up to avoid collisions, this logic should be improved later. 
+   * 
+   * @return a command for the elevatorPivot to go to intaking position
+   */
+  public Command goToIntakeReady(){
+    return stowArm().andThen(
+      goToPosition(() -> intakingReadyHeight, () -> 0.0).until(atTargetHeight)
+      .andThen(goToPosition(() -> intakingReadyHeight, () -> intakingAngle)));
+  }
+
 
   public Command increaseHeight(){
     return goToHeight(() -> getHeight() + 0.2);
@@ -432,8 +441,8 @@ public class ElevatorPivot extends SubsystemBase {
     pivotMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
     pivotCancoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
-    elevatorSim.setState(minimumHeight, 0);
-    armSim.setState(Units.degreesToRadians(minAngleDegrees), 0);
+    elevatorSim.setState(stowHeight, 0);
+    armSim.setState(Units.degreesToRadians(stowAngle), 0);
 
     stage3Height = carriageToGround;
     stage2Height = carriageToGround;
