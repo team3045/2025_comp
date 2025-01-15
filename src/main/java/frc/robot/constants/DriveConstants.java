@@ -48,10 +48,10 @@ public class DriveConstants {
         new PIDConstants(9, 0, 0)
     );
 
-    public static final double preciseTranslationkP = 100;
+    public static final double preciseTranslationkP = 10;
     public static final double preciseTranslationkI = 0;
     public static final double preciseTranslationkD = 0;
-    public static final double preciseRotationkP = 8;
+    public static final double preciseRotationkP = 1;
     public static final double preciseRotationkI = 0;
     public static final double preciseRotationkD = 0;
 

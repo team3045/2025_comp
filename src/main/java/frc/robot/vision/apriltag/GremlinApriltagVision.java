@@ -289,7 +289,7 @@ public class GremlinApriltagVision extends SubsystemBase {
     AprilTagFieldLayout layout;
     try {
       layout = FieldConstants.isShopField ? FieldConstants.shopLayout
-          : AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+          : AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025Reefscape.m_resourceFile);
       visionSystemSim.addAprilTags(layout);
     } catch (IOException e) {
       e.printStackTrace();
