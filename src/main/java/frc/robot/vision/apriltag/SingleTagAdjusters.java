@@ -26,6 +26,13 @@ public class SingleTagAdjusters {
     SingleTagAdjustersTable.put(14, 1.0);
     SingleTagAdjustersTable.put(15, 1.0);
     SingleTagAdjustersTable.put(16, 1.0);
+    SingleTagAdjustersTable.put(17, 1.0);
+    SingleTagAdjustersTable.put(18, 1.0);
+    SingleTagAdjustersTable.put(19, 1.0);
+    SingleTagAdjustersTable.put(20, 1.0);
+    SingleTagAdjustersTable.put(21, 1.0);
+    SingleTagAdjustersTable.put(22, 1.0);
+
   }
 
   public static double getAdjustmentForTag(int tagId) {
