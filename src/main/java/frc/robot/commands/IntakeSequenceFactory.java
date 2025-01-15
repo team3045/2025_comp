@@ -4,8 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.constants.IntakeSequenceConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -23,7 +21,7 @@ public class IntakeSequenceFactory {
     }
     
     public Command getPathFindCommand(){
-    
+ 
             return new ConditionalCommand(
                 drivetrain.pathFindToPose(
                         ()->  IntakeSequenceConstants.leftSubstationPose, 
@@ -32,7 +30,7 @@ public class IntakeSequenceFactory {
                     drivetrain.pathFindToPose(
                                 ()-> IntakeSequenceConstants.rightSubstationPose,
                                 ()-> IntakeSequenceConstants.desiredEndVelocity), 
-                    Commands.none(), 
+                    Commands.none(),  // add rumble here 
                     () -> isWithinRightRange(drivetrain.getState().Pose)), 
                 ()-> isWithinLeftRange(drivetrain.getState().Pose));
     } 
@@ -45,15 +43,11 @@ public class IntakeSequenceFactory {
         return IntakeSequenceConstants.rightSubstation.contains(pose);
     }
 
-
 /* Sets elevator & arm ready to intake  */
     public Command setElevatorPivotPosition(){
-        return  //TODO: use and then sugaring, also "goTo" Methods already wait until its at the height before ending
-            elevatorPivot.goToHeight(()-> IntakeSequenceConstants.intakeReadyHeight) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
-            .andThen(Commands.waitUntil(elevatorPivot.atTargetHeight)),
-            elevatorPivot.goToAngleDegrees(()-> IntakeSequenceConstants.intakeReadyAngle)) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
-            .andThen(Commands.waitUntil(elevatorPivot.atTargetAngle)
-        );
+        return elevatorPivot.goToPosition(
+                ()-> IntakeSequenceConstants.intakeReadyHeight, 
+                ()-> IntakeSequenceConstants.intakeReadyAngle);
     }
 
 /* moves elevator & arm down & intakes coral */
