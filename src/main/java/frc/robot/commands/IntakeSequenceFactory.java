@@ -14,13 +14,15 @@ public class IntakeSequenceFactory {
     private ElevatorPivot elevatorPivot;
     private Claw claw; 
 
-    private Boolean pastMidPoint = drivetrain.getState().Pose.getX() < 5;
+    private Boolean pastMidPoint;
 
 
     public IntakeSequenceFactory(CommandSwerveDrivetrain drivetrain, ElevatorPivot elevatorPivot, Claw claw){
         this.drivetrain = drivetrain;
         this.elevatorPivot = elevatorPivot;
         this.claw = claw; 
+
+        pastMidPoint = drivetrain.getState().Pose.getX() < 5; //TODO: I dont think this will work because will always use state at construction
     }
 
     public Command getPathFindCommand(){

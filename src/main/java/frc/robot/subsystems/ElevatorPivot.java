@@ -48,6 +48,10 @@ public class ElevatorPivot extends SubsystemBase {
   private double targetHeight;
   private double targetAngleDegrees;
 
+  private double stage3Height = carriageToGround;
+  private double stage2Height = carriageToGround;
+  private double carriageHeight = carriageToGround;
+
   private boolean travellingUpward;
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
@@ -192,6 +196,67 @@ public class ElevatorPivot extends SubsystemBase {
     return velocityMPS / rotationToLengthRatio;
   }
 
+  /**Update the heights of each stage, used for sim, as well as collision logic*/
+  public void updateStageHeights(){
+    carriageHeight = getHeight();
+
+    boolean travellingUpwards = travelingUpwards();
+
+    //Update the max Heights
+    double stage3Top = stage3Height + stage3StageLength;
+    double stage2Top = stage2Height + stage2StageLength - stage3StageLength; 
+
+    //Logic to handle the position of the elevator stages
+    if(travellingUpwards){
+      if(carriageHeight < stage3Top){
+          //Do Nothing, carriageHeight is just carriage Height
+      } else if (carriageHeight >= stage3Top && stage3Height < stage2Top) {
+          stage3Height = carriageHeight - stage3StageLength;
+          //Stage2Height remains the same
+      } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top){
+          stage3Height = carriageHeight - stage3StageLength;
+          stage2Height = carriageHeight - stage2StageLength;
+      } else {
+        try {
+          throw new Exception("Something weird happened with the elevator sim heights");
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    } else {
+      if(carriageHeight > stage3Height){
+          //Do nothing, hasnt hit the bottom yet
+      } else if (carriageHeight <= stage3Height && stage3Height > stage2Height) {
+          stage3Height = carriageHeight;
+      } else if (carriageHeight <= stage3Height && stage3Height <= stage2Height){
+          stage3Height = carriageHeight;
+          stage2Height = carriageHeight;
+      }
+    }
+  }
+
+  /**Returns the most recently calculated stage height
+   * 1 is the outermost stage, 2 is next, 3 is next, 4 is carriage
+   * 
+   * @param stage the stage outlined as above
+   * @return the height of the stage in meters
+   */
+  public double getStageHeight(int stage){
+    updateStageHeights();
+    switch (stage) {
+      case 1:
+        return 0.0;
+      case 2:
+        return stage2Height;
+      case 3:
+        return stage3Height;
+      case 4:
+        return carriageHeight;
+      default:
+        return carriageHeight;
+    }
+  }
+
   /**
    * Set the height that the elevator should try to go to
    * This function sets the target height as well as actively
@@ -214,6 +279,8 @@ public class ElevatorPivot extends SubsystemBase {
 
   private void setAngleTargetDegrees(double targetAngleDegrees){
     this.targetAngleDegrees = targetAngleDegrees;
+
+    this.targetAngleDegrees = GremlinUtil.clampWithLogs(maxAngleDegrees, minAngleDegrees, targetAngleDegrees);
 
     //TODO: add check if travelling downwards then make sure the pivot wont hit the next stage bar
 
@@ -267,6 +334,22 @@ public class ElevatorPivot extends SubsystemBase {
   public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
     return this.runOnce(() -> {
       setHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
+    }).until(atTargetAngle.and(atTargetHeight));
+  }
+
+  /**Stows the arm, making sure that the arm doesnt hit the bottom of the elevator
+   * 
+   * @return a command to stow the arm
+   */
+  public Command stowArm(){
+    return this.runOnce(() -> {
+      setAngleTargetDegrees(stowAngle);
+
+      while(getPivotAngleDegrees() < 0){
+        //just wait
+      }
+
+      setHeightAndAngle(minimumHeight, stowAngle);
     }).until(atTargetAngle.and(atTargetHeight));
   }
 
@@ -326,10 +409,6 @@ public class ElevatorPivot extends SubsystemBase {
   private TalonFXSimState leftMotorSim;
   private TalonFXSimState pivotMotorSim;
   private CANcoderSimState pivotCancoderSim;
-
-  private double stage3Height = carriageToGround;
-  private double stage2Height = carriageToGround;
-  private double carriageHeight = carriageToGround;
 
   private Mechanism2d pivotMechanism = new Mechanism2d(canvasWidth, canvasHeight);
 
@@ -409,42 +488,9 @@ public class ElevatorPivot extends SubsystemBase {
    * Updates the mechanism2d which visualizes our mechanism in SmartDashboard, generally used for simulation
    */
   public void updateMechanism2d(){
-    carriageHeight = getHeight();
     double currentAngle = getPivotAngleDegrees();
 
-    boolean travellingUpwards = travelingUpwards();
-
-    //Update the max Heights
-    double stage3Top = stage3Height + stage3StageLength;
-    double stage2Top = stage2Height + stage2StageLength - stage3StageLength; 
-
-    //Logic to handle the position of the elevator stages
-    if(travellingUpwards){
-      if(carriageHeight < stage3Top){
-          //Do Nothing, carriageHeight is just carriage Height
-      } else if (carriageHeight >= stage3Top && stage3Height < stage2Top) {
-          stage3Height = carriageHeight - stage3StageLength;
-          //Stage2Height remains the same
-      } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top){
-          stage3Height = carriageHeight - stage3StageLength;
-          stage2Height = carriageHeight - stage2StageLength;
-      } else {
-        try {
-          throw new Exception("Something weird happened with the elevator sim heights");
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-    } else {
-      if(carriageHeight > stage3Height){
-          //Do nothing, hasnt hit the bottom yet
-      } else if (carriageHeight <= stage3Height && stage3Height > stage2Height) {
-          stage3Height = carriageHeight;
-      } else if (carriageHeight <= stage3Height && stage3Height <= stage2Height){
-          stage3Height = carriageHeight;
-          stage2Height = carriageHeight;
-      }
-    }
+    updateStageHeights();
 
     double carriageZ = carriageHeight - carriageToGround; //Same no matter what
     double stage3Z = stage3Height - carriageToGround; //The heights of our stages are not the same as their z positions
