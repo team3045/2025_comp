@@ -98,8 +98,8 @@ public class RobotContainer {
         joystick.cross().whileTrue(
             intakeSequenceFactory.getPathFindCommand()
             .andThen(intakeSequenceFactory.setElevatorPivotPosition())
-            .andThen(Commands.waitSeconds(1))
-            .andThen(intakeSequenceFactory.moveElevatorAndIntake()) 
+            .andThen(Commands.waitSeconds(1)) //TODO: What is this wait?
+            .andThen(intakeSequenceFactory.moveElevatorAndIntake()) //TODO: cancel / end behavior
         );
 
         

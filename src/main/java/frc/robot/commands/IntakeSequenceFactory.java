@@ -27,31 +27,30 @@ public class IntakeSequenceFactory {
         return new ConditionalCommand(
             drivetrain.pathFindToPose(
                IntakeSequenceConstants.leftSubstationPose, 
-                IntakeSequenceConstants.desiredEndVelocity), 
+                IntakeSequenceConstants.desiredEndVelocity), //TODO: personally I would prefer these be constant doubles and Pose2ds and you put the lambda here
             drivetrain.pathFindToPose(
                 IntakeSequenceConstants.rightSubstationPose,
                 IntakeSequenceConstants.desiredEndVelocity),
-            () -> pastMidPoint);
+            () -> pastMidPoint); //TODO: I don't think this condition makes sense
     } 
 
     public Command setElevatorPivotPosition(){
-        return new SequentialCommandGroup(
-            elevatorPivot.goToHeight(IntakeSequenceConstants.intakeReadyHeight)
+        return new SequentialCommandGroup( //TODO: use and then sugaring, also "goTo" Methods already wait until its at the height before ending
+            elevatorPivot.goToHeight(IntakeSequenceConstants.intakeReadyHeight) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
             .andThen(Commands.waitUntil(elevatorPivot.atTargetHeight)),
-            
-            elevatorPivot.goToAngleDegrees(IntakeSequenceConstants.intakeReadyAngle))
+            elevatorPivot.goToAngleDegrees(IntakeSequenceConstants.intakeReadyAngle)) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
             .andThen(Commands.waitUntil(elevatorPivot.atTargetAngle)
         );
     }
 
     public Command moveElevatorAndIntake(){
         return 
-            elevatorPivot.goToHeight(IntakeSequenceConstants.intakingHeight)
+            elevatorPivot.goToHeight(IntakeSequenceConstants.intakingHeight) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
             .alongWith(claw.clawIntake())
             .andThen(Commands.waitUntil(claw.hasObject))
-                .withTimeout(IntakeSequenceConstants.timeOutTime)
+                .withTimeout(IntakeSequenceConstants.timeOutTime) //TODO: only do this if sim
             .andThen(elevatorPivot.goToPosition
-                (IntakeSequenceConstants.stowHeight,
+                (IntakeSequenceConstants.stowHeight, //TODO: Make this a unique command called like goToStow or something
                 IntakeSequenceConstants.stowAngle));
     }
 

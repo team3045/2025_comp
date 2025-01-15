@@ -233,6 +233,7 @@ public class ElevatorPivot extends SubsystemBase {
   /**
    * The public command we expose to direct the elevator to a height.
    * All subsystem actions should be controlled through commands not direct functions. 
+   * Command Doesnt end until height is at target Height
    * 
    * @param desiredHeight the desired height in meters
    * @return a command directing this subsytem to go to desiredheight
@@ -244,6 +245,7 @@ public class ElevatorPivot extends SubsystemBase {
   /**
    * The public command we expose to direct the pivot to an angle.
    * All subsystem actions should be controlled through commands not direct functions. 
+   * Command Doesnt end until angle is at target angle
    * 
    * @param desiredAngle the desired angle in degrees
    * @return a command directing this subsytem to go to desiredAngle
@@ -256,6 +258,7 @@ public class ElevatorPivot extends SubsystemBase {
    * The public command we expose to direct the elevator to a position;
    * A Position includes both a height and a pivot Angle;
    * All subsystem actions should be controlled through commands not direct functions. 
+   * Command Doesnt end until height and angle are at targets
    * 
    * @param desiredAngle the desired angle in degrees
    * @param desiredHeight the desired height in meters
