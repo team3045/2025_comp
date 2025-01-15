@@ -1,9 +1,11 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.constants.IntakeSequenceConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -14,46 +16,63 @@ public class IntakeSequenceFactory {
     private ElevatorPivot elevatorPivot;
     private Claw claw; 
 
-    private Boolean pastMidPoint;
-
-
     public IntakeSequenceFactory(CommandSwerveDrivetrain drivetrain, ElevatorPivot elevatorPivot, Claw claw){
-        this.drivetrain = drivetrain;
+        this.drivetrain = drivetrain;  
         this.elevatorPivot = elevatorPivot;
         this.claw = claw; 
-
-        pastMidPoint = drivetrain.getState().Pose.getX() < 5; //TODO: I dont think this will work because will always use state at construction
     }
-
+    
     public Command getPathFindCommand(){
-        return new ConditionalCommand(
-            drivetrain.pathFindToPose(
-               IntakeSequenceConstants.leftSubstationPose, 
-                IntakeSequenceConstants.desiredEndVelocity), //TODO: personally I would prefer these be constant doubles and Pose2ds and you put the lambda here
-            drivetrain.pathFindToPose(
-                IntakeSequenceConstants.rightSubstationPose,
-                IntakeSequenceConstants.desiredEndVelocity),
-            () -> pastMidPoint); //TODO: I don't think this condition makes sense
+    
+            return new ConditionalCommand(
+                drivetrain.pathFindToPose(
+                        ()->  IntakeSequenceConstants.leftSubstationPose, 
+                        ()-> IntakeSequenceConstants.desiredEndVelocity),
+                new ConditionalCommand(
+                    drivetrain.pathFindToPose(
+                                ()-> IntakeSequenceConstants.rightSubstationPose,
+                                ()-> IntakeSequenceConstants.desiredEndVelocity), 
+                    Commands.none(), 
+                    () -> isWithinRightRange(drivetrain.getState().Pose)), 
+                ()-> isWithinLeftRange(drivetrain.getState().Pose));
     } 
 
+    private boolean isWithinLeftRange(Pose2d pose){
+        return IntakeSequenceConstants.leftSubstation.contains(pose);
+    }
+
+    private boolean isWithinRightRange(Pose2d pose){
+        return IntakeSequenceConstants.rightSubstation.contains(pose);
+    }
+
+
+/* Sets elevator & arm ready to intake  */
     public Command setElevatorPivotPosition(){
-        return new SequentialCommandGroup( //TODO: use and then sugaring, also "goTo" Methods already wait until its at the height before ending
-            elevatorPivot.goToHeight(IntakeSequenceConstants.intakeReadyHeight) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
+        return  //TODO: use and then sugaring, also "goTo" Methods already wait until its at the height before ending
+            elevatorPivot.goToHeight(()-> IntakeSequenceConstants.intakeReadyHeight) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
             .andThen(Commands.waitUntil(elevatorPivot.atTargetHeight)),
-            elevatorPivot.goToAngleDegrees(IntakeSequenceConstants.intakeReadyAngle)) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
+            elevatorPivot.goToAngleDegrees(()-> IntakeSequenceConstants.intakeReadyAngle)) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
             .andThen(Commands.waitUntil(elevatorPivot.atTargetAngle)
         );
     }
 
+/* moves elevator & arm down & intakes coral */
     public Command moveElevatorAndIntake(){
         return 
-            elevatorPivot.goToHeight((IntakeSequenceConstants.intakingHeight)) //TODO: Use GoToPosition rather than goToHeight or GoToAngle, 
-            .alongWith(claw.clawIntake())
-            .andThen(Commands.waitUntil(claw.hasObject))
-                .withTimeout(IntakeSequenceConstants.timeOutTime) //TODO: only do this if sim
-            .andThen(elevatorPivot.goToPosition
-                (IntakeSequenceConstants.stowHeight, //TODO: Make this a unique command called like goToStow or something
-                IntakeSequenceConstants.stowAngle));
+            elevatorPivot.goToPosition(
+                ()-> IntakeSequenceConstants.intakingHeight, 
+                ()-> elevatorPivot.getPivotAngleDegrees())
+                .alongWith(claw.clawIntake())
+                .andThen(Commands.waitUntil(claw.hasObject))
+                .andThen(goToStow());
+    } 
+
+    //should probably go in elevatorpivot 
+    public Command goToStow(){
+        return elevatorPivot.goToPosition(
+            ()-> IntakeSequenceConstants.stowHeight, 
+            ()-> IntakeSequenceConstants.stowAngle);
     }
 
 }
+
