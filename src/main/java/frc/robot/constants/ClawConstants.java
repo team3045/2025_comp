@@ -49,6 +49,9 @@ public class ClawConstants {
     public static final double proximityHysterisis = 0.01; //1 cm
     public static final double proximityThreshold = 0.1; //10cm
 
+    public static final double outputWaitTime = 0.5; //500 ms
+    public static final int timeoutSeconds = 10; //10 sec
+
     public static final double updateFrequency = 50; //every 20 ms, this is overridden to 100 Hz when we're in ShortRange100hz mode
 
     public static final FovParamsConfigs fovConfigs = new FovParamsConfigs()
