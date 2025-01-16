@@ -11,6 +11,7 @@ import dev.doglog.DogLogOptions;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
@@ -81,11 +82,11 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
-        // joystick.cross().whileTrue(
-        //     intakeSequenceFactory.getPathFindCommand()
-        //     .alongWith(elevatorPivot.goToIntakeReady()).andThen(
-        //     Commands.waitSeconds(1))
-        //     .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
+        joystick.cross().whileTrue(
+            intakeSequenceFactory.getPathFindCommand()
+            .alongWith(elevatorPivot.goToIntakeReady()).andThen(
+                Commands.waitSeconds(1))
+            .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
 
         
         joystick.square().whileTrue(
