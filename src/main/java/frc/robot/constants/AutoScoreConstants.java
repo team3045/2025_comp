@@ -38,7 +38,7 @@ public class AutoScoreConstants {
         kScorePoseMap.put(9, new Pose2d(5.023,2.737,Rotation2d.fromDegrees(119.75)));
         kScorePoseMap.put(10, new Pose2d(5.327,2.914,Rotation2d.fromDegrees(119.75)));
         kScorePoseMap.put(11, new Pose2d(5.900,3.830,Rotation2d.k180deg));
-        kScorePoseMap.put(12, new Pose2d(5.900,4.163,Rotation2d.k180deg));
+        kScorePoseMap.put(12, new Pose2d(5.900,4.163,Rotation2d.k180deg)); //TODO: flip all these based on alliance color
 
         kScoreHeightMap.put(1, ElevatorPivotConstants.HeightPositions.L2.getHeight());
         kScoreHeightMap.put(2, ElevatorPivotConstants.HeightPositions.L3.getHeight());

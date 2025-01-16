@@ -1,7 +1,5 @@
 package frc.robot.constants;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,19 +19,19 @@ public class IntakeSequenceConstants {
 
     public static final double timeOutTime = 5; 
 
-    public static final BoundingBox leftSubstation = new BoundingBox(0, 0, 0, 0);
-    public static final BoundingBox rightSubstation = new BoundingBox(0, 0, 0, 0);
+    public static final BoundingBox topSubstation = new BoundingBox(0.058, 3.620, 5.302,8.023);
+    public static final BoundingBox bottomSubstation = new BoundingBox(0.036, 3.057, 0, 2.353); //TODO: flip all these based on alliance
 
-    public static final Pose2d leftSubstationPose =
+    public static final Pose2d topSubstationPose =
             new Pose2d(
-                new Translation2d(0, 0),  
-                new Rotation2d(Math.toRadians(0)) 
+                new Translation2d(1.343, 7.040),  
+                Rotation2d.fromDegrees(128.830) 
             );
 
-    public static final Pose2d rightSubstationPose = 
+    public static final Pose2d bottomSubstationPose = 
             new Pose2d(
-                new Translation2d(0, 0),  
-                new Rotation2d(Math.toRadians(0)) 
+                new Translation2d(1.163, 1.142),  
+                Rotation2d.fromDegrees(-126.254)
             );
 
 

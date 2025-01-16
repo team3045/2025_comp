@@ -1,7 +1,5 @@
 package frc.robot.commons;
 
-import static frc.robot.constants.ElevatorPivotConstants.leftInverted;
-
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class BoundingBox {
@@ -19,5 +17,4 @@ public class BoundingBox {
         double y = pose.getY();
         return x > minX && x < maxX && y > minY && y < maxY;
     }
-
 }

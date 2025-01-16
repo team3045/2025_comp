@@ -22,7 +22,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -30,7 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commons.GremlinUtil;
@@ -350,7 +348,7 @@ public class ElevatorPivot extends SubsystemBase {
       .andThen(goToPosition(() -> stowHeight, () -> stowAngle));
   }
 
-  /**Send the elevatorPivot to the intaking height and angle.
+  /**Send the elevatorPivot to the intaking ready height and angle.
    * First goes down then up to avoid collisions, this logic should be improved later. 
    * 
    * @return a command for the elevatorPivot to go to intaking position
@@ -359,6 +357,15 @@ public class ElevatorPivot extends SubsystemBase {
     return stowArm().andThen(
       goToPosition(() -> intakingReadyHeight, () -> 0.0).until(atTargetHeight)
       .andThen(goToPosition(() -> intakingReadyHeight, () -> intakingAngle)));
+  }
+
+   /**Send the elevatorPivot to the intaking height and angle.
+   * Assumes go to Intaje ready was called before so has no collision avoidance logic
+   * 
+   * @return a command for the elevatorPivot to go to intaking position
+   */
+  public Command goToIntake(){
+    return goToPosition(() -> intakingHeight, () -> intakingAngle);
   }
 
 
@@ -515,7 +522,6 @@ public class ElevatorPivot extends SubsystemBase {
     });
 
 
-    SmartDashboard.putData("Pivot Mech2d", pivotMechanism);
     SmartDashboard.putNumber("Elevator Height", carriageHeight);
     SmartDashboard.putNumber("Target Heght", targetHeight);
     SmartDashboard.putNumber("Arm Target", targetAngleDegrees);

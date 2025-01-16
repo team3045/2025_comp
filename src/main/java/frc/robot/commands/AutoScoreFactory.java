@@ -7,20 +7,10 @@ package frc.robot.commands;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commons.GeomUtil;
 import frc.robot.constants.AutoScoreConstants;
-import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
-
-import static frc.robot.constants.AutoScoreConstants.*;
-
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:

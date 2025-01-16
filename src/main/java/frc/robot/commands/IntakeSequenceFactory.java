@@ -21,14 +21,13 @@ public class IntakeSequenceFactory {
     }
     
     public Command getPathFindCommand(){
- 
             return new ConditionalCommand(
                 drivetrain.pathFindToPose(
-                        ()->  IntakeSequenceConstants.leftSubstationPose, 
+                        ()->  IntakeSequenceConstants.topSubstationPose, 
                         ()-> IntakeSequenceConstants.desiredEndVelocity),
                 new ConditionalCommand(
                     drivetrain.pathFindToPose(
-                                ()-> IntakeSequenceConstants.rightSubstationPose,
+                                ()-> IntakeSequenceConstants.bottomSubstationPose,
                                 ()-> IntakeSequenceConstants.desiredEndVelocity), 
                     Commands.none(),  // add rumble here 
                     () -> isWithinRightRange(drivetrain.getState().Pose)), 
@@ -36,11 +35,11 @@ public class IntakeSequenceFactory {
     } 
 
     private boolean isWithinLeftRange(Pose2d pose){
-        return IntakeSequenceConstants.leftSubstation.contains(pose);
+        return IntakeSequenceConstants.topSubstation.contains(pose);
     }
 
     private boolean isWithinRightRange(Pose2d pose){
-        return IntakeSequenceConstants.rightSubstation.contains(pose);
+        return IntakeSequenceConstants.bottomSubstation.contains(pose);
     }
 
 /* Sets elevator & arm ready to intake  */
@@ -53,20 +52,10 @@ public class IntakeSequenceFactory {
 /* moves elevator & arm down & intakes coral */
     public Command moveElevatorAndIntake(){
         return 
-            elevatorPivot.goToPosition(
-                ()-> IntakeSequenceConstants.intakingHeight, 
-                ()-> elevatorPivot.getPivotAngleDegrees())
-                .alongWith(claw.clawIntake())
-                .andThen(Commands.waitUntil(claw.hasObject))
-                .andThen(goToStow());
+            claw.clawIntake().alongWith(elevatorPivot.goToIntake())
+            .until(claw.hasObject).andThen(
+                Commands.waitSeconds(0.5).andThen( //TODO: Remove Commands.waitSeconds for nonSim
+                    claw.hold().alongWith(elevatorPivot.stowArm())));
     } 
-
-    //should probably go in elevatorpivot 
-    public Command goToStow(){
-        return elevatorPivot.goToPosition(
-            ()-> IntakeSequenceConstants.stowHeight, 
-            ()-> IntakeSequenceConstants.stowAngle);
-    }
-
 }
 

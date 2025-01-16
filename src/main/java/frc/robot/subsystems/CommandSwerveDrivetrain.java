@@ -38,7 +38,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.DynamicPathfindCommand;
-import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 

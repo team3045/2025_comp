@@ -4,7 +4,6 @@
 
 package frc.robot.constants;
 
-import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -60,7 +59,8 @@ public class ElevatorPivotConstants {
     public static final double carriageToGround = Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
     public static final double minimumHeight = carriageToGround; //m
     public static final double stowHeight = minimumHeight;
-    public static final double intakingReadyHeight = 0.75; 
+    public static final double intakingReadyHeight = 0.85; 
+    public static final double intakingHeight = 0.75;
 
     public static final double maxHeight = Units.inchesToMeters(57) + carriageToGround; // m
 

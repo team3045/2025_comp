@@ -4,27 +4,17 @@
 
 package frc.robot;
 
-import static frc.robot.constants.DriveConstants.deadband;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.IntegerSubscriber;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
-import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
@@ -51,10 +41,6 @@ public class RobotContainer {
 
     /*Auto Score Stuff */
     public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
-    private IntegerSubscriber poleNumberSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
-    .getIntegerTopic("Pole").subscribe(0);
-    private IntegerSubscriber heightSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
-    .getIntegerTopic("Height").subscribe(0);
 
     /* intake sequence */
     public final IntakeSequenceFactory intakeSequenceFactory = new IntakeSequenceFactory(drivetrain, elevatorPivot, claw);
@@ -95,20 +81,19 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
-        joystick.cross().whileTrue(
-            intakeSequenceFactory.getPathFindCommand()
-            .andThen(intakeSequenceFactory.setElevatorPivotPosition())
-            .andThen(Commands.waitSeconds(1)) //TODO: What is this wait?
-            .andThen(intakeSequenceFactory.moveElevatorAndIntake()) //TODO: cancel / end behavior
-        );
+        // joystick.cross().whileTrue(
+        //     intakeSequenceFactory.getPathFindCommand()
+        //     .alongWith(elevatorPivot.goToIntakeReady()).andThen(
+        //     Commands.waitSeconds(1))
+        //     .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
 
         
         joystick.square().whileTrue(
             autoScoreFactory.getPathFindCommand()
             .andThen(autoScoreFactory.getPrecisePidCommand())
             .andThen(autoScoreFactory.setElevatorHeight()));
-        joystick.share().onTrue(elevatorPivot.stowArm());
-        joystick.options().onTrue(elevatorPivot.goToIntakeReady());
+        
+        joystick.share().onTrue(elevatorPivot.goToIntakeReady());
         joystick.L1().whileTrue(elevatorPivot.decreaseHeight().repeatedly());
         joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
         joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
