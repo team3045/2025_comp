@@ -19,6 +19,10 @@ public class IntakeSequenceFactory {
         this.elevatorPivot = elevatorPivot;
         this.claw = claw; 
     }
+
+    public boolean isNearSubstation() {
+        return isWithinRightRange(drivetrain.getState().Pose) || isWithinLeftRange(drivetrain.getState().Pose);
+    }
     
     public Command getPathFindCommand(){
             return new ConditionalCommand(
