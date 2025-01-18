@@ -4,20 +4,19 @@
 
 package frc.robot;
 
-import static frc.robot.constants.DriveConstants.deadband;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AutoScoreFactory;
+import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
+import frc.robot.constants.DriveConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -30,13 +29,6 @@ import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
 public class RobotContainer {
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 5% deadband
-            .withDriveRequestType(DriveRequestType.Velocity); // Use close-loop control for drive motors
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final GremlinPS4Controller joystick = new GremlinPS4Controller(0);
@@ -47,6 +39,13 @@ public class RobotContainer {
         (drivetrain::addVisionMeasurements));
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
+
+    /*Auto Score Stuff */
+    public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
+
+    /* intake sequence */
+    public final IntakeSequenceFactory intakeSequenceFactory = new IntakeSequenceFactory(drivetrain, elevatorPivot, claw);
+
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
@@ -59,15 +58,15 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(GremlinUtil.squareDriverInput(joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
+                DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(GremlinUtil.squareDriverInput(joystick.getLeftX()) * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
-        joystick.triangle().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.triangle().whileTrue(drivetrain.applyRequest(() -> DriveConstants.brake));
         joystick.circle().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+            DriveConstants.point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
         // Run SysId routines when holding back/start and X/Y.
@@ -83,14 +82,29 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
+        joystick.cross().whileTrue(
+            intakeSequenceFactory.getPathFindCommand()
+            .andThen(elevatorPivot.goToIntakeReady()).onlyIf(() -> intakeSequenceFactory.isNearSubstation()).andThen( //NEEDS TO BE .andThen (if not, the pathfinding command is not run)
+                Commands.waitSeconds(1))
+            .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
+
         
-        joystick.L1().OnPressTwice(claw.clawIntake(), claw.stop());
-        joystick.R1().OnPressTwice(claw.clawOutake(), claw.stop());
+        joystick.square().whileTrue(
+            autoScoreFactory.getPathFindCommand()
+            .andThen(autoScoreFactory.getPrecisePidCommand())
+            .andThen(autoScoreFactory.setElevatorHeight()));
+        
+        joystick.share().onTrue(elevatorPivot.goToIntakeReady());
+        joystick.L1().whileTrue(elevatorPivot.decreaseHeight().repeatedly());
+        joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
+        joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
+        joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
+
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("Curvy Square");
+        return AutoBuilder.buildAuto("Curvy Square");
     }
 }

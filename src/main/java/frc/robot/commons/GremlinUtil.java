@@ -4,6 +4,9 @@
 
 package frc.robot.commons;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+
 /** Add your docs here. */
 public class GremlinUtil {
     // private constructor so cant be instantiated
@@ -83,6 +86,20 @@ public class GremlinUtil {
         }
     }
 
+    public static <T extends Comparable<T>> T clamp(T val, T min, T max) {
+        if (val.compareTo(min) < 0) return min;
+        else if (val.compareTo(max) > 0) return max;
+        else return val;
+    }
+
+    public static Pose2d movePoseForward(Pose2d seedPose, double dist) {
+        Translation2d forwardTranslation = new Translation2d(Math.abs(dist), seedPose.getRotation());
+        if (dist >= 0) {
+            return new Pose2d(seedPose.getTranslation().plus(forwardTranslation), seedPose.getRotation());
+        } else {
+            return new Pose2d(seedPose.getTranslation().minus(forwardTranslation), seedPose.getRotation());
+        }
+    }
     public static boolean withinTolerance(double target, double actual, double tolerance){
         return Math.abs(target - actual) < tolerance;
     }

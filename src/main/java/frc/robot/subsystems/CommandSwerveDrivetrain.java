@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.List;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -35,6 +36,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.DriveToPose;
+import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -57,7 +60,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /** Swerve request to apply during robot-centric path following */
-    private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
+    public final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -67,6 +70,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /*Swerve Setpoint Generator */
     private SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
+    private RobotConfig config;
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -219,7 +223,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void configureAutoBuilder() {
         try {
-            var config = RobotConfig.fromGUISettings();
+            config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
                 () -> getState().Pose,   // Supplier of current robot pose
                 this::resetPose,         // Consumer for seeding pose against auto
@@ -303,7 +307,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      *
      * @param speeds The desired robot-relative speeds
      */
-    public void driveRobotRelative(ChassisSpeeds speeds) {
+    public SwerveRequest.ApplyRobotSpeeds driveRobotRelative(ChassisSpeeds speeds) {
         // Note: it is important to not discretize speeds before or after
         // using the setpoint generator, as it will discretize them for you
         previousSetpoint = setpointGenerator.generateSetpoint(
@@ -311,11 +315,30 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             speeds, // The desired target speeds
             0.02 // The loop time of the robot code, in seconds
         );
-        setControl(m_pathApplyRobotSpeeds
+        return m_pathApplyRobotSpeeds
             .withSpeeds(previousSetpoint.robotRelativeSpeeds())
             .withWheelForceFeedforwardsX(previousSetpoint.feedforwards().robotRelativeForcesXNewtons())
-            .withWheelForceFeedforwardsY(previousSetpoint.feedforwards().robotRelativeForcesYNewtons())
-        ); // Method that will drive the robot given target module states
+            .withWheelForceFeedforwardsY(previousSetpoint.feedforwards().robotRelativeForcesYNewtons()); // Method that will drive the robot given target module states
+    }
+
+    public Command preciseTargetPose(Supplier<Pose2d> targetPose){
+        return new DriveToPose(
+            this, 
+            targetPose, 
+            preciseTranslationController, 
+            preciseRotationController, 
+            preciseTranslationTolerance, 
+            preciseRotationTolerance);
+    }
+
+    /**Returns a command that will drive robot to supplied targetPose using Pathplanner Pathfind
+     * 
+     * @param targetPoseSup A supplier of the desired pose to drive to
+     * @param desiredEndVelocitySup A supplier of the desired end velocity
+     * @return A command to drive robot to desired Pose
+     */
+    public Command pathFindToPose(Supplier<Pose2d> targetPoseSup, DoubleSupplier desiredEndVelocitySup){
+        return new DynamicPathfindCommand(targetPoseSup, desiredEndVelocitySup, pathFollowingConstraints, this);
     }
 
     /**

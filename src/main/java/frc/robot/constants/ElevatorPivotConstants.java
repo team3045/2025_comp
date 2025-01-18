@@ -4,6 +4,7 @@
 
 package frc.robot.constants;
 
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -39,9 +40,12 @@ public class ElevatorPivotConstants {
     public static final double thirdStageLength = Units.inchesToMeters(24); //m
     public static final double fourthStageLength = Units.inchesToMeters(24); //m
 
-    public static final double pivotArmLength = 1; //m
-    public static final double minAngleDegrees = 0;
-    public static final double maxAngleDegrees = 360;
+    public static final double pivotArmLength = Units.inchesToMeters(20.125); //m
+    public static final double carriageHeightToPivot = Units.inchesToMeters(-1.25);
+    public static final double minAngleDegrees = -90;
+    public static final double maxAngleDegrees = 90;
+    public static final double stowAngle = maxAngleDegrees;
+    public static final double intakingAngle = -90;
 
     
     public static final double rotorToSensorRatio = 1; 
@@ -54,6 +58,9 @@ public class ElevatorPivotConstants {
 
     public static final double carriageToGround = Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
     public static final double minimumHeight = carriageToGround; //m
+    public static final double stowHeight = minimumHeight;
+    public static final double intakingReadyHeight = 0.85; 
+    public static final double intakingHeight = 0.75;
 
     public static final double maxHeight = Units.inchesToMeters(57) + carriageToGround; // m
 
@@ -126,6 +133,36 @@ public class ElevatorPivotConstants {
 
     public static final double magnetOffset = 0;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+
+    public enum HeightPositions{
+        L4(1.673),
+        L3(0.88),
+        L2(0.584);
+
+        private final double height;
+        HeightPositions(double height){
+            this.height = height;
+        }
+
+        public double getHeight(){
+            return height;
+        }
+    }
+
+    public enum AnglePositions{
+        L4(41),
+        L3(41),
+        L2(41);
+
+        private final double angle;
+        AnglePositions(double angle){
+            this.angle = angle;
+        }
+
+        public double getAngle(){
+            return angle;
+        }
+    }
 
     /*Configuration */
     public static final CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs()
