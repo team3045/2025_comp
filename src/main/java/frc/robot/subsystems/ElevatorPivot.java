@@ -398,6 +398,8 @@ public class ElevatorPivot extends SubsystemBase {
     //if zero retain last value basically
     if(getVerticalVelocity() > 0.2) travellingUpward = true;
     else if(getVerticalVelocity() < -0.2) travellingUpward = false;
+
+    updateMechanism2d();
   } 
 
   /*SIMULATION*/

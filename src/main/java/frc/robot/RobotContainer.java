@@ -82,23 +82,23 @@ public class RobotContainer {
         //     .withRotationalRate(0))
         // );
 
-        joystick.cross().whileTrue(
-            intakeSequenceFactory.getPathFindCommand()
-            .andThen(elevatorPivot.goToIntakeReady()).onlyIf(() -> intakeSequenceFactory.isNearSubstation()).andThen( //NEEDS TO BE .andThen (if not, the pathfinding command is not run)
-                Commands.waitSeconds(1))
-            .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
+        // joystick.cross().whileTrue(
+        //     intakeSequenceFactory.getPathFindCommand()
+        //     .andThen(elevatorPivot.goToIntakeReady()).onlyIf(() -> intakeSequenceFactory.isNearSubstation()).andThen( //NEEDS TO BE .andThen (if not, the pathfinding command is not run)
+        //         Commands.waitSeconds(1))
+        //     .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
 
         
-        joystick.square().whileTrue(
-            autoScoreFactory.getPathFindCommand()
-            .andThen(autoScoreFactory.getPrecisePidCommand())
-            .andThen(autoScoreFactory.setElevatorHeight()));
+        // joystick.square().whileTrue(
+        //     autoScoreFactory.getPathFindCommand()
+        //     .andThen(autoScoreFactory.getPrecisePidCommand())
+        //     .andThen(autoScoreFactory.setElevatorHeight()));
         
         joystick.share().onTrue(elevatorPivot.goToIntakeReady());
         joystick.L1().whileTrue(elevatorPivot.decreaseHeight().repeatedly());
         joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
-        joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
-        joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
+        // joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
+        // joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
 
         
         drivetrain.registerTelemetry(logger::telemeterize);

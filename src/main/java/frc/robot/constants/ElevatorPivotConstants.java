@@ -49,14 +49,14 @@ public class ElevatorPivotConstants {
 
     
     public static final double rotorToSensorRatio = 1; 
-    public static final double sensorToMechanismRatio = (686.0 / 27.0);
+    public static final double sensorToMechanismRatio = (56.0 / 12.0);
     public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
     public static final double pivotRotorToSensorRatio = 50; 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
-    public static final double carriageToGround = Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
+    public static final double carriageToGround = 0.508;//Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
     public static final double minimumHeight = carriageToGround; //m
     public static final double stowHeight = minimumHeight;
     public static final double intakingReadyHeight = 0.85; 
@@ -84,7 +84,7 @@ public class ElevatorPivotConstants {
 
     /*Simulation */
     public static final double carriageMass = 4.53592 * 2; //kg, 9kg = 20lbs
-    public static final double drumRadius = .2; //m
+    public static final double drumRadius = 0.02794; //m
     public static final double canvasWidth = 2; //m
     public static final double canvasHeight = 6; //m
     public static final double pivotMOI = 0.02347363; //moment of inertia Kg * m^2
@@ -99,7 +99,7 @@ public class ElevatorPivotConstants {
 
 
     //Rotation of the output shaft. To get rotations of motor to the height of elevator we need to multiply by the gear ratio
-    public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot
+    public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot //0.05729478
 
     public static final double maxAccelerationLinear = 2; //m per sec^2
     public static final double maxVelocityLinear = 1; //m per sec
@@ -112,10 +112,10 @@ public class ElevatorPivotConstants {
     public static final double timesyncFrequency = 200; //Hz aka every 5 ms
 
     public static final InvertedValue leftInverted = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue rightInverted = InvertedValue.Clockwise_Positive;
     public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
 
-    public static final double kP = 200;
+    public static final double kP = 1;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0;
@@ -123,7 +123,7 @@ public class ElevatorPivotConstants {
     public static final double kA = 0;
     public static final double kV = 0;
 
-    public static final double pivotKP = 100;
+    public static final double pivotKP = 1;
     public static final double pivotKI = 0;
     public static final double pivotKD = 0;
     public static final double pivotKG = 0;
