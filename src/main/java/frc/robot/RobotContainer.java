@@ -84,7 +84,7 @@ public class RobotContainer {
 
         joystick.cross().whileTrue(
             intakeSequenceFactory.getPathFindCommand()
-            .andThen(elevatorPivot.goToIntakeReady()).onlyIf(() -> intakeSequenceFactory.isNearSubstation()).andThen(
+            .andThen(elevatorPivot.goToIntakeReady()).onlyIf(() -> intakeSequenceFactory.isNearSubstation()).andThen( //NEEDS TO BE .andThen (if not, the pathfinding command is not run)
                 Commands.waitSeconds(1))
             .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
 
