@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import dev.doglog.DogLog;
@@ -12,6 +13,7 @@ import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
@@ -63,11 +65,11 @@ public class RobotContainer {
                     .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
-
-        joystick.triangle().whileTrue(drivetrain.applyRequest(() -> DriveConstants.brake));
-        joystick.circle().whileTrue(drivetrain.applyRequest(() ->
-            DriveConstants.point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        ));
+//TODO: uncomment
+        // joystick.triangle().whileTrue(drivetrain.applyRequest(() -> DriveConstants.brake));
+        // joystick.circle().whileTrue(drivetrain.applyRequest(() ->
+        //     DriveConstants.point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        // ));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -93,11 +95,21 @@ public class RobotContainer {
         //     autoScoreFactory.getPathFindCommand()
         //     .andThen(autoScoreFactory.getPrecisePidCommand())
         //     .andThen(autoScoreFactory.setElevatorHeight()));
-        
-        joystick.share().onTrue(elevatorPivot.goToIntakeReady());
+
+        joystick.L2().onTrue(Commands.runOnce(SignalLogger::start));
+        joystick.R2().onTrue(Commands.runOnce(SignalLogger::stop));
+                
+        joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+
+        //joystick.share().onTrue(elevatorPivot.goToIntakeReady());
         joystick.L1().whileTrue(elevatorPivot.decreaseHeight().repeatedly());
         joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
-        // joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
+        // joystick.square().onTrue(elevatorPivot.zeroHeight());
+        //joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
         // joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
 
         

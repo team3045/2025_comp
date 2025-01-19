@@ -115,13 +115,13 @@ public class ElevatorPivotConstants {
     public static final InvertedValue rightInverted = InvertedValue.Clockwise_Positive;
     public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
 
-    public static final double kP = 1;
+    public static final double kP = 5;
     public static final double kI = 0;
     public static final double kD = 0;
-    public static final double kG = 0;
-    public static final double kS = 0;
-    public static final double kA = 0;
-    public static final double kV = 0;
+    public static final double kG = 0.38967;
+    public static final double kS = 0.096618;;
+    public static final double kA = 0.024757;
+    public static final double kV = 0.60932;
 
     public static final double pivotKP = 1;
     public static final double pivotKI = 0;
@@ -131,7 +131,7 @@ public class ElevatorPivotConstants {
     public static final double pivotKA = 0;
     public static final double pivotKV = 0;
 
-    public static final double magnetOffset = 0;
+    public static final double magnetOffset = -0.371338;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     public enum HeightPositions{
