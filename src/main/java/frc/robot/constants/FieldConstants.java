@@ -1,5 +1,6 @@
 package frc.robot.constants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,17 +74,20 @@ public class FieldConstants {
         private static final Rotation3d rotationDifference = fieldTag10Pose.getRotation().minus(shopTag10Pose.getRotation());
         private static final Transform3d transformToRealField = new Transform3d(translationDifference, rotationDifference);
 
-        public static final List<AprilTag> adjustedShopTags = shopTags.stream()
-        .map(tag -> {
+        public static final List<AprilTag> adjustedShopTags = new ArrayList<>();
+
+        static {
+                
+        for (AprilTag tag : shopTags) {
                 Pose3d tagPose = tag.pose; 
                 if (tag.ID == 10) {
-                return tag; 
+                    adjustedShopTags.add(tag);
+                } else {
+                    Pose3d transformedPose = tagPose.transformBy(transformToRealField);
+                    adjustedShopTags.add(new AprilTag(tag.ID, transformedPose));
                 }
-              
-                Pose3d transformedPose = tagPose.transformBy(transformToRealField);
-                return new AprilTag(tag.ID, transformedPose);
-        })
-        .collect(Collectors.toList());
+            }
+        }
 
         public static final AprilTagFieldLayout shopLayout = new AprilTagFieldLayout(
                 shopTags, 
