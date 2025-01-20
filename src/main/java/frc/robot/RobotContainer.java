@@ -91,10 +91,10 @@ public class RobotContainer {
         //     .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
 
         
-        // joystick.square().whileTrue(
-        //     autoScoreFactory.getPathFindCommand()
-        //     .andThen(autoScoreFactory.getPrecisePidCommand())
-        //     .andThen(autoScoreFactory.setElevatorHeight()));
+        joystick.square().whileTrue(
+            autoScoreFactory.getPathFindCommand()
+            // .andThen(autoScoreFactory.getPrecisePidCommand())
+            .alongWith(autoScoreFactory.setElevatorHeight()));
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));

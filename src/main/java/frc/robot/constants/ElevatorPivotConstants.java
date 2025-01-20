@@ -247,7 +247,7 @@ public class ElevatorPivotConstants {
     public static final CANcoderConfiguration pivotCancoderConfig = new CANcoderConfiguration()
         .withMagnetSensor(new MagnetSensorConfigs()
             .withSensorDirection(pivotEncoderSensorDirection)
-            .withAbsoluteSensorDiscontinuityPoint(1) //unsigned 0-1
+            .withAbsoluteSensorDiscontinuityPoint(0.5) //[-0.5,0.5]
             .withMagnetOffset(magnetOffset)
         );
 }

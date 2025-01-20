@@ -4,7 +4,13 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.util.PPLibTelemetry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,6 +70,6 @@ public class DynamicPathfindCommand extends Command {
         double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
 
         // Create a new pathfinding command with the updated values
-        currentPathfindCommand = AutoBuilder.pathfindToPose(targetPose, constraints, desiredEndVelocity);
+        currentPathfindCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, desiredEndVelocity);
     }
 }

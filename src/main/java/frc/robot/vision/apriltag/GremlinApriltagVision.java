@@ -18,6 +18,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
 
+import static frc.robot.constants.FieldConstants.adjustedShopLayout;
 import static frc.robot.constants.FieldConstants.compFieldLength;
 import static frc.robot.constants.FieldConstants.compFieldWidth;
 import static frc.robot.constants.FieldConstants.compLayout;
@@ -61,9 +62,9 @@ public class GremlinApriltagVision extends SubsystemBase {
   private VisionSystemSim visionSystemSim;
   private SimCameraProperties[] simCameraProperties;
 
-  private static final AprilTagFieldLayout LAYOUT = FieldConstants.isShopField ? shopLayout : compLayout;
-  private static final double fieldLength = FieldConstants.isShopField ? shopFieldLength : compFieldLength;
-  private static final double fieldWidth = FieldConstants.isShopField ? shopFieldWidth : compFieldWidth;
+  private static final AprilTagFieldLayout LAYOUT = FieldConstants.isShopField ? adjustedShopLayout : compLayout;
+  private static final double fieldLength = LAYOUT.getFieldLength();
+  private static final double fieldWidth = LAYOUT.getFieldWidth();
 
   // Will be the function in drivetrain that adds vision estimate to pose
   // estimation

@@ -10,19 +10,18 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class FieldConstants {
-        public static final boolean isShopField = false;
+        public static final boolean isShopField = true;
         public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
         public static final double shopFieldLength = 7.89225625;
         public static final double shopFieldWidth = 4.68122;
 
-        public static final double compFieldLength = 16.451;
-        public static final double compFieldWidth = 8.211;
+        public static final double compFieldLength = compLayout.getFieldLength(); //TODO: change these bc field size changed from 2024
+        public static final double compFieldWidth = compLayout.getFieldWidth();
 
 
         // AprilTag constants
@@ -89,4 +88,9 @@ public class FieldConstants {
                 shopTags, 
                 shopFieldLength, 
                 shopFieldWidth);
+        
+        public static final AprilTagFieldLayout adjustedShopLayout = new AprilTagFieldLayout(
+                adjustedShopTags,
+                compFieldLength,
+                compFieldWidth);
 }

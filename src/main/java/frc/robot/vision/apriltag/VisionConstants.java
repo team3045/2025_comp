@@ -49,7 +49,7 @@ public class VisionConstants {
                         new double[] { 0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068 },
                         1);
 
-        public static final double thetaModifier = 100;
+        public static final double thetaModifier = 50;
         public static final double multiTagModifier = 0.6;
         public static final double stabilityModifier = 7.5;
         public static final double maxChangeDistance = 1; // m
@@ -76,10 +76,10 @@ public class VisionConstants {
                         new Pose3d( // Front Right
                                         new Translation3d(
                                                         Units.inchesToMeters(10.886),
-                                                        -Units.inchesToMeters(9.362),
+                                                        Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(-30))),
+                                                        Units.degreesToRadians(30))),
                         new Pose3d( // Back Left
                                         new Translation3d(
                                                         -Units.inchesToMeters(10.886),
