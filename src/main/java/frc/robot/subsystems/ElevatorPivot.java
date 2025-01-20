@@ -57,6 +57,7 @@ public class ElevatorPivot extends SubsystemBase {
 
   private double targetHeight;
   private double targetAngleDegrees;
+  private double voltage = 0;
 
   private double stage3Height = carriageToGround;
   private double stage2Height = carriageToGround;
@@ -325,7 +326,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredheight
    */
   public Command goToHeight(DoubleSupplier desiredHeight){
-    return this.run(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
+    return this.runOnce(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
   }
 
   /**
@@ -337,7 +338,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredAngle
    */
   public Command goToAngleDegrees(DoubleSupplier desiredAngle){
-    return this.run(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
+    return this.runOnce(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
   }
 
   /**
@@ -351,7 +352,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to the desired position
    */
   public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
-    return this.run(() -> {
+    return this.runOnce(() -> {
       setTargetHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
     }).until(atTargetAngle.and(atTargetHeight));
   }
@@ -409,6 +410,27 @@ public class ElevatorPivot extends SubsystemBase {
 
   public Command decreasePosition(){
     return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees() - 5);
+  }
+
+  public Command increaseVoltage(){
+    return this.runOnce(() -> {
+      voltage += 0.1;
+      pivotMotor.setVoltage(voltage);
+    });
+  }
+
+  public Command decreaseVoltage(){
+    return this.runOnce(() -> {
+      voltage -= 0.1;
+      pivotMotor.setVoltage(voltage);
+    });
+  }
+
+  public Command zeroVoltage(){
+    return this.runOnce(() -> {
+      voltage = 0;
+      pivotMotor.setVoltage(voltage);
+    });
   }
 
   @Override

@@ -95,19 +95,19 @@ public class RobotContainer {
         //     autoScoreFactory.getPathFindCommand()
         //     .andThen(autoScoreFactory.getPrecisePidCommand())
         //     .andThen(autoScoreFactory.setElevatorHeight()));
-
-        joystick.L2().onTrue(Commands.runOnce(SignalLogger::start));
-        joystick.R2().onTrue(Commands.runOnce(SignalLogger::stop));
                 
-        joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        // joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        // joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
 
         //joystick.share().onTrue(elevatorPivot.goToIntakeReady());
-        joystick.L1().whileTrue(elevatorPivot.decreaseHeight().repeatedly());
-        joystick.R1().whileTrue(elevatorPivot.increaseHeight().repeatedly());
+        joystick.L1().onTrue(autoScoreFactory.setElevatorHeight());
+        joystick.R1().onTrue(elevatorPivot.stowArm());
+        joystick.R2().onTrue(claw.stop());
+        joystick.L2().onTrue(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
+            .andThen(claw.clawOutake()));
         // joystick.square().onTrue(elevatorPivot.zeroHeight());
         //joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
         // joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
