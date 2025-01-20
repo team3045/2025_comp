@@ -2,8 +2,6 @@ package frc.robot.constants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -12,9 +10,13 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class FieldConstants {
         public static final boolean isShopField = false;
+        public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
         public static final double shopFieldLength = 7.89225625;
         public static final double shopFieldWidth = 4.68122;
@@ -35,7 +37,7 @@ public class FieldConstants {
                         2.943225 + edgeToTag, 
                         wallOffset, 
                         0.5842 + edgeToTag, 
-                        new Rotation3d(0,0,Math.PI/2)).relativeTo(null)),
+                        new Rotation3d(0,0,Math.PI/2))),
                 new AprilTag(2, new Pose3d(
                         wallOffset,
                         3.7671375 + edgeToTag,
@@ -57,41 +59,34 @@ public class FieldConstants {
                         1.42160625 + edgeToTag,
                         new Rotation3d(0,0,Math.PI))),
                 new AprilTag(10, new Pose3d(
-                        5.45 ,
-                        3.0,
+                        3.5 ,
+                        4.0,
                         0.22225,
-                        new Rotation3d(0,0,0))));
-
+                        new Rotation3d(0,0,-Math.PI/2))));
         //Stuff to transform shop field apriltags relative to apriltag 10 on our mock reef 
 
         private static final Pose3d fieldTag10Pose = FieldConstants.compLayout.getTagPose(10).orElse(new Pose3d());
-        private static final Pose3d shopTag10Pose = new Pose3d(5.45 ,
-                3.0,
-                0.22225,
-                new Rotation3d(0,0,0));
+        private static final Pose3d shopTag10Pose = shopTags.get(5).pose;
 
-        private static final Translation3d translationDifference = fieldTag10Pose.getTranslation().minus(shopTag10Pose.getTranslation());
-        private static final Rotation3d rotationDifference = fieldTag10Pose.getRotation().minus(shopTag10Pose.getRotation());
-        private static final Transform3d transformToRealField = new Transform3d(translationDifference, rotationDifference);
+        private static final Transform3d transformToRealField = new Transform3d(shopTag10Pose, fieldTag10Pose);
 
         public static final List<AprilTag> adjustedShopTags = new ArrayList<>();
 
-        static {
-                
-        for (AprilTag tag : shopTags) {
-                Pose3d tagPose = tag.pose; 
-                if (tag.ID == 10) {
-                    adjustedShopTags.add(tag);
-                } else {
-                    Pose3d transformedPose = tagPose.transformBy(transformToRealField);
-                    adjustedShopTags.add(new AprilTag(tag.ID, transformedPose));
+        static {  
+                StructArrayPublisher<Pose3d> pub = NetworkTableInstance.getDefault().getStructArrayTopic("ShopTags", Pose3d.struct).publish();
+                for (AprilTag tag : shopTags) {
+                        Pose3d tagPose = tag.pose; 
+                        Pose3d transformedPose = tagPose.rotateBy(transformToRealField.getRotation());
+                        Translation3d transform = fieldTag10Pose.getTranslation().minus(shopTag10Pose.rotateBy(transformToRealField.getRotation()).getTranslation());
+                        transformedPose = new Pose3d(transformedPose.getTranslation().plus(transform), transformedPose.getRotation());
+                        adjustedShopTags.add(new AprilTag(tag.ID, transformedPose));
                 }
-            }
+
+                pub.set(adjustedShopTags.stream().map((apriltag) -> apriltag.pose).toArray(Pose3d[]::new));
         }
 
         public static final AprilTagFieldLayout shopLayout = new AprilTagFieldLayout(
                 shopTags, 
                 shopFieldLength, 
                 shopFieldWidth);
-        public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 }
