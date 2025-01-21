@@ -51,7 +51,7 @@ public class VisionConstants {
 
         public static final double thetaModifier = 50;
         public static final double multiTagModifier = 0.6;
-        public static final double stabilityModifier = 7.5;
+        public static final double stabilityModifier = 10;
         public static final double maxChangeDistance = 1; // m
 
         public static SimCameraProperties getOV2311() {
@@ -99,7 +99,7 @@ public class VisionConstants {
         public static final GremlinPhotonCamera[] cameras = {
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
-                        //new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
+                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };    
 }

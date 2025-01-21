@@ -19,12 +19,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import com.ctre.phoenix6.Utils;
 
 import static frc.robot.constants.FieldConstants.adjustedShopLayout;
-import static frc.robot.constants.FieldConstants.compFieldLength;
-import static frc.robot.constants.FieldConstants.compFieldWidth;
 import static frc.robot.constants.FieldConstants.compLayout;
-import static frc.robot.constants.FieldConstants.shopFieldLength;
-import static frc.robot.constants.FieldConstants.shopFieldWidth;
-import static frc.robot.constants.FieldConstants.shopLayout;
 import static frc.robot.vision.apriltag.VisionConstants.CAMERA_LOG_PATH;
 import static frc.robot.vision.apriltag.VisionConstants.EXCLUDED_TAG_IDS;
 import static frc.robot.vision.apriltag.VisionConstants.FIELD_BORDER_MARGIN;

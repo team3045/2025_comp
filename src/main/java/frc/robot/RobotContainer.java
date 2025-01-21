@@ -94,7 +94,9 @@ public class RobotContainer {
         joystick.square().whileTrue(
             autoScoreFactory.getPathFindCommand()
             // .andThen(autoScoreFactory.getPrecisePidCommand())
-            .alongWith(autoScoreFactory.setElevatorHeight()));
+            .alongWith(autoScoreFactory.setElevatorHeight())
+            .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
+            .andThen(claw.clawOutake())));
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
