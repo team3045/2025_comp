@@ -11,12 +11,15 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.controller.PIDController;
+import frc.robot.generated.TunerConstants;
 
 import static edu.wpi.first.units.Units.*;
 
 /** Add your docs here. */
 public class DriveConstants {
     public static final String DRIVE_LOG_PATH = "DriveState/";
+
+    public static final double drivebaseRadius = Math.hypot(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY);
 
     public static double MaxSpeed = 3; //TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     public static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);//RotationsPerSecond.of(1.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
