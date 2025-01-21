@@ -51,8 +51,8 @@ public class VisionConstants {
 
         public static final double thetaModifier = 50;
         public static final double multiTagModifier = 0.6;
-        public static final double stabilityModifier = 10;
-        public static final double maxChangeDistance = 1; // m
+        public static final double stabilityModifier = 15;
+        public static final double maxChangeDistance = 40; // m
 
         public static SimCameraProperties getOV2311() {
                 SimCameraProperties properties = new SimCameraProperties();
@@ -76,17 +76,17 @@ public class VisionConstants {
                         new Pose3d( // Front Right
                                         new Translation3d(
                                                         Units.inchesToMeters(10.886),
-                                                        Units.inchesToMeters(9.362),
+                                                       -Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(30))),
+                                                        Units.degreesToRadians(-30))),
                         new Pose3d( // Back Left
                                         new Translation3d(
                                                         -Units.inchesToMeters(10.886),
                                                         Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(150))),
+                                                        Units.degreesToRadians(-150))),
                         new Pose3d( // Back Right
                                         new Translation3d(
                                                         -Units.inchesToMeters(10.886),
