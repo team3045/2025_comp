@@ -35,6 +35,8 @@ public class DriveConstants {
     public static final double MAX_ANGULAR_ACCEL = Math.PI; //Radians per Second Squared
     public static final double MAX_ANGULAR_ACCEL_AUTO = MAX_ANGULAR_ACCEL * 0.75;
 
+    
+
     /* Setting up bindings for necessary control of the swerve drive platform */
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 5% deadband

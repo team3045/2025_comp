@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoScoreFactory;
+import frc.robot.commands.DriveWheelRadiusCharacterization;
 import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
@@ -89,6 +90,8 @@ public class RobotContainer {
         //     .andThen(elevatorPivot.goToIntakeReady()).onlyIf(() -> intakeSequenceFactory.isNearSubstation()).andThen( //NEEDS TO BE .andThen (if not, the pathfinding command is not run)
         //         Commands.waitSeconds(1))
         //     .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
+
+        joystick.cross().whileTrue(new DriveWheelRadiusCharacterization(drivetrain, DriveWheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
 
         
         joystick.square().whileTrue(

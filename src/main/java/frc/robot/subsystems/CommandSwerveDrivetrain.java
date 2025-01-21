@@ -8,7 +8,10 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -26,6 +29,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -39,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.TimestampedVisionUpdate;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 import static frc.robot.constants.DriveConstants.*;
@@ -261,6 +266,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public double[] getWheelPositionsRadians(){
+        double[] positionRads = new double[4];
+        int i =0;
+        for(SwerveModule<TalonFX, TalonFX, CANcoder> module : getModules()){
+            double positionRotations = module.getDriveMotor().getPosition().getValueAsDouble() / TunerConstants.kDriveGearRatio;
+            positionRads[i] = Units.rotationsToRadians(positionRotations);
+            i++;
+        }
+        return positionRads;
+    }
+
+    public void turnAtRotationalRate(double radsPerSecond){
+        setControl(m_rotationCharacterization.withRotationalRate(radsPerSecond));
+    }
+
+    public double getRawHeadingRadians(){
+        return getState().RawHeading.getRadians();
     }
 
     public static final StructArrayPublisher<Pose2d> TELEOP_TRAJECTORY_PUBLISHER = 

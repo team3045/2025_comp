@@ -7,9 +7,17 @@ package frc.robot.commands;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.DriveConstants;
@@ -18,7 +26,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveWheelRadiusCharacterization extends Command {
-  private static final double characterizationSpeed = 0.1; //Rads Per Sec
+  private static final double characterizationSpeed = 0.5; //Rads Per Sec
   private static final double driveRadius = DriveConstants.drivebaseRadius;
 
   private DoubleSupplier gyroYawRadsSupplier;
@@ -48,7 +56,7 @@ public class DriveWheelRadiusCharacterization extends Command {
   /** Creates a new DriveWheelRadiusCharacterization. */
   public DriveWheelRadiusCharacterization(CommandSwerveDrivetrain drive, Direction direction) {
     this.drivetrain = drive;
-    this.gyroYawRadsSupplier = () -> drivetrain.getState().Pose.getRotation().getRadians();
+    this.gyroYawRadsSupplier = () -> drivetrain.getRawHeadingRadians();
     this.omegaDirection = direction;
 
 
@@ -62,18 +70,47 @@ public class DriveWheelRadiusCharacterization extends Command {
      lastGyroYawRads = gyroYawRadsSupplier.getAsDouble();
      accumGyroYawRads = 0.0;
  
-     startWheelPositions = null;
+     startWheelPositions = drivetrain.getWheelPositionsRadians();
  
      omegaLimiter.reset(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    drivetrain.turnAtRotationalRate(
+      omegaLimiter.calculate(omegaDirection.value * characterizationSpeed));
+
+    // Get yaw and wheel positions
+    accumGyroYawRads += MathUtil.angleModulus(gyroYawRadsSupplier.getAsDouble() - lastGyroYawRads);
+    lastGyroYawRads = gyroYawRadsSupplier.getAsDouble();
+    double averageWheelPosition = 0.0;
+    double[] wheelPositiions = drivetrain.getWheelPositionsRadians();
+    for (int i = 0; i < 4; i++) {
+      averageWheelPosition += Math.abs(wheelPositiions[i] - startWheelPositions[i]);
+    }
+    averageWheelPosition /= 4.0;
+
+    currentEffectiveWheelRadius = (accumGyroYawRads * driveRadius) / averageWheelPosition;
+    SmartDashboard.putNumber("RadiusCharacterization/DrivePosition", averageWheelPosition);
+    SmartDashboard.putNumber("RadiusCharacterization/AccumGyroYawRads", accumGyroYawRads);
+    SmartDashboard.putNumber("RadiusCharacterization/effectiveWheelRadius", Units.metersToInches(currentEffectiveWheelRadius));
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    drivetrain.setControl(DriveConstants.brake);
+    if (accumGyroYawRads <= Math.PI * 2.0) {
+      System.out.println("Not enough data for characterization");
+    } else {
+      System.out.println(
+          "Effective Wheel Radius: "
+              + Units.metersToInches(currentEffectiveWheelRadius)
+              + " inches");
+    }
+  }
 
   // Returns true when the command should end.
   @Override

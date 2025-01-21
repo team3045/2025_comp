@@ -52,7 +52,7 @@ public class ElevatorPivotConstants {
     public static final double sensorToMechanismRatio = (56.0 / 12.0);
     public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
-    public static final double pivotRotorToSensorRatio = 50; 
+    public static final double pivotRotorToSensorRatio = (56.0 / 12.0) * (56.0 / 24.0) * (56.0 / 26.0); 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
