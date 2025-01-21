@@ -96,7 +96,7 @@ public class VisionConstants {
                                                         Units.degreesToRadians(162))),
         };
 
-        public static final GremlinPhotonCamera[] cameras = {
+        public static final GremlinPhotonCamera[] cameras = { //Retain this Order
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),

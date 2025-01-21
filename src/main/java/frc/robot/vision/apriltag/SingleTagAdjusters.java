@@ -19,7 +19,7 @@ public class SingleTagAdjusters {
     SingleTagAdjustersTable.put(7, 1.0);
     SingleTagAdjustersTable.put(8, 1.0);
     SingleTagAdjustersTable.put(9, 1.0);
-    SingleTagAdjustersTable.put(10, 0.8);
+    SingleTagAdjustersTable.put(10, 1.0);
     SingleTagAdjustersTable.put(11, 1.0);
     SingleTagAdjustersTable.put(12, 1.0);
     SingleTagAdjustersTable.put(13, 1.0);

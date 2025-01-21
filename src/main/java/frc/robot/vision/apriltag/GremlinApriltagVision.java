@@ -104,14 +104,13 @@ public class GremlinApriltagVision extends SubsystemBase {
     for (int i = 0; i < cameras.length; i++) {
       String logPath = CAMERA_LOG_PATH + cameras[i].getName();
 
-      Pose3d cameraPose;
-
       // Camera specific variables
       Transform3d camToRobotTransform = GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()).inverse();
       List<PhotonPipelineResult> unreadResults = cameras[i].getAllUnreadResults();
       GremlinLogger.logSD(logPath + "/Unread results", unreadResults.size());
 
       for (int j = 0; j < unreadResults.size(); j++) {
+        Pose3d cameraPose;
         Pose2d calculatedRobotPose;
         List<Pose3d> tagPose3ds = new ArrayList<>();
         PhotonPipelineResult unprocessedResult = unreadResults.get(j);
@@ -189,6 +188,7 @@ public class GremlinApriltagVision extends SubsystemBase {
           continue;
         }
 
+        //To promote stability throw out poses that are too far from the last pose
         if (calculatedRobotPose.getTranslation()
             .getDistance(poseSupplier.get().getTranslation()) > maxChangeDistance)
           continue;
@@ -269,31 +269,28 @@ public class GremlinApriltagVision extends SubsystemBase {
         FLcamPosePublisher.set(camPose);
         FLcalculatedPosePublisher.set(calculatedPose);
         FLtagPosesPublisher.set(tagPoses);
+        break;
       case 1:
         FRcamPosePublisher.set(camPose);
         FRcalculatedPosePublisher.set(calculatedPose);
         FRtagPosesPublisher.set(tagPoses);
+        break;
       case 2:
         BLcamPosePublisher.set(camPose);
         BLcalculatedPosePublisher.set(calculatedPose);
         BLtagPosesPublisher.set(tagPoses);
+        break;
       case 3:
         BRcamPosePublisher.set(camPose);
         BRcalculatedPosePublisher.set(calculatedPose);
         BRtagPosesPublisher.set(tagPoses);
+        break;
     }
   }
 
   public void configSim() {
     visionSystemSim = new VisionSystemSim("ApriltagVision");
-    AprilTagFieldLayout layout;
-    try {
-      layout = FieldConstants.isShopField ? FieldConstants.shopLayout
-          : AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025Reefscape.m_resourceFile);
-      visionSystemSim.addAprilTags(layout);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    visionSystemSim.addAprilTags(LAYOUT);
 
     simCameras = new PhotonCameraSim[cameras.length];
     simCameraProperties = new SimCameraProperties[cameras.length];
