@@ -45,6 +45,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
@@ -108,6 +109,7 @@ public class GremlinApriltagVision extends SubsystemBase {
       // Camera specific variables
       Transform3d camToRobotTransform = GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()).inverse();
       List<PhotonPipelineResult> unreadResults = cameras[i].getAllUnreadResults();
+      GremlinLogger.logSD(logPath + "/Unread results", unreadResults.size());
 
       for (int j = 0; j < unreadResults.size(); j++) {
         Pose2d calculatedRobotPose;
