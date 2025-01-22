@@ -4,18 +4,32 @@
 
 package frc.robot.vision.apriltag;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.commons.GeomUtil;
+import frc.robot.constants.FieldConstants;
 import frc.robot.vision.apriltag.LimelightHelpers.PoseEstimate;
 
 /** Add your docs here. */
 public class GremlinLimelightCamera implements AutoCloseable {
     private static int InstanceCount = 0;
-    public static final String kTableName = "";
+    public  String kTableName = "";
 
     private final String name;
     private final Pose3d cameraPose;
@@ -24,9 +38,17 @@ public class GremlinLimelightCamera implements AutoCloseable {
     private double prevHeartbeatChangeTime = 0;
     private static final double HEARTBEAT_DEBOUNCE_SEC = 0.5;
 
+    private PhotonCamera simCamera;
+
+
     public GremlinLimelightCamera(String name, Pose3d cameraPose) {
         this.cameraPose = cameraPose;
         this.name = name;
+        this.kTableName = name;
+
+        if(Utils.isSimulation()){
+            simCamera = new PhotonCamera(name);
+        }
 
         HAL.report(tResourceType.kResourceType_PhotonCamera, InstanceCount);
         InstanceCount++;
@@ -217,6 +239,42 @@ public class GremlinLimelightCamera implements AutoCloseable {
         // if its less then the deboucne time limelight hasnt had enough time to
         // increment heartbeat yet
         return (now - prevHeartbeatChangeTime) < HEARTBEAT_DEBOUNCE_SEC;
+    }
+
+    public PhotonCamera getPhotonCamera(){
+        return simCamera;
+    }
+
+    public void processSimUpdates(){
+        PhotonPipelineResult result = simCamera.getLatestResult(); //its just sim so idc too much about missing results
+        if(result.getBestTarget() != null){
+            Transform3d best = result.getBestTarget().getBestCameraToTarget();
+
+            Pose3d tagPose = FieldConstants.compLayout.getTagPose(result.getBestTarget().fiducialId).get();
+
+            Pose3d bestCamPose = tagPose.transformBy(best.inverse());
+            Transform3d camToRobotTransform = GeomUtil.pose3dToTransform3d(cameraPose).inverse();
+            Pose3d bestRobotPose = bestCamPose.transformBy(camToRobotTransform);
+
+            double[] poseData = {
+                bestRobotPose.getX(), //0: X
+                bestRobotPose.getY(), //1: Y
+                bestRobotPose.getZ(), //2: Z
+                bestRobotPose.getRotation().getX(), //3: Roll
+                bestRobotPose.getRotation().getY(), //4: Pitch
+                bestRobotPose.getRotation().getZ(), //5: Yaw
+                35, //6: latency ms
+                1, //7: tag count
+                0, //8: tag span
+                0, //9: average tag distance
+                0, //avg tag area
+            };
+
+            NetworkTableInstance.getDefault().getTable(kTableName).getEntry("botpose_orb_wpiblue")
+                .setDoubleArray(poseData);
+            
+        }
+
     }
 
     @Override
