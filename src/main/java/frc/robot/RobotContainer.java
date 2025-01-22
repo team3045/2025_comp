@@ -91,6 +91,9 @@ public class RobotContainer {
         //         Commands.waitSeconds(1))
         //     .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
 
+        joystick.circle().onTrue(elevatorPivot.goToIntakeReady());
+        joystick.triangle().onTrue(intakeSequenceFactory.moveElevatorAndIntake());
+
         joystick.cross().whileTrue(new DriveWheelRadiusCharacterization(drivetrain, DriveWheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
 
         
