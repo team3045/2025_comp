@@ -19,7 +19,7 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-    m_robotContainer.drivetrain.resetPose(new Pose2d(9,5.5,Rotation2d.fromDegrees(0)));
+    m_robotContainer.drivetrain.resetPose(new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
   }
 
   @Override
