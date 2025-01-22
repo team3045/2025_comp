@@ -4,12 +4,14 @@
 
 package frc.robot.vision.apriltag;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.photonvision.PhotonTargetSortMode;
+import org.opencv.photo.Photo;
+import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -43,6 +45,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
@@ -51,7 +54,6 @@ import frc.robot.commons.GremlinLogger;
 
 public class GremlinApriltagVision extends SubsystemBase {
   private GremlinPhotonCamera[] cameras;
-  private GremlinLimelightCamera[] limelights;
   private List<TimestampedVisionUpdate> visionUpdates;
 
   private PhotonCameraSim[] simCameras;
@@ -293,8 +295,6 @@ public class GremlinApriltagVision extends SubsystemBase {
     simCameras = new PhotonCameraSim[cameras.length];
     simCameraProperties = new SimCameraProperties[cameras.length];
 
-    
-
     for (int i = 0; i < cameras.length; i++) {
       simCameraProperties[i] = VisionConstants.getOV2311();
       simCameras[i] = new PhotonCameraSim(cameras[i].getPhotonCamera(), simCameraProperties[i]);
@@ -302,20 +302,6 @@ public class GremlinApriltagVision extends SubsystemBase {
       simCameras[i].enableRawStream(true); // (http://localhost:1181 / 1182)
       simCameras[i].enableProcessedStream(true);
       visionSystemSim.addCamera(simCameras[i], GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()));
-    }
-
-    int length = simCameras.length;
-
-    for(int i = 0; i < limelights.length; i++){
-      int positon = length + i - 1;
-      simCameraProperties[positon] = VisionConstants.getLL3();
-      simCameras[positon] = new PhotonCameraSim(limelights[i].getPhotonCamera(), simCameraProperties[positon]);
-      simCameras[positon].enableDrawWireframe(false);
-      simCameras[positon].enableRawStream(true);
-      simCameras[positon].enableProcessedStream(true);
-      simCameras[positon].setTargetSortMode(PhotonTargetSortMode.Largest);
-
-      visionSystemSim.addCamera(simCameras[positon], GeomUtil.pose3dToTransform3d(limelights[i].getCameraPose()));
     }
   }
 
@@ -325,9 +311,6 @@ public class GremlinApriltagVision extends SubsystemBase {
     Field2d debugField = visionSystemSim.getDebugField();
     debugField.getObject("EstimatedRobot").setPose(poseSupplier.get());
     debugField.getRobotObject().setPose(poseSupplier.get());
-
-    for(GremlinLimelightCamera ll : limelights)
-      ll.processSimUpdates();
 
     processVisionUpdates();
     visionConsumer.accept(visionUpdates);

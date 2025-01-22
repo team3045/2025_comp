@@ -33,9 +33,6 @@ public class VisionConstants {
         public static final int OV2311_RES_HORIZONTAL = 1600;
         public static final int OV2311_RES_VERTICAL = 1200;
         public static final double OV2311_FOV_DIAG = 90;
-        public static final int LL3_RES_HORIZONTAL = 1280;
-        public static final int LL3_RES_VERTICAL = 960;
-        public static final double LL3_FOV_DIAG = 90;
 
         public static final PolynomialRegression XY_STDDEV_MODEL = new PolynomialRegression(
                         new double[] {
@@ -62,23 +59,11 @@ public class VisionConstants {
                 properties.setCalibration(OV2311_RES_HORIZONTAL, OV2311_RES_VERTICAL,
                                 Rotation2d.fromDegrees(OV2311_FOV_DIAG));
                 properties.setCalibError(0.25, 0.08);
-                properties.setFPS(25);
+                properties.setFPS(50);
                 properties.setAvgLatencyMs(35);
                 properties.setLatencyStdDevMs(5);
 
                 return properties;
-        }
-
-        public static SimCameraProperties getLL3(){
-                SimCameraProperties properties = new SimCameraProperties();
-                properties.setCalibration(LL3_RES_HORIZONTAL, LL3_RES_VERTICAL, Rotation2d.fromDegrees(LL3_FOV_DIAG));
-                properties.setCalibError(0.25, 0.08);
-                properties.setFPS(25);
-                properties.setAvgLatencyMs(35);
-                properties.setLatencyStdDevMs(5);
-
-                return properties;
-
         }
 
         public static final Pose3d[] cameraPoses = {
