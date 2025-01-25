@@ -29,7 +29,8 @@ public class ElevatorPivotConstants {
     public static final int leftMotorId = 16;
     public static final int pivorMotorId = 17;
     public static final int pivotCancoderId = 18;
-    public static final String canbus = "Canivore 3045";
+    public static final String elevatorCanbus = "rio";
+    public static final String armCanbus = "Canivore 3045";
 
     public static final String elevatorTable = "elevator";
     public static final String pivotTable = "pivot";
@@ -213,7 +214,7 @@ public class ElevatorPivotConstants {
         .withSupplyCurrentLowerLimit(pivotSupplyCurrentLimitLowerLimit);
     
     public static final FeedbackConfigs pivotFeedbackConfigs = new FeedbackConfigs()
-        .withFusedCANcoder(new CoreCANcoder(pivotCancoderId, canbus))
+        .withFusedCANcoder(new CoreCANcoder(pivotCancoderId, armCanbus))
         .withRotorToSensorRatio(pivotRotorToSensorRatio)
         .withSensorToMechanismRatio(pivotSensorToMechanismRatio);
 
