@@ -78,11 +78,30 @@ public class GremlinApriltagVision extends SubsystemBase {
     this.cameras = cameras;
     this.poseSupplier = poseSupplier;
     this.visionConsumer = visionConsumer;
+    this.limelights = new GremlinLimelightCamera[0];
 
     if (Utils.isSimulation()) {
       configSim();
     }
   }
+
+  /** Creates a new GremlinApriltagVision. */
+  public GremlinApriltagVision(
+      GremlinPhotonCamera[] cameras,
+      Supplier<Pose2d> poseSupplier,
+      GremlinLimelightCamera[] limelights,
+      Consumer<List<TimestampedVisionUpdate>> visionConsumer) {
+
+    this.cameras = cameras;
+    this.poseSupplier = poseSupplier;
+    this.visionConsumer = visionConsumer;
+    this.limelights = limelights;
+
+    if (Utils.isSimulation()) {
+      configSim();
+    }
+  }
+
 
   @Override
   public void periodic() {
@@ -330,6 +349,7 @@ public class GremlinApriltagVision extends SubsystemBase {
       ll.processSimUpdates();
 
     processVisionUpdates();
+
     visionConsumer.accept(visionUpdates);
     GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
   }

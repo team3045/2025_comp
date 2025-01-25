@@ -111,10 +111,19 @@ public class VisionConstants {
                                                         Units.degreesToRadians(162))),
         };
 
+        public static final Pose3d limelightPose = new Pose3d(
+                new Translation3d(0.03175,0,0.2286),
+                new Rotation3d(0, Units.degreesToRadians(-10),0)
+        );
+
         public static final GremlinPhotonCamera[] cameras = { //Retain this Order
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };    
+
+        public static final GremlinLimelightCamera[] limelight = {
+                new GremlinLimelightCamera("limelight", limelightPose)
+        };
 }
