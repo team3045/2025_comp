@@ -32,7 +32,6 @@ import static frc.robot.vision.apriltag.VisionConstants.stabilityModifier;
 import static frc.robot.vision.apriltag.VisionConstants.thetaModifier;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;

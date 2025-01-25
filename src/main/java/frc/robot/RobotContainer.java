@@ -10,8 +10,7 @@ import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.DriveWheelRadiusCharacterization;
 import frc.robot.commands.IntakeSequenceFactory;
@@ -23,7 +22,6 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.vision.apriltag.GremlinApriltagVision;
-import frc.robot.vision.apriltag.GremlinLimelightCamera;
 import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
