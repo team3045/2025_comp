@@ -14,7 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class FieldConstants {
-        public static final boolean isShopField = false;
+        public static final boolean isShopField = true;
         public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
         public static final double shopFieldLength = 7.89225625;

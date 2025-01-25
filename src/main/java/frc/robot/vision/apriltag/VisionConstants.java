@@ -33,6 +33,9 @@ public class VisionConstants {
         public static final int OV2311_RES_HORIZONTAL = 1600;
         public static final int OV2311_RES_VERTICAL = 1200;
         public static final double OV2311_FOV_DIAG = 90;
+        public static final int LL3_RES_HORIZONTAL = 1280;
+        public static final int LL3_RES_VERTICAL = 960;
+        public static final double LL3_FOV_DIAG = 90;
 
         public static final PolynomialRegression XY_STDDEV_MODEL = new PolynomialRegression(
                         new double[] {
@@ -59,11 +62,23 @@ public class VisionConstants {
                 properties.setCalibration(OV2311_RES_HORIZONTAL, OV2311_RES_VERTICAL,
                                 Rotation2d.fromDegrees(OV2311_FOV_DIAG));
                 properties.setCalibError(0.25, 0.08);
-                properties.setFPS(50);
+                properties.setFPS(25);
                 properties.setAvgLatencyMs(35);
                 properties.setLatencyStdDevMs(5);
 
                 return properties;
+        }
+
+        public static SimCameraProperties getLL3(){
+                SimCameraProperties properties = new SimCameraProperties();
+                properties.setCalibration(LL3_RES_HORIZONTAL, LL3_RES_VERTICAL, Rotation2d.fromDegrees(LL3_FOV_DIAG));
+                properties.setCalibError(0.25, 0.08);
+                properties.setFPS(25);
+                properties.setAvgLatencyMs(35);
+                properties.setLatencyStdDevMs(5);
+
+                return properties;
+
         }
 
         public static final Pose3d[] cameraPoses = {
@@ -96,10 +111,19 @@ public class VisionConstants {
                                                         Units.degreesToRadians(162))),
         };
 
+        public static final Pose3d limelightPose = new Pose3d(
+                new Translation3d(0.03175,0,0.2286),
+                new Rotation3d(0, Units.degreesToRadians(-10),0)
+        );
+
         public static final GremlinPhotonCamera[] cameras = { //Retain this Order
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };    
+
+        public static final GremlinLimelightCamera[] limelight = {
+                new GremlinLimelightCamera("limelight", limelightPose)
+        };
 }

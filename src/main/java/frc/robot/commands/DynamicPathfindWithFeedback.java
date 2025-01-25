@@ -1,29 +1,45 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-public class DynamicPathfindCommand extends Command {
+public class DynamicPathfindWithFeedback extends Command {
     private final Supplier<Pose2d> targetPoseSupplier;
     private final DoubleSupplier desiredEndVelocitySupplier;
     private final PathConstraints constraints;
+
+    private static final PIDController overideFeedbackController = DriveConstants.preciseTranslationController;
+
     private Command currentPathfindCommand;
 
-    public DynamicPathfindCommand(
-            Supplier<Pose2d> targetPoseSupplier,
-            DoubleSupplier desiredEndVelocitySupplier,
-            PathConstraints constraints,
-            CommandSwerveDrivetrain drivetrain) {
+    private Supplier<Pose2d> feedbackPoseSupplier;
+
+    private BooleanSupplier overrideWithFeedback;
+
+    public DynamicPathfindWithFeedback(
+        Supplier<Pose2d> targetPoseSupplier,
+        DoubleSupplier desiredEndVelocitySupplier,
+        PathConstraints constraints,
+        CommandSwerveDrivetrain drivetrain,
+        Supplier<Pose2d> feedbackPoseSupplier,
+        BooleanSupplier overrideWithFeedback) {
+
         this.targetPoseSupplier = targetPoseSupplier;
         this.desiredEndVelocitySupplier = desiredEndVelocitySupplier;
         this.constraints = constraints;
+        this.overrideWithFeedback = overrideWithFeedback;
+        this.feedbackPoseSupplier = feedbackPoseSupplier;
 
         addRequirements(drivetrain);
     }
@@ -41,9 +57,15 @@ public class DynamicPathfindCommand extends Command {
 
     @Override
     public void execute() {
-        if (currentPathfindCommand != null) {
+      if(overrideWithFeedback.getAsBoolean()){
+        PPHolonomicDriveController.overrideXYFeedback(this::calculateXFeedback, this::calculateYFeedback);
+      } else {
+        PPHolonomicDriveController.clearFeedbackOverrides();
+      }
+
+      if (currentPathfindCommand != null) {
             currentPathfindCommand.execute();
-        }
+      }
     }
 
     @Override
@@ -51,6 +73,8 @@ public class DynamicPathfindCommand extends Command {
         if (currentPathfindCommand != null) {
             currentPathfindCommand.end(interrupted);
         }
+
+        PPHolonomicDriveController.clearFeedbackOverrides();
     }
 
     @Override
@@ -65,5 +89,13 @@ public class DynamicPathfindCommand extends Command {
 
         // Create a new pathfinding command with the updated values
         currentPathfindCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, desiredEndVelocity);
+    }
+
+    private double calculateXFeedback(){
+      return overideFeedbackController.calculate(feedbackPoseSupplier.get().getX(),targetPoseSupplier.get().getX());
+    }
+
+    private double calculateYFeedback(){
+      return overideFeedbackController.calculate(feedbackPoseSupplier.get().getY(),targetPoseSupplier.get().getY());
     }
 }

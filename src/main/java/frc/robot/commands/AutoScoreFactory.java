@@ -4,13 +4,18 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AutoScoreConstants;
+import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
+import frc.robot.vision.apriltag.GremlinLimelightCamera;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -18,6 +23,7 @@ import frc.robot.subsystems.ElevatorPivot;
 public class AutoScoreFactory{
   private CommandSwerveDrivetrain drivetrain;
   private ElevatorPivot elevatorPivot;
+  @SuppressWarnings("unused")
   private Claw claw;
 
   private IntegerSubscriber poleNumberSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
@@ -53,5 +59,16 @@ public class AutoScoreFactory{
       () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightSub.get(), elevatorPivot.getPivotAngleDegrees()));
   }
 
+  public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(Supplier<Pose2d> targetPose, int apriltagId, GremlinLimelightCamera feedbackCamera){
+    feedbackCamera.setValidIDsMT2(new int[] {apriltagId});
+
+    return new DynamicPathfindWithFeedback(
+      targetPose, 
+      () -> 0, 
+      DriveConstants.pathFollowingConstraints, 
+      drivetrain, 
+      () -> feedbackCamera.getBotPoseEstimateMT2().pose, 
+      feedbackCamera::seesObject);
+  }
   
 }
