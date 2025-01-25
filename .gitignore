@@ -189,3 +189,5 @@ compile_commands.json
 #Our own Ignores
 .gradle/8.11/checksums/checksums.lock
 .gradle/8.11/checksums/checksums.lock
+bin/main/frc/robot/constants/FieldConstants.class
+build/classes/java/main/frc/robot/constants/FieldConstants.class

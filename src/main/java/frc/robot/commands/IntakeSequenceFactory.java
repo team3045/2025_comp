@@ -57,9 +57,9 @@ public class IntakeSequenceFactory {
     public Command moveElevatorAndIntake(){
         return 
             claw.clawIntake().alongWith(elevatorPivot.goToIntake())
-           .andThen(
+            .until(claw.hasObject).andThen(
                 Commands.waitSeconds(0.5).andThen( //TODO: Remove Commands.waitSeconds for nonSim
-                    claw.hold().andThen(elevatorPivot.goToIntakeReady()).andThen(elevatorPivot.stowArm())));
+                    claw.hold().alongWith(elevatorPivot.stowArm())));
     } 
 }
 
