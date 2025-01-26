@@ -132,7 +132,7 @@ public class ElevatorPivotConstants {
     public static final double pivotKA = 0.2;
     public static final double pivotKV = 1.5;
 
-    public static final double magnetOffset = 0.231201;
+    public static final double magnetOffset = 0.236816;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.Clockwise_Positive;
 
     public enum HeightPositions{

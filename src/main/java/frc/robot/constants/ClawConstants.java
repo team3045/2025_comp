@@ -21,7 +21,7 @@ public class ClawConstants {
     public static final String canbus = "Canivore 3045";
 
 
-    public static final double intakeSpeed = 20;
+    public static final double intakeSpeed = -15;
     public static final double outtakeSpeed = 3;
     public static final double holdSpeed = 0;
 

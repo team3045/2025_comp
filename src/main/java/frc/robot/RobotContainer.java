@@ -102,7 +102,11 @@ public class RobotContainer {
         //     .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
         //     .andThen(claw.clawOutake())));
 
-        joystick.square().whileTrue(autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0]));
+        joystick.square().whileTrue(
+            autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
+            .alongWith(autoScoreFactory.setElevatorHeight())
+            .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
+            .andThen(claw.clawOutake())));
 
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));

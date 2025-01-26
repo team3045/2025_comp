@@ -55,7 +55,7 @@ public class VisionConstants {
         public static final double thetaModifier = 50;
         public static final double multiTagModifier = 0.6;
         public static final double stabilityModifier = 15;
-        public static final double maxChangeDistance = 1; // m
+        public static final double maxChangeDistance = 40; // m
 
         public static SimCameraProperties getOV2311() {
                 SimCameraProperties properties = new SimCameraProperties();
@@ -101,18 +101,21 @@ public class VisionConstants {
                                                         Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(-150))),
+                                                        Units.degreesToRadians(150))),
                         new Pose3d( // Back Right
                                         new Translation3d(
                                                         -Units.inchesToMeters(10.886),
-                                                        Units.inchesToMeters(9.362),
+                                                        -Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(162))),
+                                                        Units.degreesToRadians(-150))),
         };
 
         public static final Pose3d limelightPose = new Pose3d(
-                new Translation3d(0.03175,0,0.2286),
+                new Translation3d(
+                        -0.02616962,
+                        0,
+                        0.231267),
                 new Rotation3d(0, Units.degreesToRadians(-10),0)
         );
 
@@ -124,6 +127,6 @@ public class VisionConstants {
         };    
 
         public static final GremlinLimelightCamera[] limelight = {
-                new GremlinLimelightCamera("limelight", limelightPose)
+                new GremlinLimelightCamera("limelight-front", limelightPose)
         };
 }

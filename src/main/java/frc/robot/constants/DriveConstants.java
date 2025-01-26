@@ -35,8 +35,6 @@ public class DriveConstants {
     public static final double MAX_ANGULAR_ACCEL = Math.PI; //Radians per Second Squared
     public static final double MAX_ANGULAR_ACCEL_AUTO = MAX_ANGULAR_ACCEL * 0.75;
 
-    
-
     /* Setting up bindings for necessary control of the swerve drive platform */
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 5% deadband
@@ -48,15 +46,15 @@ public class DriveConstants {
 
     public static final PPHolonomicDriveController pathFollowingController = new PPHolonomicDriveController(
         // PID constants for translation
-        new PIDConstants(1, 0, 0),
+        new PIDConstants(3, 0, 0),
         // PID constants for rotation
-        new PIDConstants(11, 0, 0)
+        new PIDConstants(6, 0, 0)
     );
 
-    public static final double preciseTranslationkP = 10;
+    public static final double preciseTranslationkP = 0.3;
     public static final double preciseTranslationkI = 0;
     public static final double preciseTranslationkD = 0;
-    public static final double preciseRotationkP = 1;
+    public static final double preciseRotationkP = 11;
     public static final double preciseRotationkI = 0;
     public static final double preciseRotationkD = 0;
 

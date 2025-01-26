@@ -72,7 +72,7 @@ public class AutoScoreFactory{
       () -> 0, 
       DriveConstants.pathFollowingConstraints, 
       drivetrain, 
-      () -> feedbackCamera.getBotPoseEstimateMT2().pose, 
+      () -> feedbackCamera.getBotPoseEstimate().pose, 
       feedbackCamera::seesObject);
   }
   

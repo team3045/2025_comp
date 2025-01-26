@@ -44,6 +44,8 @@ public class GremlinLimelightCamera implements AutoCloseable {
             simCamera = new PhotonCamera(name);
         }
 
+        setCamPoseRobotSpace(cameraPose);
+
         HAL.report(tResourceType.kResourceType_PhotonCamera, InstanceCount);
         InstanceCount++;
     }
@@ -56,6 +58,22 @@ public class GremlinLimelightCamera implements AutoCloseable {
      */
     public PoseEstimate getBotPoseEstimate() {
         return LimelightHelpers.getBotPoseEstimate_wpiBlue(name);
+    }
+
+    /**
+     * Set the limelight pose in robot space.
+     * 
+     * @return
+     */
+    public void setCamPoseRobotSpace(Pose3d camPose3d){
+        LimelightHelpers.setCameraPose_RobotSpace(
+            name, 
+            camPose3d.getX(), 
+            camPose3d.getY(), 
+            camPose3d.getZ(), 
+            camPose3d.getRotation().getX(), 
+            camPose3d.getRotation().getY(), 
+            camPose3d.getRotation().getZ());
     }
 
     /**
