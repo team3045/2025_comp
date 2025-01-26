@@ -46,7 +46,7 @@ public class ElevatorPivotConstants {
     public static final double minAngleDegrees = -90;
     public static final double maxAngleDegrees = 90;
     public static final double stowAngle = maxAngleDegrees;
-    public static final double intakingAngle = -90;
+    public static final double intakingAngle = -91.95;
 
     
     public static final double rotorToSensorRatio = 1; 
@@ -59,9 +59,9 @@ public class ElevatorPivotConstants {
 
     public static final double carriageToGround = 0.508;//Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
     public static final double minimumHeight = carriageToGround; //m
-    public static final double stowHeight = minimumHeight;
-    public static final double intakingReadyHeight = 0.85; 
-    public static final double intakingHeight = 0.75;
+    public static final double stowHeight = 0.64;
+    public static final double intakingReadyHeight = 0.973; 
+    public static final double intakingHeight = 0.877;
 
     public static final double maxHeight = Units.inchesToMeters(57) + carriageToGround; // m
 
@@ -112,8 +112,8 @@ public class ElevatorPivotConstants {
 
     public static final double timesyncFrequency = 200; //Hz aka every 5 ms
 
-    public static final InvertedValue leftInverted = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue rightInverted = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue leftInverted = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
 
     public static final double kP = 5;

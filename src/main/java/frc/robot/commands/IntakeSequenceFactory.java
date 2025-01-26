@@ -46,13 +46,6 @@ public class IntakeSequenceFactory {
         return IntakeSequenceConstants.bottomSubstation.contains(pose);
     }
 
-/* Sets elevator & arm ready to intake  */
-    public Command setElevatorPivotPosition(){
-        return elevatorPivot.goToPosition(
-                ()-> IntakeSequenceConstants.intakeReadyHeight, 
-                ()-> IntakeSequenceConstants.intakeReadyAngle);
-    }
-
 /* moves elevator & arm down & intakes coral */
     public Command moveElevatorAndIntake(){
         return 
