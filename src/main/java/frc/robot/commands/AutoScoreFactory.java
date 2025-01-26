@@ -4,14 +4,18 @@
 
 package frc.robot.commands;
 
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
@@ -59,11 +63,12 @@ public class AutoScoreFactory{
       () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightSub.get(), elevatorPivot.getPivotAngleDegrees()));
   }
 
-  public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(Supplier<Pose2d> targetPose, int apriltagId, GremlinLimelightCamera feedbackCamera){
-    feedbackCamera.setValidIDsMT2(new int[] {apriltagId});
+  public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(GremlinLimelightCamera feedbackCamera){
+
+    feedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
 
     return new DynamicPathfindWithFeedback(
-      targetPose, 
+      () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), 
       () -> 0, 
       DriveConstants.pathFollowingConstraints, 
       drivetrain, 

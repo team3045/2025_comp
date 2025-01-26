@@ -95,12 +95,15 @@ public class RobotContainer {
         joystick.cross().whileTrue(new DriveWheelRadiusCharacterization(drivetrain, DriveWheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
 
         
-        joystick.square().whileTrue(
-            autoScoreFactory.getPathFindCommand()
-            // .andThen(autoScoreFactory.getPrecisePidCommand())
-            .alongWith(autoScoreFactory.setElevatorHeight())
-            .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
-            .andThen(claw.clawOutake())));
+        // joystick.square().whileTrue(
+        //     autoScoreFactory.getPathFindCommand()
+        //     // .andThen(autoScoreFactory.getPrecisePidCommand())
+        //     .alongWith(autoScoreFactory.setElevatorHeight())
+        //     .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
+        //     .andThen(claw.clawOutake())));
+
+        joystick.square().whileTrue(autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0]));
+
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));

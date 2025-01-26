@@ -25,6 +25,14 @@ public class AutoScoreConstants {
     public static HashMap<Integer, Pose2d> kScorePoseMap = new HashMap<Integer, Pose2d>();
     public static HashMap<Integer, Double> kScoreHeightMap = new HashMap<Integer, Double>();
     public static HashMap<Integer, Double> kScoreAngleMap = new HashMap<Integer, Double>();
+    public static HashMap<Integer, Integer> kBlueApriltagMap = new HashMap<>();
+    public static HashMap<Integer, Integer> kRedApriltagMap = new HashMap<>();
+
+    public static int[] kReefAprilTagIds = {
+        6,7,8,9,10,11, //RED
+        17,18,19,20,21,22 //BLUE
+    };
+
 
     static{
         kScorePoseMap.put(1, new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
@@ -47,5 +55,33 @@ public class AutoScoreConstants {
         kScoreAngleMap.put(1, ElevatorPivotConstants.AnglePositions.L2.getAngle());
         kScoreAngleMap.put(2, ElevatorPivotConstants.AnglePositions.L3.getAngle());
         kScoreAngleMap.put(3, ElevatorPivotConstants.AnglePositions.L4.getAngle());
+
+        kBlueApriltagMap.put(1, 20);
+        kBlueApriltagMap.put(2, 20);
+        kBlueApriltagMap.put(3, 19);
+        kBlueApriltagMap.put(4, 19);
+        kBlueApriltagMap.put(5, 18);
+        kBlueApriltagMap.put(6, 18);
+        kBlueApriltagMap.put(7, 17);
+        kBlueApriltagMap.put(8, 17);
+        kBlueApriltagMap.put(9,22);
+        kBlueApriltagMap.put(10, 22);
+        kBlueApriltagMap.put(11, 21);
+        kBlueApriltagMap.put(12, 21);
+
+        kRedApriltagMap.put(1, 11);
+        kRedApriltagMap.put(2, 11);
+        kRedApriltagMap.put(3, 6);
+        kRedApriltagMap.put(4, 6);
+        kRedApriltagMap.put(5, 7);
+        kRedApriltagMap.put(6, 7);
+        kRedApriltagMap.put(7, 8);
+        kRedApriltagMap.put(8, 8);
+        kRedApriltagMap.put(9,9);
+        kRedApriltagMap.put(10, 9);
+        kRedApriltagMap.put(11, 10);
+        kRedApriltagMap.put(12, 10);
+
+
     }
 }

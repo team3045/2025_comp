@@ -265,9 +265,10 @@ public class GremlinLimelightCamera implements AutoCloseable {
             };
 
             NetworkTableInstance.getDefault().getTable(kTableName).getEntry("botpose_orb_wpiblue")
-                .setDoubleArray(poseData);
-            
+                .setDoubleArray(poseData); 
         }
+
+        NetworkTableInstance.getDefault().getTable(kTableName).getEntry("tx").setBoolean(result.hasTargets());
 
     }
 

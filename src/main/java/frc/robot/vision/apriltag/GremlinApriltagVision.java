@@ -317,8 +317,8 @@ public class GremlinApriltagVision extends SubsystemBase {
       simCameraProperties[i] = VisionConstants.getOV2311();
       simCameras[i] = new PhotonCameraSim(cameras[i].getPhotonCamera(), simCameraProperties[i]);
       simCameras[i].enableDrawWireframe(false);
-      simCameras[i].enableRawStream(true); // (http://localhost:1181 / 1182)
-      simCameras[i].enableProcessedStream(true);
+      simCameras[i].enableRawStream(false); // (http://localhost:1181 / 1182)
+      simCameras[i].enableProcessedStream(false);
       visionSystemSim.addCamera(simCameras[i], GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()));
     }
 
