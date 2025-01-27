@@ -34,6 +34,11 @@ public class DriveConstants {
     public static final double MAX_ANGULAR_VELOCITY_AUTO = MAX_ANGULAR_VELOCITY*0.75; 
     public static final double MAX_ANGULAR_ACCEL = Math.PI; //Radians per Second Squared
     public static final double MAX_ANGULAR_ACCEL_AUTO = MAX_ANGULAR_ACCEL * 0.75;
+    public static final double MAX_VELO_AUTOSCORE = 2;
+    public static final double MAX_ACCEL_AUTOSCORE = 1;
+    public static final double MAX_ANGULAR_VELOCITY_AUTOSCORE = Math.PI;
+    public static final double MAX_ANGULAR_ACCEL_AUTOSCORE = Math.PI / 2;
+
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -41,6 +46,9 @@ public class DriveConstants {
             .withDriveRequestType(DriveRequestType.Velocity); // Use close-loop control for drive motors
     public static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     public static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+    public static final SwerveRequest.RobotCentric driveBack = new SwerveRequest.RobotCentric()
+        .withVelocityX(MaxSpeed*-0.2);
 
     public static final double MAX_STEER_VELOCITY = 10; //radians per second
 
@@ -70,4 +78,10 @@ public class DriveConstants {
         MAX_ACCEL_AUTO, 
         MAX_ANGULAR_VELOCITY_AUTO, 
         MAX_ANGULAR_ACCEL_AUTO);
+    
+    public static final PathConstraints autoScoreConstraints = new PathConstraints(
+        MAX_VELO_AUTOSCORE, 
+        MAX_ACCEL_AUTOSCORE, 
+        MAX_ANGULAR_VELOCITY_AUTOSCORE, 
+        MAX_ANGULAR_ACCEL_AUTOSCORE);
 }

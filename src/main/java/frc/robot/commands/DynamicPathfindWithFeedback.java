@@ -83,10 +83,6 @@ public class DynamicPathfindWithFeedback extends Command {
     @Override
     public void execute() {
       if(overrideWithFeedback.getAsBoolean()){
-        // xController.reset(feedbackPoseSupplier.get().getX(), drivetrain.getState().Speeds.vxMetersPerSecond);
-        // yController.reset(feedbackPoseSupplier.get().getY(), drivetrain.getState().Speeds.vyMetersPerSecond);
-
-        // PPHolonomicDriveController.overrideXYFeedback(this::calculateXFeedback, this::calculateYFeedback);
         feedbackPosePublisher.set(feedbackPoseSupplier.get());
         drivetrain.addVisionMeasurement(
           limelight[0].getBotPoseEstimate().pose, 
@@ -115,7 +111,6 @@ public class DynamicPathfindWithFeedback extends Command {
       Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 
         targetPoseSupplier.get() : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
       return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, 0.02);
-        //return currentPathfindCommand == null || currentPathfindCommand.isFinished();
     }
 
     private void updatePathfindCommand() {
@@ -124,7 +119,9 @@ public class DynamicPathfindWithFeedback extends Command {
         double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
 
         // Create a new pathfinding command with the updated values
-        currentPathfindCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, desiredEndVelocity);
+        currentPathfindCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, 
+          constraints, 
+          desiredEndVelocity);
     }
 
     private double calculateXFeedback(){

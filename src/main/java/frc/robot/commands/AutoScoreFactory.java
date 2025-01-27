@@ -70,7 +70,7 @@ public class AutoScoreFactory{
     return new DynamicPathfindWithFeedback(
       () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), 
       () -> 0, 
-      DriveConstants.pathFollowingConstraints, 
+      DriveConstants.autoScoreConstraints, 
       drivetrain, 
       () -> feedbackCamera.getBotPoseEstimate().pose, 
       feedbackCamera::seesObject);

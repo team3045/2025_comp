@@ -10,7 +10,7 @@ import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 
 import edu.wpi.first.wpilibj2.command.Command;
-
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.DriveWheelRadiusCharacterization;
 import frc.robot.commands.IntakeSequenceFactory;
@@ -105,8 +105,9 @@ public class RobotContainer {
         joystick.square().whileTrue(
             autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
             .alongWith(autoScoreFactory.setElevatorHeight())
-            .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
-            .andThen(claw.clawOutake())));
+            .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.15, () -> elevatorPivot.getPivotAngleDegrees())
+            .andThen(Commands.waitSeconds(0.3).andThen(claw.clawOutake().andThen(Commands.waitSeconds(0.2)))
+            .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop()))))));
 
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -119,8 +120,6 @@ public class RobotContainer {
         joystick.L1().onTrue(autoScoreFactory.setElevatorHeight());
         joystick.R1().onTrue(elevatorPivot.stowArm());
         joystick.R2().onTrue(claw.stop());
-        joystick.L2().onTrue(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
-            .andThen(claw.clawOutake()));
         // joystick.square().onTrue(elevatorPivot.zeroHeight());
         //joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
         // joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());

@@ -365,6 +365,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return new DynamicPathfindCommand(targetPoseSup, desiredEndVelocitySup, pathFollowingConstraints, this);
     }
 
+    public Command driveBack(){
+        return applyRequest(() -> driveBack).withTimeout(0.2);
+    }
+
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
