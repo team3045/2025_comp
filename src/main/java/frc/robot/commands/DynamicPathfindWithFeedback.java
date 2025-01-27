@@ -9,7 +9,10 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.pathfinding.Pathfinder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.VecBuilder;
