@@ -68,6 +68,8 @@ public class GremlinApriltagVision extends SubsystemBase {
   // Will be the function in driveTrain that supplies current pose estimate
   private Supplier<Pose2d> poseSupplier = () -> new Pose2d();
 
+  private boolean shouldRejectAllUpdates;
+
   /** Creates a new GremlinApriltagVision. */
   public GremlinApriltagVision(
       GremlinPhotonCamera[] cameras,
@@ -78,6 +80,8 @@ public class GremlinApriltagVision extends SubsystemBase {
     this.poseSupplier = poseSupplier;
     this.visionConsumer = visionConsumer;
     this.limelights = new GremlinLimelightCamera[0];
+
+    shouldRejectAllUpdates = false;
 
     if (Utils.isSimulation()) {
       configSim();
@@ -96,17 +100,25 @@ public class GremlinApriltagVision extends SubsystemBase {
     this.visionConsumer = visionConsumer;
     this.limelights = limelights;
 
+    shouldRejectAllUpdates = false;
+
     if (Utils.isSimulation()) {
       configSim();
     }
   }
 
+  public void setRejectAllUpdates(boolean shouldRejectAllUpdates){
+    this.shouldRejectAllUpdates = shouldRejectAllUpdates;
+  }
+
 
   @Override
   public void periodic() {
-    processVisionUpdates();
-    visionConsumer.accept(visionUpdates);
-    GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
+    if(!shouldRejectAllUpdates){
+      processVisionUpdates();
+      visionConsumer.accept(visionUpdates);
+      GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
+    }
   }
 
   @SuppressWarnings("unused")

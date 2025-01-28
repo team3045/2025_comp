@@ -11,6 +11,8 @@ import dev.doglog.DogLogOptions;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.DriveWheelRadiusCharacterization;
 import frc.robot.commands.IntakeSequenceFactory;
@@ -29,6 +31,8 @@ import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
 public class RobotContainer {
+    public static final RobotState M_ROBOT_STATE = RobotState.getRobotState();
+
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final GremlinPS4Controller joystick = new GremlinPS4Controller(0);
@@ -47,6 +51,9 @@ public class RobotContainer {
     /* intake sequence */
     public final IntakeSequenceFactory intakeSequenceFactory = new IntakeSequenceFactory(drivetrain, elevatorPivot, claw);
 
+    /*Triggers */
+    private final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
+
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
@@ -64,11 +71,6 @@ public class RobotContainer {
                     .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
-//TODO: uncomment
-        // joystick.triangle().whileTrue(drivetrain.applyRequest(() -> DriveConstants.brake));
-        // joystick.circle().whileTrue(drivetrain.applyRequest(() ->
-        //     DriveConstants.point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        // ));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -77,18 +79,6 @@ public class RobotContainer {
         // joystick.share().and(joystick.square()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.share().and(joystick.cross()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // joystick.cross().whileTrue(drivetrain.applyRequest(() -> 
-        //     drive.withVelocityX(MaxSpeed)
-        //     .withVelocityY(0)
-        //     .withRotationalRate(0))
-        // );
-
-        // joystick.cross().whileTrue(
-        //     intakeSequenceFactory.getPathFindCommand()
-        //     .andThen(elevatorPivot.goToIntakeReady()).onlyIf(() -> intakeSequenceFactory.isNearSubstation()).andThen( //NEEDS TO BE .andThen (if not, the pathfinding command is not run)
-        //         Commands.waitSeconds(1))
-        //     .andThen(intakeSequenceFactory.moveElevatorAndIntake())); //TODO: cancel / end behavior;
-
         joystick.circle().onTrue(elevatorPivot.goToIntakeReady());
         joystick.triangle().onTrue(intakeSequenceFactory.moveElevatorAndIntake());
 
@@ -96,12 +86,36 @@ public class RobotContainer {
 
 
         // joystick.square().whileTrue(
+        //     Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)).andThen(
         //     autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
         //     .alongWith(autoScoreFactory.setElevatorHeight())
         //     .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.15, () -> elevatorPivot.getPivotAngleDegrees())
         //     .andThen(Commands.waitSeconds(0.3).andThen(claw.clawOutake().andThen(Commands.waitSeconds(0.2)))
-        //     .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop()))))));
+        //     .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop()))))))
+        //     .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))); //ALWAYS SET BACK TO TELEOP AFTER SCORE
 
+        joystick.square().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
+        joystick.square().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+        
+        scoringState.whileTrue(
+            Commands.runOnce(() -> vision.setRejectAllUpdates(true))
+            .andThen(autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0]))
+            .alongWith(autoScoreFactory.setElevatorHeight())
+            .andThen(elevatorPivot.goDownToScore())
+            .andThen(Commands.waitSeconds(0.3))
+            .andThen(claw.clawOutake())
+            .andThen(Commands.waitSeconds(0.2))
+            .andThen(drivetrain.driveBack())
+            .finallyDo(() -> {
+                M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+                vision.setRejectAllUpdates(false);
+                }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+        );
+
+        scoringState.onFalse(
+            Commands.runOnce(() -> vision.setRejectAllUpdates(false)).andThen(
+            elevatorPivot.stowArm().alongWith(claw.stop()))
+        ); //STOW ARM AND STOP CLAW AFTER SCORING
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));

@@ -372,6 +372,10 @@ public class ElevatorPivot extends SubsystemBase {
       .andThen(goToPosition(() -> intakingReadyHeight, () -> intakingAngle)));
   }
 
+  public Command goDownToScore(){
+    return goToPosition(() -> getHeight() - 0.15, () -> getPivotAngleDegrees());
+  }
+
    /**Send the elevatorPivot to the intaking height and angle.
    * Assumes go to Intaje ready was called before so has no collision avoidance logic
    * 

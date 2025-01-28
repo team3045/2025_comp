@@ -16,7 +16,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-
   public Robot() {
     m_robotContainer = new RobotContainer();
     //m_robotContainer.drivetrain.resetPose(new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
