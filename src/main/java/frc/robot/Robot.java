@@ -11,8 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.DynamicPathfindWithMT2;
-import frc.robot.vision.apriltag.VisionConstants;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -22,7 +20,9 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
     //m_robotContainer.drivetrain.resetPose(new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
-    m_robotContainer.drivetrain.resetPose(new Pose2d(9,5.5, new Rotation2d()));
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(9,5.5, new Rotation2d()));
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(5,8,Rotation2d.kZero));
+    m_robotContainer.drivetrain.resetPose(new Pose2d(17,7,Rotation2d.fromDegrees(-90)));
   }
 
   @Override

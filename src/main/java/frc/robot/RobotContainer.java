@@ -59,8 +59,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(GremlinUtil.squareDriverInput(joystick.getLeftX()) * MaxSpeed) // Drive left with negative X (left)
+                DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
@@ -94,20 +94,13 @@ public class RobotContainer {
 
         joystick.cross().whileTrue(new DriveWheelRadiusCharacterization(drivetrain, DriveWheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
 
-        
-        // joystick.square().whileTrue(
-        //     autoScoreFactory.getPathFindCommand()
-        //     // .andThen(autoScoreFactory.getPrecisePidCommand())
-        //     .alongWith(autoScoreFactory.setElevatorHeight())
-        //     .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.1, () -> elevatorPivot.getPivotAngleDegrees())
-        //     .andThen(claw.clawOutake())));
 
-        joystick.square().whileTrue(
-            autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
-            .alongWith(autoScoreFactory.setElevatorHeight())
-            .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.15, () -> elevatorPivot.getPivotAngleDegrees())
-            .andThen(Commands.waitSeconds(0.3).andThen(claw.clawOutake().andThen(Commands.waitSeconds(0.2)))
-            .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop()))))));
+        // joystick.square().whileTrue(
+        //     autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
+        //     .alongWith(autoScoreFactory.setElevatorHeight())
+        //     .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.15, () -> elevatorPivot.getPivotAngleDegrees())
+        //     .andThen(Commands.waitSeconds(0.3).andThen(claw.clawOutake().andThen(Commands.waitSeconds(0.2)))
+        //     .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop()))))));
 
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -118,8 +111,10 @@ public class RobotContainer {
 
         //joystick.share().onTrue(elevatorPivot.goToIntakeReady());
         joystick.L1().onTrue(autoScoreFactory.setElevatorHeight());
-        joystick.R1().onTrue(elevatorPivot.stowArm());
-        joystick.R2().onTrue(claw.stop());
+        joystick.R1().onTrue(elevatorPivot.stowArm().alongWith(claw.stop()));
+        joystick.R2().onTrue(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.15, () -> elevatorPivot.getPivotAngleDegrees())
+        .andThen(Commands.waitSeconds(0.3).andThen(claw.clawOutake().andThen(Commands.waitSeconds(0.2)))
+        .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop())))));
         // joystick.square().onTrue(elevatorPivot.zeroHeight());
         //joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
         // joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
