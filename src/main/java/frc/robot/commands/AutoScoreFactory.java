@@ -5,7 +5,9 @@
 package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -59,18 +61,39 @@ public class AutoScoreFactory{
       () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightSub.get(), elevatorPivot.getPivotAngleDegrees()));
   }
 
-  public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(GremlinLimelightCamera feedbackCamera){
+  public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(GremlinLimelightCamera rightFeedbackCamera, GremlinLimelightCamera leftFeedbackCamera){
 
-    feedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
+    rightFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
+    leftFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
 
-    BooleanSupplier shouldOverride = () -> feedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+
+    //Basically we alternate between right or left cameras, depending on the pole number.
+    //Odd pole numbers use rightCamera, Even pole numbers use leftCamera
+    Supplier<Pose2d> targetPoseSupplier = () -> {
+      int poleNumber =(int) poleNumberSub.get();
+      if(poleNumber % 2 == 0){
+        return leftFeedbackCamera .getBotPoseEstimateMT2().pose;
+      } else {
+        return rightFeedbackCamera.getBotPoseEstimateMT2().pose;
+      }
+    };
+
+    BooleanSupplier shouldOverride = () -> {
+      int poleNumber = (int) poleNumberSub.get();
+
+      if(poleNumber % 2 == 0){
+        return leftFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+      } else {
+        return rightFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+      }
+    };
 
     return new DynamicPathfindWithFeedback(
       () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), 
       () -> 0, 
       DriveConstants.autoScoreConstraints, 
       drivetrain, 
-      () -> feedbackCamera.getBotPoseEstimateMT2().pose, 
+      targetPoseSupplier, 
       shouldOverride);
   }
   

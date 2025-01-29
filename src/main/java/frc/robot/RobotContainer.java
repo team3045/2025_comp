@@ -41,7 +41,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
         () -> drivetrain.getState().Pose, 
-        VisionConstants.limelight,
+        VisionConstants.limelights,
         (drivetrain::addVisionMeasurements));
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
@@ -100,7 +100,7 @@ public class RobotContainer {
         joystick.square().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
         scoringState.whileTrue(
-            autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
+            autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelights[0], VisionConstants.limelights[1]) //righ and left
             .alongWith(autoScoreFactory.setElevatorHeight())
             .andThen(elevatorPivot.goDownToScore())
             .andThen(Commands.waitSeconds(0.3))

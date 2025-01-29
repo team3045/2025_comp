@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import static frc.robot.vision.apriltag.VisionConstants.limelight;
+import static frc.robot.vision.apriltag.VisionConstants.limelights;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -83,8 +83,8 @@ public class DynamicPathfindWithFeedback extends Command {
       if(overrideWithFeedback.getAsBoolean()){
         feedbackPosePublisher.set(feedbackPoseSupplier.get());
         drivetrain.addVisionMeasurement(
-          limelight[0].getBotPoseEstimate().pose, 
-          Utils.fpgaToCurrentTime(limelight[0].getBotPoseEstimate().timestampSeconds),
+          limelights[0].getBotPoseEstimate().pose, 
+          Utils.fpgaToCurrentTime(limelights[0].getBotPoseEstimate().timestampSeconds),
           VecBuilder.fill(0.01,0.01,0.01));
       } else {
         PPHolonomicDriveController.clearFeedbackOverrides();
