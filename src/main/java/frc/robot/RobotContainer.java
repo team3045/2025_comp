@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import dev.doglog.DogLog;
