@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -66,7 +67,6 @@ public class AutoScoreFactory{
     rightFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
     leftFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
 
-
     //Basically we alternate between right or left cameras, depending on the pole number.
     //Odd pole numbers use rightCamera, Even pole numbers use leftCamera
     Supplier<Pose2d> targetPoseSupplier = () -> {
@@ -88,13 +88,24 @@ public class AutoScoreFactory{
       }
     };
 
+    DoubleSupplier timestampSupplier = () -> {
+      int poleNumber = (int) poleNumberSub.get();
+
+      if(poleNumber % 2 == 0){
+        return leftFeedbackCamera.getBotPoseEstimateMT2().timestampSeconds;
+      } else {
+        return rightFeedbackCamera.getBotPoseEstimateMT2().timestampSeconds;
+      }
+    };
+
     return new DynamicPathfindWithFeedback(
       () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), 
       () -> 0, 
       DriveConstants.autoScoreConstraints, 
       drivetrain, 
       targetPoseSupplier, 
-      shouldOverride);
+      shouldOverride,
+      timestampSupplier);
   }
   
 }

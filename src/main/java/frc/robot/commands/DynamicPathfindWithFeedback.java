@@ -43,6 +43,7 @@ public class DynamicPathfindWithFeedback extends Command {
     private Command currentPathfindCommand;
 
     private Supplier<Pose2d> feedbackPoseSupplier;
+    private DoubleSupplier timestampSupplier;
 
     private BooleanSupplier overrideWithFeedback;
 
@@ -52,7 +53,8 @@ public class DynamicPathfindWithFeedback extends Command {
         PathConstraints constraints,
         CommandSwerveDrivetrain drivetrain,
         Supplier<Pose2d> feedbackPoseSupplier,
-        BooleanSupplier overrideWithFeedback) {
+        BooleanSupplier overrideWithFeedback,
+        DoubleSupplier timestampSupplier) {
 
         this.targetPoseSupplier = targetPoseSupplier;
         this.desiredEndVelocitySupplier = desiredEndVelocitySupplier;
@@ -60,6 +62,7 @@ public class DynamicPathfindWithFeedback extends Command {
         this.overrideWithFeedback = overrideWithFeedback;
         this.feedbackPoseSupplier = feedbackPoseSupplier;
         this.drivetrain = drivetrain;
+        this.timestampSupplier = timestampSupplier;
 
         addRequirements(drivetrain);
     }
@@ -83,8 +86,8 @@ public class DynamicPathfindWithFeedback extends Command {
       if(overrideWithFeedback.getAsBoolean()){
         feedbackPosePublisher.set(feedbackPoseSupplier.get());
         drivetrain.addVisionMeasurement(
-          limelights[0].getBotPoseEstimate().pose, 
-          Utils.fpgaToCurrentTime(limelights[0].getBotPoseEstimate().timestampSeconds),
+          feedbackPoseSupplier.get(), 
+          Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
           VecBuilder.fill(0.01,0.01,0.01));
       } else {
         PPHolonomicDriveController.clearFeedbackOverrides();
