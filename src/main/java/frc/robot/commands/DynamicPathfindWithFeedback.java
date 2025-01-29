@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import static frc.robot.vision.apriltag.VisionConstants.limelights;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
