@@ -41,6 +41,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;
@@ -119,6 +120,8 @@ public class GremlinApriltagVision extends SubsystemBase {
       visionConsumer.accept(visionUpdates);
       GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
     }
+
+    GremlinLogger.logSD("VISION/shouldRejectAllUpdates", shouldRejectAllUpdates);    
   }
 
   @SuppressWarnings("unused")
@@ -285,6 +288,8 @@ public class GremlinApriltagVision extends SubsystemBase {
       .getStructTopic(CAMERA_LOG_PATH + "backRight" + "/Calculated Pose", Pose2d.struct).publish();
   private static final StructArrayPublisher<Pose3d> BRtagPosesPublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic(CAMERA_LOG_PATH + "backRight" + "/Tag Poses", Pose3d.struct).publish();
+  private static final StructPublisher<Pose2d> LLcalculatedPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "limelight" + "/Calculated Pose", Pose2d.struct).publish();
 
   /**
    * Log the CamPose, Calculated Pose, and TagPose
@@ -314,6 +319,8 @@ public class GremlinApriltagVision extends SubsystemBase {
         BRtagPosesPublisher.set(tagPoses);
         break;
     }
+
+    LLcalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().pose);
   }
 
   public void configSim() {

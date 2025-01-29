@@ -88,7 +88,7 @@ public class GremlinLimelightCamera implements AutoCloseable {
     }
 
     /**
-     * Sets the robot orientation for use with limelight's MegaTag2
+     * Sets the robot orientation for use with limelight's MegaTag2 Degrees
      * 
      * @param rotation the current rotation of the robot, should be from your
      *                 estimated pose

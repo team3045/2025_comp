@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
@@ -67,13 +68,15 @@ public class AutoScoreFactory{
 
     feedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
 
+    BooleanSupplier shouldOverride = () -> feedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+
     return new DynamicPathfindWithFeedback(
       () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), 
       () -> 0, 
       DriveConstants.autoScoreConstraints, 
       drivetrain, 
-      () -> feedbackCamera.getBotPoseEstimate().pose, 
-      feedbackCamera::seesObject);
+      () -> feedbackCamera.getBotPoseEstimateMT2().pose, 
+      shouldOverride);
   }
   
 }

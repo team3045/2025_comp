@@ -25,6 +25,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -45,8 +46,11 @@ import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.*;
+import static frc.robot.constants.FieldConstants.blueReefCenter;
+import static frc.robot.constants.FieldConstants.redReefCenter;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -365,6 +369,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return new DynamicPathfindCommand(targetPoseSup, desiredEndVelocitySup, pathFollowingConstraints, this);
     }
 
+    public boolean withinDistanceOfReef(double distance){
+        return getState().Pose.getTranslation().getDistance(
+            DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? blueReefCenter : redReefCenter) 
+            < distance;
+    }
+
     public Command driveBack(){
         return applyRequest(() -> driveBack).withTimeout(0.2);
     }
@@ -410,6 +420,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        VisionConstants.limelight[0].setRobotHeading(getState().Pose.getRotation().getDegrees());
     }
 
     private void startSimThread() {

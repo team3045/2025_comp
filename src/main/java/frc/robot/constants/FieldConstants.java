@@ -3,18 +3,23 @@ package frc.robot.constants;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pathplanner.lib.util.FlippingUtil;
+
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class FieldConstants {
-        public static final boolean isShopField = false;
+        public static final boolean isShopField = true;
         public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
         public static final double shopFieldLength = 7.89225625;
@@ -30,6 +35,9 @@ public class FieldConstants {
         public static final double edgeToTag = 0.0508 + (aprilTagWidth / 2) ; //2 inches to edge and half of width to center
         public static final double temp = 1.42160625 + edgeToTag;
 
+        public static final Translation2d blueReefCenter = new Translation2d(4.5,4);
+        public static final Translation2d redReefCenter = FlippingUtil.flipFieldPosition(blueReefCenter);
+        public static final double reefDistanceTolerance = 1.25;
 
         public static final List<AprilTag> shopTags = List.of(
                 new AprilTag(1, new Pose3d(

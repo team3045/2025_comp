@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import dev.doglog.DogLog;
@@ -19,6 +20,7 @@ import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -53,6 +55,7 @@ public class RobotContainer {
 
     /*Triggers */
     private final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
+    private final Trigger disableGlobalEstimation = scoringState.and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
 
 
     public RobotContainer() {
@@ -98,8 +101,7 @@ public class RobotContainer {
         joystick.square().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
         scoringState.whileTrue(
-            Commands.runOnce(() -> vision.setRejectAllUpdates(true))
-            .andThen(autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0]))
+            autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
             .alongWith(autoScoreFactory.setElevatorHeight())
             .andThen(elevatorPivot.goDownToScore())
             .andThen(Commands.waitSeconds(0.3))
@@ -108,14 +110,14 @@ public class RobotContainer {
             .andThen(drivetrain.driveBack())
             .finallyDo(() -> {
                 M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-                vision.setRejectAllUpdates(false);
                 }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
-        );
+            );
 
         scoringState.onFalse(
-            Commands.runOnce(() -> vision.setRejectAllUpdates(false)).andThen(
-            elevatorPivot.stowArm().alongWith(claw.stop()))
-        ); //STOW ARM AND STOP CLAW AFTER SCORING
+            elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
+        
+        disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
+        disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
