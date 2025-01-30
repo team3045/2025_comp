@@ -287,7 +287,7 @@ public class GremlinApriltagVision extends SubsystemBase {
       .getStructTopic(CAMERA_LOG_PATH + "backRight" + "/Calculated Pose", Pose2d.struct).publish();
   private static final StructArrayPublisher<Pose3d> BRtagPosesPublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic(CAMERA_LOG_PATH + "backRight" + "/Tag Poses", Pose3d.struct).publish();
-  private static final StructPublisher<Pose2d> LLcalculatedPosePublisher = NetworkTableInstance.getDefault()
+  private static final StructPublisher<Pose2d> LLlleftCalculatedPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "limelight" + "/Calculated Pose", Pose2d.struct).publish();
 
   /**
@@ -319,7 +319,7 @@ public class GremlinApriltagVision extends SubsystemBase {
         break;
     }
 
-    LLcalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().pose);
+    LLlleftCalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().pose);
   }
 
   public void configSim() {
