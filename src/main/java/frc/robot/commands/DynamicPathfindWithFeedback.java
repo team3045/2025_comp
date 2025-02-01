@@ -18,12 +18,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.GremlinAutoBuilder;
-import frc.robot.commons.GremlinPathfindingCommand;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -134,24 +132,5 @@ public class DynamicPathfindWithFeedback extends Command {
             constraints, 
             desiredEndVelocity);
         }
-    }
-
-    private double calculateXFeedback(){
-      Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 
-        targetPoseSupplier.get() : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
-
-      SmartDashboard.putNumber("autoScore/setpointX", targetPose.getX());
-      SmartDashboard.putNumber("autoScore/measuredX", feedbackPoseSupplier.get().getX());
-      return xController.calculate(feedbackPoseSupplier.get().getX(),targetPose.getX());
-    }
-
-    private double calculateYFeedback(){
-      Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 
-        targetPoseSupplier.get() : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
-      
-      SmartDashboard.putNumber("autoScore/setpointY", targetPose.getY());
-      SmartDashboard.putNumber("autoScore/measuredY", feedbackPoseSupplier.get().getY());
-      
-      return yController.calculate(feedbackPoseSupplier.get().getY(), feedbackPoseSupplier.get().getY());
     }
 }
