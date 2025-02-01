@@ -20,7 +20,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.commons.GeomUtil;
+import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -29,6 +31,7 @@ public class DynamicPathfindWithFeedback extends Command {
     private final DoubleSupplier desiredEndVelocitySupplier;
     private final PathConstraints constraints;
     private CommandSwerveDrivetrain drivetrain;
+
 
     private static final ProfiledPIDController xController = new ProfiledPIDController(6, 0, 0, 
       new Constraints(DriveConstants.MAX_VELOCITY_AUTO, DriveConstants.MAX_ACCEL_AUTO), 0.02);
@@ -86,7 +89,7 @@ public class DynamicPathfindWithFeedback extends Command {
         drivetrain.addVisionMeasurement(
           feedbackPoseSupplier.get(), 
           Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
-          VecBuilder.fill(0.01,0.01,0.01));
+          VecBuilder.fill(0.001,0.001,0.001));
       } else {
         PPHolonomicDriveController.clearFeedbackOverrides();
       }
@@ -102,25 +105,33 @@ public class DynamicPathfindWithFeedback extends Command {
             currentPathfindCommand.end(interrupted);
         }
 
-        PPHolonomicDriveController.clearFeedbackOverrides();
+        currentPathfindCommand = null;
     }
 
     @Override
     public boolean isFinished() {
       Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 
         targetPoseSupplier.get() : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
-      return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, 0.02);
+      return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance);
     }
 
     private void updatePathfindCommand() {
         // Get the dynamic pose and velocity
-        Pose2d targetPose = targetPoseSupplier.get();
+        Pose2d targetPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(targetPoseSupplier.get()) 
+          : targetPoseSupplier.get();
         double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
 
-        // Create a new pathfinding command with the updated values
-        currentPathfindCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, 
-          constraints, 
-          desiredEndVelocity);
+        Robot.pathfinder.setGoalPosition(targetPose.getTranslation());
+        Robot.pathfinder.setStartPosition(drivetrain.getState().Pose.getTranslation());
+
+        if(drivetrain.getState().Pose.getTranslation().getDistance(targetPose.getTranslation()) < AutoScoreConstants.basicPIDDistance){
+           currentPathfindCommand = drivetrain.preciseTargetPose(targetPoseSupplier);
+        } else {
+          // Create a new pathfinding command with the updated values
+          currentPathfindCommand = AutoBuilder.pathfindToPose(targetPose, 
+            constraints, 
+            desiredEndVelocity);
+        }
     }
 
     private double calculateXFeedback(){

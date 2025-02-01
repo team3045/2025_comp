@@ -5,6 +5,8 @@
 package frc.robot.constants;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.ApplyFieldSpeeds;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -50,6 +52,11 @@ public class DriveConstants {
     public static final SwerveRequest.RobotCentric driveBack = new SwerveRequest.RobotCentric()
         .withVelocityX(MaxSpeed*-0.2);
 
+    public static final SwerveRequest.ApplyFieldSpeeds APPLY_FIELD_SPEEDS = new ApplyFieldSpeeds()
+        .withDesaturateWheelSpeeds(true)
+        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+        .withDriveRequestType(DriveRequestType.Velocity);
+
     public static final double MAX_STEER_VELOCITY = 10; //radians per second
 
     public static final PPHolonomicDriveController pathFollowingController = new PPHolonomicDriveController(
@@ -59,15 +66,15 @@ public class DriveConstants {
         new PIDConstants(6, 0, 0)
     );
 
-    public static final double preciseTranslationkP = 0.3;
+    public static final double preciseTranslationkP = 8;
     public static final double preciseTranslationkI = 0;
     public static final double preciseTranslationkD = 0;
-    public static final double preciseRotationkP = 11;
+    public static final double preciseRotationkP = 10;
     public static final double preciseRotationkI = 0;
     public static final double preciseRotationkD = 0;
 
-    public static final double preciseTranslationTolerance = 0.1;
-    public static final double preciseRotationTolerance = 1;
+    public static final double preciseTranslationTolerance = 0.02;
+    public static final double preciseRotationTolerance = 0.8;
     public static final double kMaxPathFindTranslationError = 0.2;
 
     public static final PIDController preciseTranslationController = new PIDController(preciseTranslationkP, preciseTranslationkI, preciseTranslationkD);

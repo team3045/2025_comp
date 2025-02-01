@@ -351,11 +351,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command preciseTargetPose(Supplier<Pose2d> targetPose){
         return new DriveToPose(
             this, 
-            targetPose, 
-            preciseTranslationController, 
-            preciseRotationController, 
-            preciseTranslationTolerance, 
-            preciseRotationTolerance);
+            () -> getState().Pose,
+            targetPose);
     }
 
     /**Returns a command that will drive robot to supplied targetPose using Pathplanner Pathfind

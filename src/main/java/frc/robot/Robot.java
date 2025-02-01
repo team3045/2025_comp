@@ -5,24 +5,31 @@
 package frc.robot;
 
 import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.pathfinding.Pathfinder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commons.GremlinPathFinder;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  public static final Pathfinder pathfinder = new GremlinPathFinder();
 
   private final RobotContainer m_robotContainer;
   public Robot() {
+    Pathfinding.setPathfinder(pathfinder);
     m_robotContainer = new RobotContainer();
     //m_robotContainer.drivetrain.resetPose(new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
     //m_robotContainer.drivetrain.resetPose(new Pose2d(9,5.5, new Rotation2d()));
     //m_robotContainer.drivetrain.resetPose(new Pose2d(5,8,Rotation2d.kZero));
    // m_robotContainer.drivetrain.resetPose(new Pose2d(17,7,Rotation2d.fromDegrees(-90)));
     m_robotContainer.drivetrain.resetPose(new Pose2d(10.85,3.9, Rotation2d.kZero));
+    SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
   @Override

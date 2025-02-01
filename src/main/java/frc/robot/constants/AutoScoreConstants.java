@@ -21,6 +21,8 @@ public class AutoScoreConstants {
     public static final double rotationkI = 0;
     public static final double rotationkD = 0;
 
+    public static final double basicPIDDistance = 2.1;
+
     //Pole Number, Scoring Pose2d
     public static HashMap<Integer, Pose2d> kScorePoseMap = new HashMap<Integer, Pose2d>();
     public static HashMap<Integer, Double> kScoreHeightMap = new HashMap<Integer, Double>();

@@ -86,30 +86,20 @@ public class RobotContainer {
 
         joystick.cross().whileTrue(new DriveWheelRadiusCharacterization(drivetrain, DriveWheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
 
-
-        // joystick.square().whileTrue(
-        //     Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)).andThen(
-        //     autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelight[0])
-        //     .alongWith(autoScoreFactory.setElevatorHeight())
-        //     .andThen(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.15, () -> elevatorPivot.getPivotAngleDegrees())
-        //     .andThen(Commands.waitSeconds(0.3).andThen(claw.clawOutake().andThen(Commands.waitSeconds(0.2)))
-        //     .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop()))))))
-        //     .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))); //ALWAYS SET BACK TO TELEOP AFTER SCORE
-
         joystick.square().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.square().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
         scoringState.whileTrue(
             autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelights[0], VisionConstants.limelights[1]) //righ and left
-            // .alongWith(autoScoreFactory.setElevatorHeight())
-            // .andThen(elevatorPivot.goDownToScore())
-            // .andThen(Commands.waitSeconds(0.3))
-            // .andThen(claw.clawOutake())
-            // .andThen(Commands.waitSeconds(0.2))
-            // .andThen(drivetrain.driveBack())
-            // .finallyDo(() -> {
-            //     M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-            //     }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+            .alongWith(autoScoreFactory.setElevatorHeight())
+            .andThen(elevatorPivot.goDownToScore())
+            .andThen(Commands.waitSeconds(0.3))
+            .andThen(claw.clawOutake())
+            .andThen(Commands.waitSeconds(0.2))
+            .andThen(drivetrain.driveBack())
+            .finallyDo(() -> {
+                M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+                }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
             );
 
         scoringState.onFalse(

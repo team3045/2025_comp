@@ -1,75 +1,140 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
+
+import static frc.robot.constants.DriveConstants.MAX_ANGULAR_ACCEL_AUTOSCORE;
+import static frc.robot.constants.DriveConstants.MAX_ANGULAR_VELOCITY_AUTOSCORE;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.controller.PIDController;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.FlippingUtil;
+
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commons.GeomUtil;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/**
+ * Command to drive to a pose.
+ */
 public class DriveToPose extends Command {
-  private CommandSwerveDrivetrain drivetrain;
-  private Supplier<Pose2d> targetPoseSupplier;
-  private Pose2d targetPose;
-  private PIDController translationController;
-  private PIDController rotationController;
-  private double translationTolerance;
-  private double rotationTolerance;
 
-  /** Creates a new PreciseDriveToPose. */
-  public DriveToPose(CommandSwerveDrivetrain drivetrain, Supplier<Pose2d> poseSupplier, PIDController translationController, 
-    PIDController rotationController, double translationToleranceMeters, double rotationToleranceDegrees) {
-    this.drivetrain = drivetrain;
-    this.targetPoseSupplier = poseSupplier;
-    this.translationController = translationController;
-    this.rotationController = rotationController;
-    this.translationTolerance = translationToleranceMeters;
-    this.rotationTolerance = rotationToleranceDegrees;
+  /** Default constraints are 90% of max speed, accelerate to full speed in 1/3 second */
+  private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
+      DriveConstants.MAX_VELO_AUTOSCORE,
+      DriveConstants.MAX_ACCEL_AUTOSCORE);
+  private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(
+      MAX_ANGULAR_VELOCITY_AUTOSCORE,
+      MAX_ANGULAR_ACCEL_AUTOSCORE);
 
-    rotationController.enableContinuousInput(-Math.PI, Math.PI);
+  private final ProfiledPIDController xController;
+  private final ProfiledPIDController yController;
+  private final ProfiledPIDController thetaController;
 
-    addRequirements(drivetrain);
+  private final CommandSwerveDrivetrain drivetrainSubsystem;
+  private final Supplier<Pose2d> poseProvider;
+  private final Supplier<Pose2d> goalPoseSupplier;
+
+  private Pose2d goalPose;
+
+  public static final StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic("DriveState/targetPose", Pose2d.struct).publish();
+
+  public DriveToPose(
+        CommandSwerveDrivetrain drivetrainSubsystem,
+        Supplier<Pose2d> poseProvider,
+        Supplier<Pose2d> goalPoseSup) {
+    this(drivetrainSubsystem, poseProvider, goalPoseSup, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS);
   }
 
-  // Called when the command is initially scheduled.
+  public DriveToPose(
+        CommandSwerveDrivetrain drivetrainSubsystem,
+        Supplier<Pose2d> poseProvider,
+        Supplier<Pose2d> goalPoseSup,
+        TrapezoidProfile.Constraints xyConstraints,
+        TrapezoidProfile.Constraints omegaConstraints) {
+    this.drivetrainSubsystem = drivetrainSubsystem;
+    this.poseProvider = poseProvider;
+    this.goalPoseSupplier = goalPoseSup;
+
+    xController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseTranslationkD, xyConstraints);
+    yController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseTranslationkD, xyConstraints);
+    xController.setTolerance(DriveConstants.preciseTranslationTolerance);
+    yController.setTolerance(DriveConstants.preciseTranslationTolerance);
+    thetaController = new ProfiledPIDController(DriveConstants.preciseRotationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseRotationkD, omegaConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    thetaController.setTolerance(Units.degreesToRadians(DriveConstants.preciseRotationTolerance));
+
+    addRequirements(drivetrainSubsystem);
+  }
+
+
   @Override
   public void initialize() {
-    targetPose = targetPoseSupplier.get();
-    translationController.setTolerance(translationTolerance);
-    rotationController.setTolerance(rotationTolerance);
+    resetPIDControllers();
+    goalPose = goalPoseSupplier.get();
+    if (AutoBuilder.shouldFlip()) {
+      goalPose = FlippingUtil.flipFieldPose(goalPose);
+      SmartDashboard.putString("TargetPose", goalPose.toString());
+    }
+    thetaController.setGoal(goalPose.getRotation().getRadians());
+    xController.setGoal(goalPose.getX());
+    yController.setGoal(goalPose.getY()); 
+    
+    targetPosePublisher.set(goalPose);
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+  public boolean atGoal() {
+    return xController.atGoal() && yController.atGoal() && thetaController.atGoal();
+  }
+
+  private void resetPIDControllers() {
+    var robotPose = poseProvider.get();
+    thetaController.reset(robotPose.getRotation().getRadians());
+    xController.reset(robotPose.getX());
+    yController.reset(robotPose.getY());
+  }
+
   @Override
   public void execute() {
-    double xApplied = -translationController.calculate(drivetrain.getState().Pose.getX(), targetPose.getX());
-    double yApplied = -translationController.calculate(drivetrain.getState().Pose.getY(), targetPose.getY());
-    double omegaApplied = -rotationController.calculate(drivetrain.getState().Pose.getRotation().getDegrees(), targetPose.getRotation().getDegrees());
+    var robotPose = poseProvider.get();
+    // Drive to the goal
+    var xSpeed = xController.calculate(robotPose.getX());
+    if (xController.atGoal()) {
+      xSpeed = 0;
+    }
 
-    drivetrain.setControl(
-      DriveConstants.drive.withVelocityX(xApplied) // Drive forward with negative Y (forward)
-                    .withVelocityY(yApplied)// Drive left with negative X (left)
-                    .withRotationalRate(omegaApplied) // Drive counterclockwise with negative X (left)
-    );
+    var ySpeed = yController.calculate(robotPose.getY());
+    if (yController.atGoal()) {
+      ySpeed = 0;
+    }
+
+    var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
+    if (thetaController.atGoal()) {
+      omegaSpeed = 0;
+    }
+
+    drivetrainSubsystem.setControl(DriveConstants.APPLY_FIELD_SPEEDS
+      .withSpeeds(new ChassisSpeeds(xSpeed,ySpeed,omegaSpeed)));
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    if(!interrupted)
-      drivetrain.setControl(DriveConstants.brake);
-  }
-
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return GeomUtil.isNearPoseWithRotation(targetPose, drivetrain.getState().Pose, translationTolerance, rotationTolerance);
+    return atGoal();
   }
+
+  @Override
+  public void end(boolean interrupted) {
+    drivetrainSubsystem.setControl(DriveConstants.brake);
+  }
+
 }
