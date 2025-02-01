@@ -102,13 +102,13 @@ public class ElevatorPivotConstants {
     //Rotation of the output shaft. To get rotations of motor to the height of elevator we need to multiply by the gear ratio
     public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot //0.05729478
 
-    public static final double maxAccelerationLinear = 2; //m per sec^2
-    public static final double maxVelocityLinear = 1; //m per sec
+    public static final double maxAccelerationLinear = 4; //m per sec^2
+    public static final double maxVelocityLinear = 2; //m per sec
     public static final double maxAccelerationRotations =  maxAccelerationLinear / rotationToLengthRatio; //rot per sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; //rot per sec
 
-    public static final double pivotMaxAcceleration =  2; //rot per sec^2
-    public static final double pivotMaxVelocity = 1; //rot per sec
+    public static final double pivotMaxAcceleration =  4; //rot per sec^2
+    public static final double pivotMaxVelocity = 2; //rot per sec
 
     public static final double timesyncFrequency = 200; //Hz aka every 5 ms
 
