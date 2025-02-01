@@ -20,6 +20,7 @@ import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commons.GremlinAutoBuilder;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.FieldConstants;
@@ -49,6 +50,7 @@ public class AutoScoreFactory{
     this.drivetrain = drivetrain;
     this.elevatorPivot = elevatorPivot;
     this.claw = clawRef;
+
   }
 
 

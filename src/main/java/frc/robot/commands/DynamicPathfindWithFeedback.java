@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.commons.GeomUtil;
+import frc.robot.commons.GremlinAutoBuilder;
+import frc.robot.commons.GremlinPathfindingCommand;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -128,7 +130,7 @@ public class DynamicPathfindWithFeedback extends Command {
            currentPathfindCommand = drivetrain.preciseTargetPose(targetPoseSupplier);
         } else {
           // Create a new pathfinding command with the updated values
-          currentPathfindCommand = AutoBuilder.pathfindToPose(targetPose, 
+          currentPathfindCommand = GremlinAutoBuilder.pathfindToPose(targetPose, 
             constraints, 
             desiredEndVelocity);
         }
