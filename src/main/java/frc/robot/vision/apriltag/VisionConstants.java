@@ -112,14 +112,20 @@ public class VisionConstants {
         };
 
         public static final Pose3d[] limelightPoses = {
-                new Pose3d(
+                new Pose3d( //right
                         new Translation3d(
-                                0.2063496,
-                                0,
-                                0.231267),
+                                0.2063496-0.0381,
+                                0.1143,
+                                0.2320544),
                         new Rotation3d(0, Units.degreesToRadians(-10),0)
                 ),
-                new Pose3d()
+                new Pose3d(
+                        new Translation3d(
+                                0.2063496-0.0381,
+                                -0.1143,
+                                0.2320544),
+                        new Rotation3d(0, Units.degreesToRadians(-10),0)
+                ) // left
         };
 
         public static final GremlinPhotonCamera[] cameras = { //Retain this Order

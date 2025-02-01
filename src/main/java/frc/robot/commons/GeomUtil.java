@@ -162,7 +162,6 @@ public class GeomUtil {
    * @return whether or not the poses are near each other
    */
   public static boolean isNearPose(Pose2d targetPose, Pose2d actualPose, double tolerance){
-    System.out.println(targetPose.getTranslation().getDistance(actualPose.getTranslation()));
     return targetPose.getTranslation().getDistance(actualPose.getTranslation()) < tolerance;
   }
 

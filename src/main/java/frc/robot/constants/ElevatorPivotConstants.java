@@ -138,7 +138,7 @@ public class ElevatorPivotConstants {
     public enum HeightPositions{
         L4(1.73),
         L3(1.155),
-        L2(0.794);
+        L2(0.734);
 
         private final double height;
         HeightPositions(double height){

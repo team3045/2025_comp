@@ -421,6 +421,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         VisionConstants.limelights[0].setRobotHeading(getState().Pose.getRotation().getDegrees());
+        VisionConstants.limelights[1].setRobotHeading(getState().Pose.getRotation().getDegrees());
     }
 
     private void startSimThread() {

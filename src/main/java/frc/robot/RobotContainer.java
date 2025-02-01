@@ -101,15 +101,15 @@ public class RobotContainer {
         
         scoringState.whileTrue(
             autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelights[0], VisionConstants.limelights[1]) //righ and left
-            .alongWith(autoScoreFactory.setElevatorHeight())
-            .andThen(elevatorPivot.goDownToScore())
-            .andThen(Commands.waitSeconds(0.3))
-            .andThen(claw.clawOutake())
-            .andThen(Commands.waitSeconds(0.2))
-            .andThen(drivetrain.driveBack())
-            .finallyDo(() -> {
-                M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-                }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+            // .alongWith(autoScoreFactory.setElevatorHeight())
+            // .andThen(elevatorPivot.goDownToScore())
+            // .andThen(Commands.waitSeconds(0.3))
+            // .andThen(claw.clawOutake())
+            // .andThen(Commands.waitSeconds(0.2))
+            // .andThen(drivetrain.driveBack())
+            // .finallyDo(() -> {
+            //     M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+            //     }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
             );
 
         scoringState.onFalse(

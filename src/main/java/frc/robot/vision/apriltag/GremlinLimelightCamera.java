@@ -4,6 +4,8 @@
 
 package frc.robot.vision.apriltag;
 
+import java.util.Optional;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -83,8 +85,8 @@ public class GremlinLimelightCamera implements AutoCloseable {
      * 
      * @return The botpose estimate using Megatag
      */
-    public PoseEstimate getBotPoseEstimateMT2() {
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+    public Optional<PoseEstimate> getBotPoseEstimateMT2() {
+        return Optional.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name));
     }
 
     /**

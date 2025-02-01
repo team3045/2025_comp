@@ -8,9 +8,17 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Utils;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
@@ -69,12 +77,18 @@ public class AutoScoreFactory{
 
     //Basically we alternate between right or left cameras, depending on the pole number.
     //Odd pole numbers use rightCamera, Even pole numbers use leftCamera
-    Supplier<Pose2d> targetPoseSupplier = () -> {
+    Supplier<Pose2d> robotPoseSupplier = () -> {
       int poleNumber =(int) poleNumberSub.get();
+
+      Pose2d targetPose = AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose);
+
+      SmartDashboard.putNumberArray("targetposition", new double[]{targetPose.getX(), targetPose.getY()});
+      SmartDashboard.putNumber("polenum", (int) poleNumberSub.get());
+
       if(poleNumber % 2 == 0){
-        return leftFeedbackCamera .getBotPoseEstimateMT2().pose;
+        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
       } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().pose;
+        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
       }
     };
 
@@ -92,20 +106,23 @@ public class AutoScoreFactory{
       int poleNumber = (int) poleNumberSub.get();
 
       if(poleNumber % 2 == 0){
-        return leftFeedbackCamera.getBotPoseEstimateMT2().timestampSeconds;
+        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? leftFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds : Utils.getCurrentTimeSeconds();
       } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().timestampSeconds;
+        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? rightFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds : Utils.getCurrentTimeSeconds();
       }
     };
 
     return new DynamicPathfindWithFeedback(
-      () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), 
+      () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose),
       () -> 0, 
       DriveConstants.autoScoreConstraints, 
       drivetrain, 
-      targetPoseSupplier, 
+      robotPoseSupplier, 
       shouldOverride,
       timestampSupplier);
   }
-  
+
+  public Command pathfindRaw() {
+    return AutoBuilder.pathfindToPoseFlipped(AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), DriveConstants.autoScoreConstraints);
+  }
 }
