@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -16,8 +18,10 @@ import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.ElevatorPivotConstants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -122,4 +126,67 @@ public class AutoScoreFactory{
   public Command pathfindRaw() {
     return AutoBuilder.pathfindToPoseFlipped(AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), DriveConstants.autoScoreConstraints);
   }
+
+  public Command goToNearestAlgea(Supplier<Pose2d> poseSupplier, GremlinLimelightCamera feedbackCamera){
+    Supplier<Pose2d> targetPoseSupplier = () -> {
+      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+
+      Pose2d closest = poseList.get(0);
+      int closestNum = 0;
+
+      for(int i = 1; i < poseList.size(); i++){
+        if(
+          poseList.get(i).getTranslation().getDistance(poseSupplier.get().getTranslation()) < 
+          closest.getTranslation().getDistance(poseSupplier.get().getTranslation())) 
+        {
+          closest = poseList.get(i);
+          closestNum = i;
+        }
+      }
+
+      return FieldConstants.algeaPoses.get(closestNum);
+    };
+
+    return new DynamicPathfindWithFeedback(
+      targetPoseSupplier, 
+      () -> 0, 
+      DriveConstants.autoScoreConstraints, 
+      drivetrain,
+      () -> feedbackCamera.getBotPoseEstimateMT2().isPresent() ? feedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose,
+      feedbackCamera::seesObject,
+      () -> feedbackCamera.getBotPoseEstimateMT2().isPresent() ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds : Utils.getCurrentTimeSeconds()
+    );
+  }
+
+  public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera){
+    return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
+      .alongWith(
+        Commands.either(
+          elevatorPivot.goToPosition(
+            () -> ElevatorPivotConstants.HeightPositions.L3.getHeight(), 
+            () -> ElevatorPivotConstants.AnglePositions.L3.getAngle()), 
+          elevatorPivot.goToPosition(
+            () -> ElevatorPivotConstants.HeightPositions.L2.getHeight(), 
+            () -> ElevatorPivotConstants.AnglePositions.L2.getAngle()), 
+            () -> {
+              List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+
+              Pose2d closest = poseList.get(0);
+              int closestNum = 0;
+        
+              for(int i = 1; i < poseList.size(); i++){
+                if(
+                  poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 
+                  closest.getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) 
+                {
+                  closest = poseList.get(i);
+                  closestNum = i;
+                }
+              }
+        
+              return closestNum % 2 == 0; //basically the even poles are L3 and the odd poles are L2
+            })
+      );
+  }
+  
 }

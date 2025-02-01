@@ -8,7 +8,9 @@ import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -99,4 +101,16 @@ public class FieldConstants {
                 adjustedShopTags,
                 compFieldLength,
                 compFieldWidth);
+
+        public static final List<Pose2d> algeaPoses = List.of(
+                new Pose2d(3,4, Rotation2d.kZero),
+                new Pose2d(3.75, 2.8, Rotation2d.fromDegrees(60)),
+                new Pose2d(5.37, 2.5, Rotation2d.fromDegrees(120) ),
+                new Pose2d(5.97, 3.98, Rotation2d.k180deg),
+                new Pose2d(5.3, 5.375, Rotation2d.fromDegrees(240)),
+                new Pose2d(3.75, 5.375, Rotation2d.fromDegrees(300))
+        );
+
+        public static final List<Pose2d> flippedAlgeaPoses = algeaPoses.stream().map((pose) -> FlippingUtil.flipFieldPose(pose)).toList();
+
 }

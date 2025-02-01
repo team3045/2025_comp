@@ -54,7 +54,8 @@ public class RobotContainer {
 
     /*Triggers */
     private final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
-    private final Trigger disableGlobalEstimation = scoringState.and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
+    private final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
+    private final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
 
 
     public RobotContainer() {
@@ -84,8 +85,8 @@ public class RobotContainer {
         joystick.circle().onTrue(elevatorPivot.goToIntakeReady());
         joystick.triangle().onTrue(intakeSequenceFactory.moveElevatorAndIntake());
 
-        joystick.square().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
-        joystick.square().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+        joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
+        joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
         scoringState.whileTrue(
             autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelights[0], VisionConstants.limelights[1]) //righ and left
@@ -105,22 +106,24 @@ public class RobotContainer {
         
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
+
+        joystick.R2().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)));
+        joystick.R2().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+
+        algeaState.whileTrue(
+            autoScoreFactory.getAlgeaRemoveCommand(VisionConstants.limelights[0])
+            .finallyDo(() -> {
+                M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+                }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER REMOVAL
+        );
+
+        joystick.povDown().onTrue(elevatorPivot.zeroHeight());
+        joystick.square().onTrue(elevatorPivot.stowArm());
                 
         // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
         // joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
         // joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-
-        //joystick.share().onTrue(elevatorPivot.goToIntakeReady());
-        joystick.L1().onTrue(autoScoreFactory.setElevatorHeight());
-        joystick.R1().onTrue(elevatorPivot.stowArm().alongWith(claw.stop()));
-        joystick.R2().onTrue(elevatorPivot.goToPosition(() -> elevatorPivot.getHeight() - 0.15, () -> elevatorPivot.getPivotAngleDegrees())
-        .andThen(Commands.waitSeconds(0.3).andThen(claw.clawOutake().andThen(Commands.waitSeconds(0.2)))
-        .andThen(drivetrain.driveBack().andThen(elevatorPivot.stowArm().alongWith(claw.stop())))));
-        // joystick.square().onTrue(elevatorPivot.zeroHeight());
-        //joystick.L2().whileTrue(elevatorPivot.decreaseAngle().repeatedly());
-        // joystick.R2().whileTrue(elevatorPivot.increaseAngle().repeatedly());
 
         
         drivetrain.registerTelemetry(logger::telemeterize);
