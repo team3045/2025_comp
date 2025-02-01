@@ -84,8 +84,6 @@ public class RobotContainer {
         joystick.circle().onTrue(elevatorPivot.goToIntakeReady());
         joystick.triangle().onTrue(intakeSequenceFactory.moveElevatorAndIntake());
 
-        joystick.cross().whileTrue(new DriveWheelRadiusCharacterization(drivetrain, DriveWheelRadiusCharacterization.Direction.COUNTER_CLOCKWISE));
-
         joystick.square().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.square().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
