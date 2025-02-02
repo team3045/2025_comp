@@ -8,7 +8,10 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -26,6 +29,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -38,10 +42,15 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.DynamicPathfindCommand;
+import frc.robot.commons.GremlinAutoBuilder;
 import frc.robot.commons.TimestampedVisionUpdate;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.*;
+import static frc.robot.constants.FieldConstants.blueReefCenter;
+import static frc.robot.constants.FieldConstants.redReefCenter;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -240,6 +249,24 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this // Subsystem for requirements
             );
+
+            GremlinAutoBuilder.configure(
+                () -> getState().Pose,   // Supplier of current robot pose
+                this::resetPose,         // Consumer for seeding pose against auto
+                () -> getState().Speeds, // Supplier of current robot speeds
+                // Consumer of ChassisSpeeds and feedforwards to drive the robot
+                (speeds, feedforwards) -> setControl(
+                    m_pathApplyRobotSpeeds.withSpeeds(speeds)
+                        .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                        .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
+                ),
+                pathFollowingController,
+                config,
+                // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                this // Subsystem for requirements
+            );
+            
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
@@ -261,6 +288,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public double[] getWheelPositionsRadians(){
+        double[] positionRads = new double[4];
+        int i =0;
+        for(SwerveModule<TalonFX, TalonFX, CANcoder> module : getModules()){
+            double positionRotations = module.getDriveMotor().getPosition().getValueAsDouble() / TunerConstants.kDriveGearRatio;
+            positionRads[i] = Units.rotationsToRadians(positionRotations);
+            i++;
+        }
+        return positionRads;
+    }
+
+    public void turnAtRotationalRate(double radsPerSecond){
+        setControl(m_rotationCharacterization.withRotationalRate(radsPerSecond));
+    }
+
+    public double getRawHeadingRadians(){
+        return getState().RawHeading.getRadians();
     }
 
     public static final StructArrayPublisher<Pose2d> TELEOP_TRAJECTORY_PUBLISHER = 
@@ -324,11 +370,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command preciseTargetPose(Supplier<Pose2d> targetPose){
         return new DriveToPose(
             this, 
-            targetPose, 
-            preciseTranslationController, 
-            preciseRotationController, 
-            preciseTranslationTolerance, 
-            preciseRotationTolerance);
+            () -> getState().Pose,
+            targetPose);
     }
 
     /**Returns a command that will drive robot to supplied targetPose using Pathplanner Pathfind
@@ -339,6 +382,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command pathFindToPose(Supplier<Pose2d> targetPoseSup, DoubleSupplier desiredEndVelocitySup){
         return new DynamicPathfindCommand(targetPoseSup, desiredEndVelocitySup, pathFollowingConstraints, this);
+    }
+
+    public boolean withinDistanceOfReef(double distance){
+        return getState().Pose.getTranslation().getDistance(
+            DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? blueReefCenter : redReefCenter) 
+            < distance;
+    }
+
+    public Command driveBack(){
+        return applyRequest(() -> driveBack).withTimeout(0.2);
     }
 
     /**
@@ -382,6 +435,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        VisionConstants.limelights[0].setRobotHeading(getState().Pose.getRotation().getDegrees());
+        VisionConstants.limelights[1].setRobotHeading(getState().Pose.getRotation().getDegrees());
     }
 
     private void startSimThread() {

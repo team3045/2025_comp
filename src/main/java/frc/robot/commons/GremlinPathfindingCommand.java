@@ -32,6 +32,8 @@ import java.util.function.Supplier;
 public class GremlinPathfindingCommand extends Command {
   private static int instances = 0;
 
+  private static final double tooCloseSkipDistance = 0.5;
+
   private final Timer timer = new Timer();
   private final PathPlannerPath targetPath;
   private Supplier<Pose2d> targetPose;
@@ -342,7 +344,7 @@ public class GremlinPathfindingCommand extends Command {
             && currentPose
                     .getTranslation()
                     .getDistance(currentTrajectory.getEndState().pose.getTranslation())
-                < 2.0;
+                < tooCloseSkipDistance;
 
     if (!skipUpdates && Pathfinding.isNewPathAvailable()) {
       currentPath = Pathfinding.getCurrentPath(constraints, goalEndState);

@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 156,
-      "y": 128,
-      "width": 1288,
-      "height": 712,
+      "x": 60,
+      "y": 138,
+      "width": 1303,
+      "height": 736,
       "state": {
         "sidebar": {
           "width": 309,
@@ -31,7 +31,7 @@
             "/Object Poses/2/translation",
             "/Object Poses",
             "/OakD",
-            "/elevator"
+            "/SmartDashboard"
           ]
         },
         "tabs": {
@@ -116,7 +116,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Duck Bot",
+                      "model": "2025Alpha",
                       "color": "#00ff00"
                     }
                   },
@@ -146,7 +146,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Duck Bot",
+                      "model": "2025Alpha",
                       "color": "#0000ff"
                     }
                   },
@@ -176,7 +176,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Duck Bot",
+                      "model": "2025Alpha",
                       "color": "#ffff00"
                     }
                   },
@@ -206,7 +206,7 @@
                     "logType": "Pose2d",
                     "visible": false,
                     "options": {
-                      "model": "Duck Bot",
+                      "model": "2025Alpha",
                       "color": "#ff0000"
                     }
                   },
@@ -257,29 +257,29 @@
                     }
                   }
                 ],
-                "game": "Axes",
+                "game": "2025 Field",
                 "origin": "blue"
               },
               "controllerUUID": "3x44rbwboglbdvvdhpbln3ckm3wj7evd",
               "renderer": {
-                "cameraIndex": -2,
-                "orbitFov": 50,
+                "cameraIndex": -5,
+                "orbitFov": 60,
                 "cameraPosition": [
-                  -1.9850069725699822,
-                  0.9170176699895913,
-                  0.06948175271674344
+                  10.28116,
+                  1.5748000000000002,
+                  6.295394842760901e-16
                 ],
                 "cameraTarget": [
-                  0.15728264485066693,
-                  0.4441534454585494,
-                  0.018846375947924484
+                  0,
+                  0.5,
+                  0
                 ]
               },
               "controlsHeight": 200
             },
             {
               "type": 1,
-              "title": "Line Graph",
+              "title": "StdDevs",
               "controller": {
                 "leftSources": [
                   {
@@ -339,6 +339,51 @@
                 "rightFilter": 0
               },
               "controllerUUID": "w98g9gj484hcl078tg8vywe11frfeujh",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "ClawVelo",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Claw Motor Sim Velocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "NT:/SmartDashboard/Target Velocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "kxuizxpl0rlg0wf6sqkbfgtkwo6ghscc",
               "renderer": null,
               "controlsHeight": 200
             },

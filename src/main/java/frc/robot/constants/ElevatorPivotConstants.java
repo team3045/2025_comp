@@ -29,7 +29,8 @@ public class ElevatorPivotConstants {
     public static final int leftMotorId = 16;
     public static final int pivorMotorId = 17;
     public static final int pivotCancoderId = 18;
-    public static final String canbus = "Canivore 3045";
+    public static final String elevatorCanbus = "rio";
+    public static final String armCanbus = "Canivore 3045";
 
     public static final String elevatorTable = "elevator";
     public static final String pivotTable = "pivot";
@@ -45,22 +46,22 @@ public class ElevatorPivotConstants {
     public static final double minAngleDegrees = -90;
     public static final double maxAngleDegrees = 90;
     public static final double stowAngle = maxAngleDegrees;
-    public static final double intakingAngle = -90;
+    public static final double intakingAngle = -91.95;
 
     
     public static final double rotorToSensorRatio = 1; 
-    public static final double sensorToMechanismRatio = (686.0 / 27.0);
+    public static final double sensorToMechanismRatio = (56.0 / 12.0);
     public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
-    public static final double pivotRotorToSensorRatio = 50; 
+    public static final double pivotRotorToSensorRatio = (56.0 / 12.0) * (56.0 / 24.0) * (56.0 / 26.0); 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
-    public static final double carriageToGround = Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
+    public static final double carriageToGround = 0.508;//Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
     public static final double minimumHeight = carriageToGround; //m
-    public static final double stowHeight = minimumHeight;
-    public static final double intakingReadyHeight = 0.85; 
-    public static final double intakingHeight = 0.75;
+    public static final double stowHeight = 0.64;
+    public static final double intakingReadyHeight = 0.973; 
+    public static final double intakingHeight = 0.877;
 
     public static final double maxHeight = Units.inchesToMeters(57) + carriageToGround; // m
 
@@ -84,7 +85,7 @@ public class ElevatorPivotConstants {
 
     /*Simulation */
     public static final double carriageMass = 4.53592 * 2; //kg, 9kg = 20lbs
-    public static final double drumRadius = .2; //m
+    public static final double drumRadius = 0.02794; //m
     public static final double canvasWidth = 2; //m
     public static final double canvasHeight = 6; //m
     public static final double pivotMOI = 0.02347363; //moment of inertia Kg * m^2
@@ -99,45 +100,45 @@ public class ElevatorPivotConstants {
 
 
     //Rotation of the output shaft. To get rotations of motor to the height of elevator we need to multiply by the gear ratio
-    public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot
+    public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot //0.05729478
 
-    public static final double maxAccelerationLinear = 2; //m per sec^2
-    public static final double maxVelocityLinear = 1; //m per sec
+    public static final double maxAccelerationLinear = 4; //m per sec^2
+    public static final double maxVelocityLinear = 2; //m per sec
     public static final double maxAccelerationRotations =  maxAccelerationLinear / rotationToLengthRatio; //rot per sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; //rot per sec
 
-    public static final double pivotMaxAcceleration =  2; //rot per sec^2
-    public static final double pivotMaxVelocity = 1; //rot per sec
+    public static final double pivotMaxAcceleration =  4; //rot per sec^2
+    public static final double pivotMaxVelocity = 2; //rot per sec
 
     public static final double timesyncFrequency = 200; //Hz aka every 5 ms
 
-    public static final InvertedValue leftInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue leftInverted = InvertedValue.Clockwise_Positive;
     public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
 
-    public static final double kP = 200;
+    public static final double kP = 5;
     public static final double kI = 0;
     public static final double kD = 0;
-    public static final double kG = 0;
-    public static final double kS = 0;
-    public static final double kA = 0;
-    public static final double kV = 0;
+    public static final double kG = 0.38967;
+    public static final double kS = 0.096618;;
+    public static final double kA = 0.024757;
+    public static final double kV = 0.60932;
 
-    public static final double pivotKP = 100;
+    public static final double pivotKP = 30;
     public static final double pivotKI = 0;
     public static final double pivotKD = 0;
-    public static final double pivotKG = 0;
-    public static final double pivotKS = 0;
-    public static final double pivotKA = 0;
-    public static final double pivotKV = 0;
+    public static final double pivotKG = 0.4;
+    public static final double pivotKS = 0.1;
+    public static final double pivotKA = 0.2;
+    public static final double pivotKV = 1.5;
 
-    public static final double magnetOffset = 0;
-    public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    public static final double magnetOffset = 0.236816;
+    public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.Clockwise_Positive;
 
     public enum HeightPositions{
-        L4(1.673),
-        L3(0.88),
-        L2(0.584);
+        L4(1.73),
+        L3(1.155),
+        L2(0.734);
 
         private final double height;
         HeightPositions(double height){
@@ -150,9 +151,9 @@ public class ElevatorPivotConstants {
     }
 
     public enum AnglePositions{
-        L4(41),
-        L3(41),
-        L2(41);
+        L4(35),
+        L3(37),
+        L2(37);
 
         private final double angle;
         AnglePositions(double angle){
@@ -213,7 +214,7 @@ public class ElevatorPivotConstants {
         .withSupplyCurrentLowerLimit(pivotSupplyCurrentLimitLowerLimit);
     
     public static final FeedbackConfigs pivotFeedbackConfigs = new FeedbackConfigs()
-        .withFusedCANcoder(new CoreCANcoder(pivotCancoderId, canbus))
+        .withFusedCANcoder(new CoreCANcoder(pivotCancoderId, armCanbus))
         .withRotorToSensorRatio(pivotRotorToSensorRatio)
         .withSensorToMechanismRatio(pivotSensorToMechanismRatio);
 
@@ -247,7 +248,7 @@ public class ElevatorPivotConstants {
     public static final CANcoderConfiguration pivotCancoderConfig = new CANcoderConfiguration()
         .withMagnetSensor(new MagnetSensorConfigs()
             .withSensorDirection(pivotEncoderSensorDirection)
-            .withAbsoluteSensorDiscontinuityPoint(1) //unsigned 0-1
+            .withAbsoluteSensorDiscontinuityPoint(0.5) //[-0.5,0.5]
             .withMagnetOffset(magnetOffset)
         );
 }

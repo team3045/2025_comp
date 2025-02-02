@@ -21,8 +21,8 @@ public class ClawConstants {
     public static final String canbus = "Canivore 3045";
 
 
-    public static final double intakeSpeed = 20;
-    public static final double outtakeSpeed = -10;
+    public static final double intakeSpeed = -15;
+    public static final double outtakeSpeed = 3;
     public static final double holdSpeed = 0;
 
     public static final double speedTolerance = 0.5; //RPS
@@ -86,13 +86,13 @@ public class ClawConstants {
         .withStatorCurrentLimitEnable(clawStatorCurrentLimitEnable)
         .withSupplyCurrentLimitEnable(clawSupplyCurrentLimitEnable);
 
-    public static final double kP = 0.05;
+    public static final double kP = 0.4;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0;
     public static final double kS = 0;
-    public static final double kA = 0.06;
-    public static final double kV = 12 / 100.5;
+    public static final double kA = 0;
+    public static final double kV = 0.13;
 
     public static final MotionMagicConfigs clawMotionMagicConfigs = new MotionMagicConfigs()
         .withMotionMagicAcceleration(clawMaxAccelerationRotations)

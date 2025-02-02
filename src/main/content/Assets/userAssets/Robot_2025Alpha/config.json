@@ -14,7 +14,108 @@
 			"degrees": 0
 		}], 
 	"position": [0, 0, 0], 
-	"cameras": [],
+	"cameras": [
+		{
+			"name": "frontLeft",
+			"rotations": [
+				{ 
+					"axis": "x", 
+					"degrees": 0
+				},
+				{ 
+					"axis": "y",
+					"degrees": 40
+				},
+				{ 
+					"axis": "z", 
+					"degrees": -20
+				}
+				],
+			"position": [0.1823212, 0.2593086, 0.794766],
+			"resolution": [1280, 960],
+			"fov": 70
+		  },
+		  {
+			"name": "frontRight",
+			"rotations": [
+				{ 
+					"axis": "x", 
+					"degrees": 0
+				},
+				{ 
+					"axis": "y",
+					"degrees": 40
+				},
+				{ 
+					"axis": "z", 
+					"degrees": 20
+				}
+				],
+			"position": [0.1823212, -0.2593086, 0.794766],
+			"resolution": [1280, 960],
+			"fov": 70
+		  },
+		  {
+			"name": "backLeft",
+			"rotations": [
+				{ 
+					"axis": "x", 
+					"degrees": 0
+				},
+				{ 
+					"axis": "y",
+					"degrees": -28.125
+				},
+				{ 
+					"axis": "z", 
+					"degrees": -150
+				}
+				],
+			"position": [-0.2765044,0.2377948,0.2133092],
+			"resolution": [1600, 1200],
+			"fov": 70
+		  },
+		  {
+			"name": "backRight",
+			"rotations": [
+				{ 
+					"axis": "x", 
+					"degrees": 0
+				},
+				{ 
+					"axis": "y",
+					"degrees": -28.125
+				},
+				{ 
+					"axis": "z", 
+					"degrees": 162
+				}
+				],
+			"position": [-0.2765044,-0.2377948,0.2133092],
+			"resolution": [1600, 1200],
+			"fov": 70
+		  },
+		  {
+			"name": "frontLimelight",
+			"rotations": [
+				{ 
+					"axis": "x", 
+					"degrees": 0
+				},
+				{ 
+					"axis": "y",
+					"degrees": -10
+				},
+				{ 
+					"axis": "z", 
+					"degrees": 0
+				}
+				],
+			"position": [0.03175,0,0.2286],
+			"resolution": [1280, 960],
+			"fov": 63.3 
+		  }
+	],
 	"components": [
 		{
 			"zeroedRotations": [

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -31,9 +32,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commons.GremlinUtil;
 
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.constants.ElevatorPivotConstants.*;
 
 import java.util.function.DoubleSupplier;
@@ -41,13 +43,14 @@ import java.util.function.DoubleSupplier;
 
 /* */
 public class ElevatorPivot extends SubsystemBase {
-  private TalonFX rightMotor = new TalonFX(rightMotorId,canbus);
-  private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
-  private TalonFX pivotMotor = new TalonFX(pivorMotorId, canbus);
-  private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
+  private TalonFX rightMotor = new TalonFX(rightMotorId,elevatorCanbus);
+  private TalonFX leftMotor = new TalonFX(leftMotorId, elevatorCanbus);
+  private TalonFX pivotMotor = new TalonFX(pivorMotorId, armCanbus);
+  private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, armCanbus);
 
   private double targetHeight;
   private double targetAngleDegrees;
+  private double voltage = 0;
 
   private double stage3Height = carriageToGround;
   private double stage2Height = carriageToGround;
@@ -90,6 +93,7 @@ public class ElevatorPivot extends SubsystemBase {
     //We assume elevator starts at lowest position
     rightMotor.setPosition(0);
     leftMotor.setPosition(0);
+    pivotCancoder.setPosition(pivotCancoder.getAbsolutePosition().getValueAsDouble());
 
     BaseStatusSignal.setUpdateFrequencyForAll(200, 
       rightMotor.getPosition(),
@@ -265,17 +269,26 @@ public class ElevatorPivot extends SubsystemBase {
    * 
    * @param targetHeight the desired height in meters
    */
-  private void setHeightTarget(double targetHeight){
-    this.targetHeight = GremlinUtil.clampWithLogs(maxHeight, minimumHeight, targetHeight);
+  private void setHeightTarget(double desiredHeight){
+    this.targetHeight = GremlinUtil.clampWithLogs(maxHeight, minimumHeight, desiredHeight);
 
     double targetRotations = convertHeightToRotations(targetHeight);
 
     MotionMagicVoltage request = new MotionMagicVoltage(targetRotations)
       .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); //every  1 ms
-    Follower followerRequest = new Follower(rightMotorId, rightInverted != leftInverted);
+    Follower followerRequest = new Follower(rightMotorId, rightInverted != leftInverted).withUpdateFreqHz(1000);
 
     rightMotor.setControl(request);
     leftMotor.setControl(followerRequest);
+  }
+
+  private void resetHeight(){
+    rightMotor.setPosition(0);
+    leftMotor.setPosition(0);
+  }
+
+  public Command zeroHeight(){
+    return this.runOnce(() -> resetHeight());
   }
 
   private void setAngleTargetDegrees(double targetAngleDegrees){
@@ -293,7 +306,7 @@ public class ElevatorPivot extends SubsystemBase {
     pivotMotor.setControl(request);
   }
 
-  private void setHeightAndAngle(double heightMeters, double angleDegrees){
+  private void setTargetHeightAndAngle(double heightMeters, double angleDegrees){
     setHeightTarget(heightMeters);
     setAngleTargetDegrees(angleDegrees);
   }
@@ -307,7 +320,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredheight
    */
   public Command goToHeight(DoubleSupplier desiredHeight){
-    return this.run(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
+    return this.runOnce(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
   }
 
   /**
@@ -319,7 +332,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredAngle
    */
   public Command goToAngleDegrees(DoubleSupplier desiredAngle){
-    return this.run(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
+    return this.runOnce(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
   }
 
   /**
@@ -333,8 +346,8 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to the desired position
    */
   public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
-    return this.run(() -> {
-      setHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
+    return this.runOnce(() -> {
+      setTargetHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
     }).until(atTargetAngle.and(atTargetHeight));
   }
 
@@ -357,6 +370,10 @@ public class ElevatorPivot extends SubsystemBase {
     return stowArm().andThen(
       goToPosition(() -> intakingReadyHeight, () -> 0.0).until(atTargetHeight)
       .andThen(goToPosition(() -> intakingReadyHeight, () -> intakingAngle)));
+  }
+
+  public Command goDownToScore(){
+    return goToPosition(() -> getHeight() - 0.15, () -> getPivotAngleDegrees());
   }
 
    /**Send the elevatorPivot to the intaking height and angle.
@@ -393,11 +410,34 @@ public class ElevatorPivot extends SubsystemBase {
     return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees() - 5);
   }
 
+  public Command increaseVoltage(){
+    return this.runOnce(() -> {
+      voltage += 0.1;
+      pivotMotor.setVoltage(voltage);
+    });
+  }
+
+  public Command decreaseVoltage(){
+    return this.runOnce(() -> {
+      voltage -= 0.1;
+      pivotMotor.setVoltage(voltage);
+    });
+  }
+
+  public Command zeroVoltage(){
+    return this.runOnce(() -> {
+      voltage = 0;
+      pivotMotor.setVoltage(voltage);
+    });
+  }
+
   @Override
   public void periodic() {
     //if zero retain last value basically
     if(getVerticalVelocity() > 0.2) travellingUpward = true;
     else if(getVerticalVelocity() < -0.2) travellingUpward = false;
+
+    updateMechanism2d();
   } 
 
   /*SIMULATION*/
@@ -527,5 +567,32 @@ public class ElevatorPivot extends SubsystemBase {
     SmartDashboard.putNumber("Arm Target", targetAngleDegrees);
     SmartDashboard.putNumber("Arm Angle", currentAngle);
   }
-  
+
+
+//elevtor sysid 
+private final SysIdRoutine m_sysIdRoutine =
+   new SysIdRoutine(
+      new SysIdRoutine.Config(
+         Volts.of(0.5).per(Second),        // Use default ramp rate (1 V/s)
+         Volts.of(2), // Reduce dynamic step voltage to 4 to prevent brownout
+         null,        // Use default timeout (10 s)
+                      // Log state with Phoenix SignalLogger class
+         (state) -> SignalLogger.writeString("state", state.toString())
+      ),
+      new SysIdRoutine.Mechanism(
+         (volts) ->  {
+                    pivotMotor.setVoltage(volts.in(Volts));
+                 },
+         null,
+         this
+      )
+   );
+
+public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction);
+}
+ 
+public  Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction);
+}
 }

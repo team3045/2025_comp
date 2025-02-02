@@ -63,6 +63,10 @@ public class GremlinPhotonCamera implements AutoCloseable {
     public static final String kTableName = "photonvision";
 
     private final NetworkTable cameraTable;
+
+    private Pose3d camPose;
+    private PhotonCamera photonCamera;
+
     PacketSubscriber<PhotonPipelineResult> resultSubscriber;
     BooleanPublisher driverModePublisher;
     BooleanSubscriber driverModeSubscriber;
@@ -75,9 +79,6 @@ public class GremlinPhotonCamera implements AutoCloseable {
     DoubleArraySubscriber cameraDistortionSubscriber;
     MultiSubscriber topicNameSubscriber;
     NetworkTable rootPhotonTable;
-
-    private final Pose3d camPose;
-    private final PhotonCamera photonCamera;
 
     @Override
     public void close() {
@@ -127,12 +128,11 @@ public class GremlinPhotonCamera implements AutoCloseable {
      */
     public GremlinPhotonCamera(NetworkTableInstance instance, String cameraName, Pose3d camPose) {
         name = cameraName;
-        this.camPose = camPose;
-        this.photonCamera = new PhotonCamera(cameraName);
-
         rootPhotonTable = instance.getTable(kTableName);
         this.cameraTable = rootPhotonTable.getSubTable(cameraName);
         path = cameraTable.getPath();
+        this.camPose = camPose;
+        this.photonCamera = new PhotonCamera(cameraName);
         var rawBytesEntry = cameraTable
                 .getRawTopic("rawBytes")
                 .subscribe(
@@ -172,8 +172,26 @@ public class GremlinPhotonCamera implements AutoCloseable {
      *
      * @param cameraName The nickname of the camera (found in the PhotonVision UI).
      */
-    public GremlinPhotonCamera(String cameraName, Pose3d pose) {
-        this(NetworkTableInstance.getDefault(), cameraName, pose);
+    public GremlinPhotonCamera(String cameraName, Pose3d camPose) {
+        this(NetworkTableInstance.getDefault(), cameraName, camPose);
+    }
+
+    /**
+     * Get the 3d position of camera on robot.
+     * 
+     * @return The 3d position of the the camera with robot center as origin
+     */
+    public Pose3d getCameraPose() {
+        return camPose;
+    }
+
+    /**
+     * Gets the PhotonCamera version of this camera, only used for simulation
+     * 
+     * @return The PhotonCamera that refers to this camera
+     */
+    public PhotonCamera getPhotonCamera() {
+        return photonCamera;
     }
 
     /**
@@ -305,23 +323,6 @@ public class GremlinPhotonCamera implements AutoCloseable {
     }
 
     /**
-     * Get the 3d position of camera on robot.
-     * 
-     * @return The 3d position of the the camera with robot center as origin
-     */
-    public Pose3d getCameraPose() {
-        return camPose;
-    }
-
-    /**
-     * Gets the PhotonCamera version of this camera, only used for simulation
-     * @return The PhotonCamera that refers to this camera
-     */
-    public PhotonCamera getPhotonCamera() {
-        return photonCamera;
-    }
-
-    /**
      * Allows the user to select the active pipeline index.
      *
      * @param index The active pipeline index.
@@ -337,17 +338,12 @@ public class GremlinPhotonCamera implements AutoCloseable {
      */
     public VisionLEDMode getLEDMode() {
         int value = (int) ledModeState.get(-1);
-        switch (value) {
-            case 0:
-                return VisionLEDMode.kOff;
-            case 1:
-                return VisionLEDMode.kOn;
-            case 2:
-                return VisionLEDMode.kBlink;
-            case -1:
-            default:
-                return VisionLEDMode.kDefault;
-        }
+        return switch (value) {
+            case 0 -> VisionLEDMode.kOff;
+            case 1 -> VisionLEDMode.kOn;
+            case 2 -> VisionLEDMode.kBlink;
+            default -> VisionLEDMode.kDefault;
+        };
     }
 
     /**

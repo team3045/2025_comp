@@ -64,6 +64,6 @@ public class DynamicPathfindCommand extends Command {
         double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
 
         // Create a new pathfinding command with the updated values
-        currentPathfindCommand = AutoBuilder.pathfindToPose(targetPose, constraints, desiredEndVelocity);
+        currentPathfindCommand = AutoBuilder.pathfindToPoseFlipped(targetPose, constraints, desiredEndVelocity);
     }
 }

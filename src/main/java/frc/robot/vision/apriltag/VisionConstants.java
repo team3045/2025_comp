@@ -33,6 +33,9 @@ public class VisionConstants {
         public static final int OV2311_RES_HORIZONTAL = 1600;
         public static final int OV2311_RES_VERTICAL = 1200;
         public static final double OV2311_FOV_DIAG = 90;
+        public static final int LL3_RES_HORIZONTAL = 1280;
+        public static final int LL3_RES_VERTICAL = 960;
+        public static final double LL3_FOV_DIAG = 90;
 
         public static final PolynomialRegression XY_STDDEV_MODEL = new PolynomialRegression(
                         new double[] {
@@ -49,21 +52,33 @@ public class VisionConstants {
                         new double[] { 0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068 },
                         1);
 
-        public static final double thetaModifier = 100;
+        public static final double thetaModifier = 50;
         public static final double multiTagModifier = 0.6;
-        public static final double stabilityModifier = 7.5;
-        public static final double maxChangeDistance = 1; // m
+        public static final double stabilityModifier = 15;
+        public static final double maxChangeDistance = 40; // m
 
         public static SimCameraProperties getOV2311() {
                 SimCameraProperties properties = new SimCameraProperties();
                 properties.setCalibration(OV2311_RES_HORIZONTAL, OV2311_RES_VERTICAL,
                                 Rotation2d.fromDegrees(OV2311_FOV_DIAG));
                 properties.setCalibError(0.25, 0.08);
-                properties.setFPS(50);
+                properties.setFPS(25);
                 properties.setAvgLatencyMs(35);
                 properties.setLatencyStdDevMs(5);
 
                 return properties;
+        }
+
+        public static SimCameraProperties getLL3(){
+                SimCameraProperties properties = new SimCameraProperties();
+                properties.setCalibration(LL3_RES_HORIZONTAL, LL3_RES_VERTICAL, Rotation2d.fromDegrees(LL3_FOV_DIAG));
+                properties.setCalibError(0.25, 0.08);
+                properties.setFPS(25);
+                properties.setAvgLatencyMs(35);
+                properties.setLatencyStdDevMs(5);
+
+                return properties;
+
         }
 
         public static final Pose3d[] cameraPoses = {
@@ -76,7 +91,7 @@ public class VisionConstants {
                         new Pose3d( // Front Right
                                         new Translation3d(
                                                         Units.inchesToMeters(10.886),
-                                                        -Units.inchesToMeters(9.362),
+                                                       -Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-30))),
@@ -90,16 +105,38 @@ public class VisionConstants {
                         new Pose3d( // Back Right
                                         new Translation3d(
                                                         -Units.inchesToMeters(10.886),
-                                                        Units.inchesToMeters(9.362),
+                                                        -Units.inchesToMeters(9.362),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(162))),
+                                                        Units.degreesToRadians(-150))),
         };
 
-        public static final GremlinPhotonCamera[] cameras = {
+        public static final Pose3d[] limelightPoses = {
+                new Pose3d( //right
+                        new Translation3d(
+                                0.2063496-0.0381,
+                                0.1143,
+                                0.2320544),
+                        new Rotation3d(0, Units.degreesToRadians(-10),0)
+                ),
+                new Pose3d(
+                        new Translation3d(
+                                0.2063496-0.0381,
+                                -0.1143,
+                                0.2320544),
+                        new Rotation3d(0, Units.degreesToRadians(-10),0)
+                ) // left
+        };
+
+        public static final GremlinPhotonCamera[] cameras = { //Retain this Order
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
-                        //new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
+                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };    
+
+        public static final GremlinLimelightCamera[] limelights = { //retain this order
+                new GremlinLimelightCamera("limelight-right", limelightPoses[0]),
+                new GremlinLimelightCamera("limelight-left", limelightPoses[1])
+        };
 }
