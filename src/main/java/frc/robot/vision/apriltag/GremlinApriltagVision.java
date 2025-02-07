@@ -332,33 +332,28 @@ public class GremlinApriltagVision extends SubsystemBase {
   public void configSim() {
     visionSystemSim = new VisionSystemSim("ApriltagVision");
     visionSystemSim.addAprilTags(LAYOUT);
-
-    simCameras = new PhotonCameraSim[cameras.length];
-    simCameraProperties = new SimCameraProperties[cameras.length];
-
-    
-
+  
+    simCameras = new PhotonCameraSim[cameras.length + limelights.length];
+    simCameraProperties = new SimCameraProperties[cameras.length + limelights.length];
+  
     for (int i = 0; i < cameras.length; i++) {
       simCameraProperties[i] = VisionConstants.getOV2311();
       simCameras[i] = new PhotonCameraSim(cameras[i].getPhotonCamera(), simCameraProperties[i]);
       simCameras[i].enableDrawWireframe(false);
-      simCameras[i].enableRawStream(false); // (http://localhost:1181 / 1182)
+      simCameras[i].enableRawStream(false);
       simCameras[i].enableProcessedStream(false);
       visionSystemSim.addCamera(simCameras[i], GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()));
     }
-
-    int length = simCameras.length;
-
-    for(int i = 0; i < limelights.length; i++){
-      int positon = length + i - 1;
-      simCameraProperties[positon] = VisionConstants.getLL3();
-      simCameras[positon] = new PhotonCameraSim(limelights[i].getPhotonCamera(), simCameraProperties[positon]);
-      simCameras[positon].enableDrawWireframe(false);
-      simCameras[positon].enableRawStream(true);
-      simCameras[positon].enableProcessedStream(true);
-      simCameras[positon].setTargetSortMode(PhotonTargetSortMode.Largest);
-
-      visionSystemSim.addCamera(simCameras[positon], GeomUtil.pose3dToTransform3d(limelights[i].getCameraPose()));
+  
+    for (int i = 0; i < limelights.length; i++) {
+      int position = cameras.length + i; 
+      simCameraProperties[position] = VisionConstants.getLL3();
+      simCameras[position] = new PhotonCameraSim(limelights[i].getPhotonCamera(), simCameraProperties[position]);
+      simCameras[position].enableDrawWireframe(false);
+      simCameras[position].enableRawStream(true);
+      simCameras[position].enableProcessedStream(true);
+      simCameras[position].setTargetSortMode(PhotonTargetSortMode.Largest);
+      visionSystemSim.addCamera(simCameras[position], GeomUtil.pose3dToTransform3d(limelights[i].getCameraPose()));
     }
   }
 
