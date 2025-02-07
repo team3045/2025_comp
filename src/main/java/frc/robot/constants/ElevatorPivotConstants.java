@@ -40,19 +40,23 @@ public class ElevatorPivotConstants {
     public static final double thirdStageLength = Units.inchesToMeters(24); //m
     public static final double fourthStageLength = Units.inchesToMeters(24); //m
 
-    public static final double pivotArmLength = Units.inchesToMeters(20.125); //m
+    public static final double pivotArmLength = Units.inchesToMeters(12.632); //m
     public static final double carriageHeightToPivot = Units.inchesToMeters(-1.25);
-    public static final double minAngleDegrees = -120.82 - 135;
-    public static final double maxAngleDegrees = 69.762 - 135;
-    public static final double stowAngle = maxAngleDegrees;
-    public static final double intakingAngle = -91.95;
+    public static final double minAngleDegrees = -80;
+    public static final double maxAngleDegrees = 105;
+    public static final double stowAngle = 50;
+    public static final double intakingAngle = 105;
+    
+    /*Collision */
+    public static final double maxUpperCollisionAngle = 75;
+    public static final double stageToCarriageMax = 0.15;
 
     
     public static final double rotorToSensorRatio = 1; 
     public static final double sensorToMechanismRatio = (56.0 / 12.0);
     public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
-    public static final double pivotRotorToSensorRatio = (12.0 * 18 * 24) / (56 * 56 * 48);; 
+    public static final double pivotRotorToSensorRatio = (56 * 56 * 48) / (12.0 * 18 * 24); 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
@@ -90,7 +94,7 @@ public class ElevatorPivotConstants {
     public static final double pivotMOI = 0.08585723; //moment of inertia Kg * m^2
 
     public static final double stage3StageLength = Units.inchesToMeters(23);
-    public static final double stage2StageLength = stage3StageLength + Units.inchesToMeters(21);
+    public static final double stage2StageLength = Units.inchesToMeters(21);
     public static final double verticalTimerThreshold = 0.5;
 
     public static final double pivotOffsetX = 0;
@@ -113,7 +117,7 @@ public class ElevatorPivotConstants {
 
     public static final InvertedValue leftInverted = InvertedValue.Clockwise_Positive;
     public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
-    public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue pivotInvert = InvertedValue.Clockwise_Positive;
 
     public static final double kP = 5;
     public static final double kI = 0;
@@ -131,7 +135,7 @@ public class ElevatorPivotConstants {
     public static final double pivotKA = 0.2;
     public static final double pivotKV = 1.5;
 
-    public static final double magnetOffset = 0.236816;
+    public static final double magnetOffset = 0;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.Clockwise_Positive;
 
     public enum HeightPositions{

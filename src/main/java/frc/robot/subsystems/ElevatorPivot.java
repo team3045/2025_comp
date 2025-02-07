@@ -57,6 +57,7 @@ public class ElevatorPivot extends SubsystemBase {
   private double carriageHeight = carriageToGround;
 
   private boolean travellingUpward;
+  private double lastCarriageHeight = carriageHeight;
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
   public Trigger atTargetAngle = new Trigger(() -> atTargetAngle());
@@ -71,6 +72,7 @@ public class ElevatorPivot extends SubsystemBase {
 
     targetHeight = getHeight(); //This should go after configDevices to make sure that the elevator is zeroed
     targetAngleDegrees = getPivotAngleDegrees();
+    setTargetHeightAndAngle(targetHeight, targetAngleDegrees);
     travellingUpward = true;
   }
 
@@ -204,23 +206,26 @@ public class ElevatorPivot extends SubsystemBase {
   /**Update the heights of each stage, used for sim, as well as collision logic*/
   public void updateStageHeights(){
     carriageHeight = getHeight();
+    double difference = carriageHeight - lastCarriageHeight;
 
+    //Lightest goes up first and down last
     boolean travellingUpwards = travelingUpwards();
 
     //Update the max Heights
+    double carriageMax = stage3Height + stage3StageLength;
     double stage3Top = stage3Height + stage3StageLength;
-    double stage2Top = stage2Height + stage2StageLength - stage3StageLength; 
+    double stage2Max = minimumHeight + stage2StageLength; 
 
     //Logic to handle the position of the elevator stages
     if(travellingUpwards){
-      if(carriageHeight < stage3Top){
+      if(carriageHeight < carriageMax){
           //Do Nothing, carriageHeight is just carriage Height
-      } else if (carriageHeight >= stage3Top && stage3Height < stage2Top) {
-          stage3Height = carriageHeight - stage3StageLength;
+      } else if (carriageHeight >= carriageMax && stage2Height < stage2Max) {
+          stage2Height += difference;
+          stage3Height += difference;
           //Stage2Height remains the same
-      } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top){
-          stage3Height = carriageHeight - stage3StageLength;
-          stage2Height = carriageHeight - stage2StageLength;
+      } else if (carriageHeight >= carriageMax && stage2Height >= stage2Max){
+          stage3Height += difference;
       } else {
         try {
           throw new Exception("Something weird happened with the elevator sim heights");
@@ -229,15 +234,17 @@ public class ElevatorPivot extends SubsystemBase {
         }
       }
     } else {
-      if(carriageHeight > stage3Height){
-          //Do nothing, hasnt hit the bottom yet
-      } else if (carriageHeight <= stage3Height && stage3Height > stage2Height) {
-          stage3Height = carriageHeight;
-      } else if (carriageHeight <= stage3Height && stage3Height <= stage2Height){
-          stage3Height = carriageHeight;
-          stage2Height = carriageHeight;
+      if(stage3Height > stage2Height){
+          stage3Height += difference;
+      } else if (stage3Height <= stage2Height && stage2Height > minimumHeight){ 
+          stage3Height += difference;
+          stage2Height += difference;
+      } else if (stage3Height <= stage2Height && stage2Height <= minimumHeight){
+        //DO Nothing
       }
     }
+
+    lastCarriageHeight = carriageHeight;
   }
 
   /**Returns the most recently calculated stage height
@@ -387,27 +394,27 @@ public class ElevatorPivot extends SubsystemBase {
 
 
   public Command increaseHeight(){
-    return goToHeight(() -> getHeight() + 0.2);
+    return goToPosition(() -> getHeight() + 0.2, () -> getPivotAngleDegrees());
   }
 
   public Command decreaseHeight(){
-    return goToHeight(() -> getHeight() - 0.2);
+    return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees());
   }
 
   public Command increaseAngle(){
-    return goToAngleDegrees(() -> getPivotAngleDegrees() + 5);
+    return goToPosition(() -> getHeight(), () -> getPivotAngleDegrees() + 15);
   }
 
   public Command decreaseAngle(){
-    return goToAngleDegrees(() -> getPivotAngleDegrees() - 5);
+    return goToPosition(() -> getHeight(), () -> getPivotAngleDegrees() - 15);
   }
 
   public Command increasePosition(){
-    return goToPosition(() -> getHeight() + 0.2, () -> getPivotAngleDegrees() + 5);
+    return goToPosition(() -> getHeight() + 0.2, () -> getPivotAngleDegrees() + 15);
   }
 
   public Command decreasePosition(){
-    return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees() - 5);
+    return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees() - 15);
   }
 
   public Command increaseVoltage(){
@@ -459,7 +466,7 @@ public class ElevatorPivot extends SubsystemBase {
     Units.degreesToRadians(minAngleDegrees), 
     Units.degreesToRadians(maxAngleDegrees), 
     true, 
-    Units.degreesToRadians(minAngleDegrees));
+    Units.degreesToRadians(0));
   
   private TalonFXSimState rightMotorSim;
   private TalonFXSimState leftMotorSim;
@@ -485,11 +492,10 @@ public class ElevatorPivot extends SubsystemBase {
 
     rightMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
     leftMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
-    pivotMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
-    pivotCancoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
+    pivotMotorSim.Orientation = ChassisReference.Clockwise_Positive;
+    pivotCancoderSim.Orientation = ChassisReference.Clockwise_Positive;
 
     elevatorSim.setState(stowHeight, 0);
-    armSim.setState(Units.degreesToRadians(stowAngle), 0);
 
     stage3Height = carriageToGround;
     stage2Height = carriageToGround;
@@ -558,7 +564,7 @@ public class ElevatorPivot extends SubsystemBase {
       new Pose3d(0,0,carriageZ, new Rotation3d()),
       new Pose3d(0,0,stage3Z, new Rotation3d()),
       new Pose3d(0,0,stage2Z, new Rotation3d()),
-      new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ + pivotOffsetZ, new Rotation3d(-getPivotAngleRadians(),0,0))
+      new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ + pivotOffsetZ, new Rotation3d(-getPivotAngleRadians() + Units.degreesToRadians(0),0,0))
     });
 
 
@@ -566,6 +572,7 @@ public class ElevatorPivot extends SubsystemBase {
     SmartDashboard.putNumber("Target Heght", targetHeight);
     SmartDashboard.putNumber("Arm Target", targetAngleDegrees);
     SmartDashboard.putNumber("Arm Angle", currentAngle);
+    SmartDashboard.putNumber("Stage 3 height", stage3Height);
   }
 
 
