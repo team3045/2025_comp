@@ -49,6 +49,7 @@ public class ElevatorPivotConstants {
     
     /*Collision */
     public static final double maxUpperCollisionAngle = 75;
+    public static final double travelAngle = maxUpperCollisionAngle - 5;
     public static final double stageToCarriageMax = 0.15;
 
     
@@ -64,7 +65,7 @@ public class ElevatorPivotConstants {
     public static final double minimumHeight = carriageToGround; //m
     public static final double stowHeight = 0.64;
     public static final double intakingReadyHeight = 0.973; 
-    public static final double intakingHeight = 0.877;
+    public static final double intakingHeight = 0.508;
 
     public static final double maxHeight = Units.inchesToMeters(57) + carriageToGround; // m
 
@@ -127,13 +128,13 @@ public class ElevatorPivotConstants {
     public static final double kA = 0.024757;
     public static final double kV = 0.60932;
 
-    public static final double pivotKP = 30;
+    public static final double pivotKP = 15;
     public static final double pivotKI = 0;
     public static final double pivotKD = 0;
-    public static final double pivotKG = 0.4;
-    public static final double pivotKS = 0.1;
-    public static final double pivotKA = 0.2;
-    public static final double pivotKV = 1.5;
+    public static final double pivotKG = 0.24;
+    public static final double pivotKS = 0;
+    public static final double pivotKA = 0;
+    public static final double pivotKV = 3.5;
 
     public static final double magnetOffset = 0;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.Clockwise_Positive;

@@ -90,8 +90,7 @@ public class RobotContainer {
         // joystick.share().and(joystick.square()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.share().and(joystick.cross()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        joystick.circle().onTrue(elevatorPivot.goToIntakeReady());
-        joystick.triangle().onTrue(intakeSequenceFactory.moveElevatorAndIntake());
+        joystick.circle().onTrue(elevatorPivot.goToIntake());
 
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
@@ -133,8 +132,8 @@ public class RobotContainer {
         // joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
         // joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        joystick.L1().onTrue(elevatorPivot.increaseHeight());
-        joystick.L2().onTrue(elevatorPivot.decreaseHeight());
+        joystick.L1().whileTrue(elevatorPivot.increaseHeight());
+        joystick.L2().whileTrue(elevatorPivot.decreaseHeight());
 
         
         drivetrain.registerTelemetry(logger::telemeterize);

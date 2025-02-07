@@ -277,7 +277,6 @@ public class ElevatorPivot extends SubsystemBase {
    * @param targetHeight the desired height in meters
    */
   private void setHeightTarget(double desiredHeight){
-    this.targetHeight = GremlinUtil.clampWithLogs(maxHeight, minimumHeight, desiredHeight);
 
     double targetRotations = convertHeightToRotations(targetHeight);
 
@@ -299,10 +298,6 @@ public class ElevatorPivot extends SubsystemBase {
   }
 
   private void setAngleTargetDegrees(double targetAngleDegrees){
-    this.targetAngleDegrees = targetAngleDegrees;
-
-    this.targetAngleDegrees = GremlinUtil.clampWithLogs(maxAngleDegrees, minAngleDegrees, targetAngleDegrees);
-
     //TODO: add check if travelling downwards then make sure the pivot wont hit the next stage bar
 
     double targetAngleRotations = Units.degreesToRotations(targetAngleDegrees);
@@ -314,8 +309,31 @@ public class ElevatorPivot extends SubsystemBase {
   }
 
   private void setTargetHeightAndAngle(double heightMeters, double angleDegrees){
-    setHeightTarget(heightMeters);
-    setAngleTargetDegrees(angleDegrees);
+    this.targetHeight = GremlinUtil.clampWithLogs(maxHeight, minimumHeight, heightMeters);
+    this.targetAngleDegrees = GremlinUtil.clampWithLogs(maxAngleDegrees, minAngleDegrees, angleDegrees);
+
+    double tempTargetHeight = heightMeters;
+    double tempTargetAngle = angleDegrees;
+
+  
+    if(targetAngleDegrees > getPivotAngleDegrees() && heightMeters <= getHeight() && getPivotAngleDegrees() < maxUpperCollisionAngle){
+        tempTargetAngle = travelAngle;
+        tempTargetHeight = heightMeters;
+    }
+
+    //If we're greater than collision angle than just be safe no matter what
+    if(getPivotAngleDegrees() > maxUpperCollisionAngle){
+      tempTargetAngle = travelAngle;
+      tempTargetHeight = getHeight();
+    }
+
+    if(atTargetHeight()){
+      tempTargetAngle = targetAngleDegrees;
+    }
+      
+
+    setHeightTarget(tempTargetHeight);
+    setAngleTargetDegrees(tempTargetAngle);
   }
 
   /**
@@ -327,7 +345,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredheight
    */
   public Command goToHeight(DoubleSupplier desiredHeight){
-    return this.runOnce(() -> setHeightTarget(desiredHeight.getAsDouble())).until(atTargetHeight);
+    return goToPosition(desiredHeight, () -> getPivotAngleDegrees());
   }
 
   /**
@@ -339,7 +357,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to desiredAngle
    */
   public Command goToAngleDegrees(DoubleSupplier desiredAngle){
-    return this.runOnce(() -> setAngleTargetDegrees(desiredAngle.getAsDouble())).until(atTargetAngle);
+    return goToPosition(() -> getHeight(), desiredAngle);
   }
 
   /**
@@ -353,7 +371,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command directing this subsytem to go to the desired position
    */
   public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
-    return this.runOnce(() -> {
+    return this.run(() -> {
       setTargetHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
     }).until(atTargetAngle.and(atTargetHeight));
   }
