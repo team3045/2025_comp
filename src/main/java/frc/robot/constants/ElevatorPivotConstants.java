@@ -43,8 +43,8 @@ public class ElevatorPivotConstants {
 
     public static final double pivotArmLength = Units.inchesToMeters(20.125); //m
     public static final double carriageHeightToPivot = Units.inchesToMeters(-1.25);
-    public static final double minAngleDegrees = -90;
-    public static final double maxAngleDegrees = 90;
+    public static final double minAngleDegrees = -120.82 - 135;
+    public static final double maxAngleDegrees = 69.762 - 135;
     public static final double stowAngle = maxAngleDegrees;
     public static final double intakingAngle = -91.95;
 
@@ -53,7 +53,7 @@ public class ElevatorPivotConstants {
     public static final double sensorToMechanismRatio = (56.0 / 12.0);
     public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
-    public static final double pivotRotorToSensorRatio = (56.0 / 12.0) * (56.0 / 24.0) * (56.0 / 26.0); 
+    public static final double pivotRotorToSensorRatio = (56.0 / 12.0) * (56.0 / 24.0); 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
@@ -84,7 +84,7 @@ public class ElevatorPivotConstants {
 
 
     /*Simulation */
-    public static final double carriageMass = 4.53592 * 2; //kg, 9kg = 20lbs
+    public static final double carriageMass = 17.65;
     public static final double drumRadius = 0.02794; //m
     public static final double canvasWidth = 2; //m
     public static final double canvasHeight = 6; //m
@@ -94,9 +94,9 @@ public class ElevatorPivotConstants {
     public static final double stage2StageLength = stage3StageLength + Units.inchesToMeters(20);
     public static final double verticalTimerThreshold = 0.5;
 
-    public static final double pivotOffsetX = Units.inchesToMeters(8.250);
-    public static final double pivotOffsetY = 0;
-    public static final double pivotOffsetZ = Units.inchesToMeters(15.502224);
+    public static final double pivotOffsetX = 0;
+    public static final double pivotOffsetY = Units.inchesToMeters(-11);
+    public static final double pivotOffsetZ = Units.inchesToMeters(17.5);
 
 
     //Rotation of the output shaft. To get rotations of motor to the height of elevator we need to multiply by the gear ratio

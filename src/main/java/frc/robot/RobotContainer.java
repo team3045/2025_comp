@@ -133,6 +133,9 @@ public class RobotContainer {
         // joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
         // joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+        joystick.L1().onTrue(elevatorPivot.decreaseAngle());
+        joystick.L2().onTrue(elevatorPivot.increaseAngle());
+
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

@@ -558,7 +558,7 @@ public class ElevatorPivot extends SubsystemBase {
       new Pose3d(0,0,carriageZ, new Rotation3d()),
       new Pose3d(0,0,stage3Z, new Rotation3d()),
       new Pose3d(0,0,stage2Z, new Rotation3d()),
-      new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ + pivotOffsetZ, new Rotation3d(0,-getPivotAngleRadians(),0))
+      new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ + pivotOffsetZ, new Rotation3d(-getPivotAngleRadians(),0,0))
     });
 
 

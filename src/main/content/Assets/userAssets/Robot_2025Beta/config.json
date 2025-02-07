@@ -176,11 +176,11 @@
 				},
 				{
 					"axis": "y",
-					"degrees": 180
+					"degrees": 0
 				},
 				{
 					"axis": "z",
-					"degrees": 90
+					"degrees": 180
 				}
 			],
 			"zeroedPosition": [0,0,0]
