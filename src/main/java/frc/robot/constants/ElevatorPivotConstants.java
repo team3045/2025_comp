@@ -29,8 +29,7 @@ public class ElevatorPivotConstants {
     public static final int leftMotorId = 16;
     public static final int pivorMotorId = 17;
     public static final int pivotCancoderId = 18;
-    public static final String elevatorCanbus = "rio";
-    public static final String armCanbus = "Canivore 3045";
+    public static final String canbus = "Canivore 3045";
 
     public static final String elevatorTable = "elevator";
     public static final String pivotTable = "pivot";
@@ -53,7 +52,7 @@ public class ElevatorPivotConstants {
     public static final double sensorToMechanismRatio = (56.0 / 12.0);
     public static final double totalGearing = rotorToSensorRatio * sensorToMechanismRatio;
 
-    public static final double pivotRotorToSensorRatio = (56.0 / 12.0) * (56.0 / 24.0); 
+    public static final double pivotRotorToSensorRatio = (12.0 * 18 * 24) / (56 * 56 * 48);; 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
@@ -88,10 +87,10 @@ public class ElevatorPivotConstants {
     public static final double drumRadius = 0.02794; //m
     public static final double canvasWidth = 2; //m
     public static final double canvasHeight = 6; //m
-    public static final double pivotMOI = 0.02347363; //moment of inertia Kg * m^2
+    public static final double pivotMOI = 0.08585723; //moment of inertia Kg * m^2
 
-    public static final double stage3StageLength = Units.inchesToMeters(19);
-    public static final double stage2StageLength = stage3StageLength + Units.inchesToMeters(20);
+    public static final double stage3StageLength = Units.inchesToMeters(23);
+    public static final double stage2StageLength = stage3StageLength + Units.inchesToMeters(21);
     public static final double verticalTimerThreshold = 0.5;
 
     public static final double pivotOffsetX = 0;
@@ -214,7 +213,7 @@ public class ElevatorPivotConstants {
         .withSupplyCurrentLowerLimit(pivotSupplyCurrentLimitLowerLimit);
     
     public static final FeedbackConfigs pivotFeedbackConfigs = new FeedbackConfigs()
-        .withFusedCANcoder(new CoreCANcoder(pivotCancoderId, armCanbus))
+        .withFusedCANcoder(new CoreCANcoder(pivotCancoderId, canbus))
         .withRotorToSensorRatio(pivotRotorToSensorRatio)
         .withSensorToMechanismRatio(pivotSensorToMechanismRatio);
 

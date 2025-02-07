@@ -43,10 +43,10 @@ import java.util.function.DoubleSupplier;
 
 /* */
 public class ElevatorPivot extends SubsystemBase {
-  private TalonFX rightMotor = new TalonFX(rightMotorId,elevatorCanbus);
-  private TalonFX leftMotor = new TalonFX(leftMotorId, elevatorCanbus);
-  private TalonFX pivotMotor = new TalonFX(pivorMotorId, armCanbus);
-  private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, armCanbus);
+  private TalonFX rightMotor = new TalonFX(rightMotorId,canbus);
+  private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
+  private TalonFX pivotMotor = new TalonFX(pivorMotorId, canbus);
+  private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
 
   private double targetHeight;
   private double targetAngleDegrees;
