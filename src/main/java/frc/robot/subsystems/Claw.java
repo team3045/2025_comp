@@ -22,14 +22,14 @@ import static frc.robot.constants.ClawConstants.*;
 
 public class Claw extends SubsystemBase {
     private TalonFX clawMotor = new TalonFX(clawID,canbus); 
-    private CANrange distanceSensor = new CANrange(canRangeId, canbus);
+    private CANrange coralSensor = new CANrange(canRangeId, canbus);
     private double targetSpeed;
   
     private static final FlywheelSim CLAW_MOTOR_SIM = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(1), flywheelMOI, gearing),
         DCMotor.getKrakenX60(1));
     
-    public final Trigger hasObject = new Trigger(() -> hasObject());
+    public final Trigger hasCoral = new Trigger(() -> hasCoral());
     public final Trigger atSpeed = new Trigger(() -> atSpeed());
     
     public Claw(){
@@ -42,7 +42,7 @@ public class Claw extends SubsystemBase {
 
     public void configDevices(){
         clawMotor.getConfigurator().apply(motorConfig);
-        distanceSensor.getConfigurator().apply(canRangeConfig);
+        coralSensor.getConfigurator().apply(canRangeConfig);
     }
 
     public void setTargetSpeed(double speedRPS){
@@ -67,21 +67,30 @@ public class Claw extends SubsystemBase {
         return this.runOnce(() -> setTargetSpeed(holdSpeed));
     }
 
+    public Command slowIntake(){
+        return this.runOnce(() -> setTargetSpeed(slowSpeed));
+    }
+
+    public Command slowBackup(){
+        return this.runOnce(() -> setTargetSpeed(-slowSpeed));
+    }
+
     public Command runAndHold() {
-        return clawIntake().until(() -> {return !hasObject();}).andThen(hold()).withTimeout(ClawConstants.timeoutSeconds);
+        return clawIntake().until(() -> {return !hasCoral();}).andThen(hold()).withTimeout(ClawConstants.timeoutSeconds);
     }
 
     public Command outputAndStop() {
-        return clawOutake().until(() -> {return !hasObject();}).andThen(Commands.waitSeconds(ClawConstants.outputWaitTime)).andThen(stop()).withTimeout(ClawConstants.timeoutSeconds);
+        return clawOutake().until(() -> {return !hasCoral();}).andThen(Commands.waitSeconds(ClawConstants.outputWaitTime)).andThen(stop()).withTimeout(ClawConstants.timeoutSeconds);
     }
 
-    public boolean hasObject(){
-        return distanceSensor.getIsDetected(true).getValue();
+    public boolean hasCoral(){
+        return coralSensor.getIsDetected(true).getValue();
     }
 
     public boolean atSpeed(){
         return GremlinUtil.withinTolerance(targetSpeed, clawMotor.getVelocity().getValueAsDouble(), speedTolerance);
     }
+
 
     public void stopRunnable(){
         clawMotor.stopMotor();
@@ -98,6 +107,11 @@ public class Claw extends SubsystemBase {
 
     public void configSim(){
         clawMotorSim = clawMotor.getSimState();
+    }
+
+    @Override
+    public void periodic(){
+        SmartDashboard.putBoolean("Has Coral", hasCoral());
     }
 
 

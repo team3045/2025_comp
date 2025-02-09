@@ -45,7 +45,7 @@ import java.util.function.DoubleSupplier;
 public class ElevatorPivot extends SubsystemBase {
   private TalonFX rightMotor = new TalonFX(rightMotorId,canbus);
   private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
-  private TalonFX pivotMotor = new TalonFX(pivorMotorId, canbus);
+  private TalonFX pivotMotor = new TalonFX(pivotMotorId, canbus);
   private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
 
   private double targetHeight;
@@ -72,7 +72,7 @@ public class ElevatorPivot extends SubsystemBase {
 
     targetHeight = getHeight(); //This should go after configDevices to make sure that the elevator is zeroed
     targetAngleDegrees = getPivotAngleDegrees();
-    setTargetHeightAndAngle(targetHeight, targetAngleDegrees);
+    //setTargetHeightAndAngle(targetHeight, targetAngleDegrees);
     travellingUpward = true;
   }
 
@@ -95,8 +95,7 @@ public class ElevatorPivot extends SubsystemBase {
     //We assume elevator starts at lowest position
     rightMotor.setPosition(0);
     leftMotor.setPosition(0);
-    pivotCancoder.setPosition(pivotCancoder.getAbsolutePosition().getValueAsDouble());
-
+    
     BaseStatusSignal.setUpdateFrequencyForAll(200, 
       rightMotor.getPosition(),
       leftMotor.getPosition(),
@@ -206,26 +205,23 @@ public class ElevatorPivot extends SubsystemBase {
   /**Update the heights of each stage, used for sim, as well as collision logic*/
   public void updateStageHeights(){
     carriageHeight = getHeight();
-    double difference = carriageHeight - lastCarriageHeight;
 
-    //Lightest goes up first and down last
     boolean travellingUpwards = travelingUpwards();
 
     //Update the max Heights
-    double carriageMax = stage3Height + stage3StageLength;
     double stage3Top = stage3Height + stage3StageLength;
-    double stage2Max = minimumHeight + stage2StageLength; 
+    double stage2Top = stage2Height + stage2StageLength - stage3StageLength; 
 
     //Logic to handle the position of the elevator stages
     if(travellingUpwards){
-      if(carriageHeight < carriageMax){
+      if(carriageHeight < stage3Top){
           //Do Nothing, carriageHeight is just carriage Height
-      } else if (carriageHeight >= carriageMax && stage2Height < stage2Max) {
-          stage2Height += difference;
-          stage3Height += difference;
+      } else if (carriageHeight >= stage3Top && stage3Height < stage2Top) {
+          stage3Height = carriageHeight - stage3StageLength;
           //Stage2Height remains the same
-      } else if (carriageHeight >= carriageMax && stage2Height >= stage2Max){
-          stage3Height += difference;
+      } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top){
+          stage3Height = carriageHeight - stage3StageLength;
+          stage2Height = carriageHeight - stage2StageLength;
       } else {
         try {
           throw new Exception("Something weird happened with the elevator sim heights");
@@ -234,13 +230,13 @@ public class ElevatorPivot extends SubsystemBase {
         }
       }
     } else {
-      if(stage3Height > stage2Height){
-          stage3Height += difference;
-      } else if (stage3Height <= stage2Height && stage2Height > minimumHeight){ 
-          stage3Height += difference;
-          stage2Height += difference;
-      } else if (stage3Height <= stage2Height && stage2Height <= minimumHeight){
-        //DO Nothing
+      if(carriageHeight > stage3Height){
+          //Do nothing, hasnt hit the bottom yet
+      } else if (carriageHeight <= stage3Height && stage3Height > stage2Height) {
+          stage3Height = carriageHeight;
+      } else if (carriageHeight <= stage3Height && stage3Height <= stage2Height){
+          stage3Height = carriageHeight;
+          stage2Height = carriageHeight;
       }
     }
 

@@ -13,7 +13,7 @@ public class RobotState {
     public enum DriveState{
         TELEOP,
         AUTOSCORE,
-        AUTOINTAKE,
+        INTAKE,
         ALGEA
     }
 

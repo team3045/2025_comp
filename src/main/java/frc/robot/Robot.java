@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -28,7 +30,8 @@ public class Robot extends TimedRobot {
     //m_robotContainer.drivetrain.resetPose(new Pose2d(9,5.5, new Rotation2d()));
     //m_robotContainer.drivetrain.resetPose(new Pose2d(5,8,Rotation2d.kZero));
    // m_robotContainer.drivetrain.resetPose(new Pose2d(17,7,Rotation2d.fromDegrees(-90)));
-    m_robotContainer.drivetrain.resetPose(new Pose2d(10.85,3.9, Rotation2d.kZero));
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(10.85,3.9, Rotation2d.kZero));
+    m_robotContainer.drivetrain.resetPose(new Pose2d(1.73,4.08, Rotation2d.kZero));
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
 

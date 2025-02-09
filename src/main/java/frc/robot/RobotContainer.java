@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
@@ -57,6 +58,7 @@ public class RobotContainer {
     /*Triggers */
     private final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
     private final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
+    private final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     private final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
 
 
@@ -90,18 +92,14 @@ public class RobotContainer {
         // joystick.share().and(joystick.square()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.share().and(joystick.cross()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        joystick.circle().onTrue(elevatorPivot.goToIntake());
-
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
         scoringState.whileTrue(
             autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelights[0], VisionConstants.limelights[1]) //righ and left
             .alongWith(autoScoreFactory.setElevatorHeight())
-            .andThen(elevatorPivot.goDownToScore())
-            .andThen(Commands.waitSeconds(0.3))
             .andThen(claw.clawOutake())
-            .andThen(Commands.waitSeconds(0.2))
+            .andThen(Commands.waitSeconds(0.4))
             .andThen(drivetrain.driveBack())
             .finallyDo(() -> {
                 M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
@@ -114,8 +112,8 @@ public class RobotContainer {
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        joystick.R2().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)));
-        joystick.R2().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+        joystick.L1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)));
+        joystick.L1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
 
         algeaState.whileTrue(
             autoScoreFactory.getAlgeaRemoveCommand(VisionConstants.limelights[0])
@@ -132,9 +130,25 @@ public class RobotContainer {
         // joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
         // joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        joystick.L1().whileTrue(elevatorPivot.increaseHeight());
-        joystick.L2().whileTrue(elevatorPivot.decreaseHeight());
+        joystick.R2().onTrue(
+            new ConditionalCommand(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.INTAKE)), 
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
+                intakeState.negate().and(claw.hasCoral.negate()))
+        );
 
+        intakeState.whileTrue(
+            elevatorPivot.goToIntake()
+            .andThen(claw.clawIntake()
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.slowIntake())
+                .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+                .andThen(claw.slowBackup())
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)))
+        );
+
+        intakeState.onFalse(claw.stop());
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

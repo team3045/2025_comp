@@ -37,18 +37,18 @@ public class AutoScoreConstants {
 
 
     static{
-        kScorePoseMap.put(9, new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
-        kScorePoseMap.put(10, new Pose2d(5.071,5.302,Rotation2d.fromDegrees(-121.25)));
-        kScorePoseMap.put(11, new Pose2d(3.964,5.317,Rotation2d.fromDegrees(-62.25)));
-        kScorePoseMap.put(12, new Pose2d(3.673,5.139,Rotation2d.fromDegrees(-62.25)));
-        kScorePoseMap.put(1, new Pose2d(3.104,4.163,Rotation2d.kZero));
-        kScorePoseMap.put(2, new Pose2d(3.104,3.830,Rotation2d.kZero));
-        kScorePoseMap.put(3, new Pose2d(3.633,2.930,Rotation2d.fromDegrees(58.75)));
-        kScorePoseMap.put(4, new Pose2d(3.935,2.747,Rotation2d.fromDegrees(58.75)));
-        kScorePoseMap.put(5, new Pose2d(5.023,2.737,Rotation2d.fromDegrees(119.75)));
-        kScorePoseMap.put(6, new Pose2d(5.327,2.914,Rotation2d.fromDegrees(119.75)));
-        kScorePoseMap.put(7, new Pose2d(5.900,3.830+0.0254,Rotation2d.k180deg));
-        kScorePoseMap.put(8, new Pose2d(5.900,4.163 + 0.0254,Rotation2d.k180deg)); //TODO: flip all these based on alliance color
+        kScorePoseMap.put(9, new Pose2d(5.29,5.15,Rotation2d.fromDegrees(-120)));
+        kScorePoseMap.put(10, new Pose2d(4.99,5.29,Rotation2d.fromDegrees(-120)));
+        kScorePoseMap.put(11, new Pose2d(3.87,5.24,Rotation2d.fromDegrees(-60)));
+        kScorePoseMap.put(12, new Pose2d(3.60,5.06,Rotation2d.fromDegrees(-60)));
+        kScorePoseMap.put(1, new Pose2d(3.17,4.17,Rotation2d.kZero));
+        kScorePoseMap.put(2, new Pose2d(3.17,3.830,Rotation2d.kZero));
+        kScorePoseMap.put(3, new Pose2d(3.69,2.92,Rotation2d.fromDegrees(60)));
+        kScorePoseMap.put(4, new Pose2d(3.97,2.78,Rotation2d.fromDegrees(60)));
+        kScorePoseMap.put(5, new Pose2d(5.33,2.95,Rotation2d.fromDegrees(120)));
+        kScorePoseMap.put(6, new Pose2d(5.327,2.914,Rotation2d.fromDegrees(120)));
+        kScorePoseMap.put(7, new Pose2d(5.900 - 0.0254*3.5,3.830+0.0254,Rotation2d.k180deg));
+        kScorePoseMap.put(8, new Pose2d(5.900 - 0.0254*3.5,4.163 + 0.0254,Rotation2d.k180deg)); //TODO: flip all these based on alliance color
 
         kScoreHeightMap.put(1, ElevatorPivotConstants.HeightPositions.L2.getHeight());
         kScoreHeightMap.put(2, ElevatorPivotConstants.HeightPositions.L3.getHeight());

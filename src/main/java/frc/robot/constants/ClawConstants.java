@@ -16,13 +16,14 @@ import com.ctre.phoenix6.signals.UpdateModeValue;
 
 
 public class ClawConstants {
-    public static final int clawID = 19;
-    public static final int canRangeId = 20;
+    public static final int clawID = 15;
+    public static final int canRangeId = 17;
     public static final String canbus = "Canivore 3045";
 
 
-    public static final double intakeSpeed = -15;
-    public static final double outtakeSpeed = 3;
+    public static final double intakeSpeed = 20;
+    public static final double outtakeSpeed = 6;
+    public static final double slowSpeed = 6;
     public static final double holdSpeed = 0;
 
     public static final double speedTolerance = 0.5; //RPS
@@ -86,13 +87,13 @@ public class ClawConstants {
         .withStatorCurrentLimitEnable(clawStatorCurrentLimitEnable)
         .withSupplyCurrentLimitEnable(clawSupplyCurrentLimitEnable);
 
-    public static final double kP = 0.4;
+    public static final double kP = 3;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0;
     public static final double kS = 0;
     public static final double kA = 0;
-    public static final double kV = 0.13;
+    public static final double kV = 12 / 93.8;
 
     public static final MotionMagicConfigs clawMotionMagicConfigs = new MotionMagicConfigs()
         .withMotionMagicAcceleration(clawMaxAccelerationRotations)
