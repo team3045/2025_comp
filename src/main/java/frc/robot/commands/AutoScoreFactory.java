@@ -18,6 +18,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Robot;
+import frc.robot.GremlinRobotState;
+import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.ElevatorPivotConstants;
@@ -26,11 +29,13 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.vision.apriltag.GremlinLimelightCamera;
+import frc.robot.vision.apriltag.VisionConstants;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoScoreFactory{
+  public static final GremlinRobotState M_ROBOT_STATE = GremlinRobotState.getRobotState();
   private CommandSwerveDrivetrain drivetrain;
   private ElevatorPivot elevatorPivot;
   @SuppressWarnings("unused")
@@ -122,9 +127,17 @@ public class AutoScoreFactory{
       timestampSupplier);
   }
 
-  public Command pathfindRaw() {
-    return AutoBuilder.pathfindToPoseFlipped(AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose), DriveConstants.autoScoreConstraints);
+  public Command fullAutoScoreCommand(){
+    return pathFindWithApriltagFeeback(VisionConstants.limelights[0], VisionConstants.limelights[1]) //righ and left
+        .alongWith(setElevatorHeight())
+        .andThen(claw.clawOutake())
+        .andThen(Commands.waitSeconds(0.4))
+        .andThen(drivetrain.driveBack())
+        .finallyDo(() -> {
+            M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+        }); //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
   }
+
 
   public Command goToNearestAlgea(Supplier<Pose2d> poseSupplier, GremlinLimelightCamera feedbackCamera){
     Supplier<Pose2d> targetPoseSupplier = () -> {

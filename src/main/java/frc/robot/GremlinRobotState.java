@@ -5,10 +5,10 @@
 package frc.robot;
 
 /** Add your docs here. */
-public class RobotState {
+public class GremlinRobotState {
 
     private DriveState driveState;
-    private static RobotState mRobotState;
+    private static GremlinRobotState mRobotState;
 
     public enum DriveState{
         TELEOP,
@@ -17,13 +17,13 @@ public class RobotState {
         ALGEA
     }
 
-    private RobotState(){
+    private GremlinRobotState(){
         this.driveState = DriveState.TELEOP;
     }
 
-    public static RobotState getRobotState(){
+    public static GremlinRobotState getRobotState(){
         if(mRobotState == null){
-            mRobotState = new RobotState();
+            mRobotState = new GremlinRobotState();
         }
 
         return mRobotState;

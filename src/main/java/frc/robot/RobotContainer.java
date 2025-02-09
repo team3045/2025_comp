@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.RobotState.DriveState;
+import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
@@ -33,8 +33,8 @@ import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
 public class RobotContainer {
-    public static final RobotState M_ROBOT_STATE = RobotState.getRobotState();
-     private final SendableChooser<Command> autoChooser;
+    public static final GremlinRobotState M_ROBOT_STATE = GremlinRobotState.getRobotState();
+    private final SendableChooser<Command> autoChooser;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -59,7 +59,6 @@ public class RobotContainer {
     private final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
     private final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     private final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
-
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions());
