@@ -57,6 +57,7 @@ public class ElevatorPivot extends SubsystemBase {
   private double carriageHeight = carriageToGround;
 
   private boolean travellingUpward;
+  @SuppressWarnings("unused")
   private double lastCarriageHeight = carriageHeight;
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());

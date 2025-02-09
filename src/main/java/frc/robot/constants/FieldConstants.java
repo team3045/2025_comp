@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
@@ -25,9 +26,10 @@ public class FieldConstants {
         public static final double shopFieldLength = 7.89225625;
         public static final double shopFieldWidth = 4.68122;
 
-        public static final double compFieldLength = compLayout.getFieldLength(); //TODO: change these bc field size changed from 2024
-        public static final double compFieldWidth = compLayout.getFieldWidth();
-
+        public static final double compFieldLength = Units.inchesToMeters(690.876);
+        public static final double compFieldWidth = Units.inchesToMeters(317);
+        public static final double startingLineX = Units.inchesToMeters(299.438); // Measured from the inside of starting line
+        public static final double algaeDiameter = Units.inchesToMeters(16);
 
         // AprilTag constants
         public static final double aprilTagWidth = 165.1 / 1000;
@@ -112,5 +114,18 @@ public class FieldConstants {
         );
 
         public static final List<Pose2d> flippedAlgeaPoses = algeaPoses.stream().map((pose) -> FlippingUtil.flipFieldPose(pose)).toList();
+
+        public static class CoralStation {
+                public static final Pose2d leftCenterFace =
+                    new Pose2d(
+                        Units.inchesToMeters(33.526),
+                        Units.inchesToMeters(291.176),
+                        Rotation2d.fromDegrees(90 - 144.011));
+                public static final Pose2d rightCenterFace =
+                    new Pose2d(
+                        Units.inchesToMeters(33.526),
+                        Units.inchesToMeters(25.824),
+                        Rotation2d.fromDegrees(144.011 - 90));
+              }
 
 }

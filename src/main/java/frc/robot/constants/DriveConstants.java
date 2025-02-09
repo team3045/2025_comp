@@ -48,6 +48,9 @@ public class DriveConstants {
             .withDriveRequestType(DriveRequestType.Velocity); // Use close-loop control for drive motors
     public static final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     public static final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    public static final SwerveRequest.FieldCentricFacingAngle facingAngle = new SwerveRequest.FieldCentricFacingAngle()
+            .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband)
+            .withDriveRequestType(DriveRequestType.Velocity);
 
     public static final SwerveRequest.RobotCentric driveBack = new SwerveRequest.RobotCentric()
         .withVelocityX(MaxSpeed*-0.2);
@@ -72,10 +75,15 @@ public class DriveConstants {
     public static final double preciseRotationkP = 10;
     public static final double preciseRotationkI = 0;
     public static final double preciseRotationkD = 0;
-
+    
+    public static final double headingP = 6;
+    public static final double headingI = 0;
+    public static final double headingD = 0;
+    
     public static final double preciseTranslationTolerance = 0.02;
     public static final double preciseRotationTolerance = 0.8;
     public static final double kMaxPathFindTranslationError = 0.2;
+
 
     public static final PIDController preciseTranslationController = new PIDController(preciseTranslationkP, preciseTranslationkI, preciseTranslationkD);
     public static final PIDController preciseRotationController = new PIDController(preciseRotationkP, preciseRotationkI, preciseRotationkD);

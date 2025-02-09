@@ -14,10 +14,10 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
@@ -44,6 +44,7 @@ import frc.robot.commands.DriveToPose;
 import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.GremlinAutoBuilder;
 import frc.robot.commons.TimestampedVisionUpdate;
+import frc.robot.constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.vision.apriltag.VisionConstants;
@@ -270,6 +271,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
+
+        //Set the PID gains for the heading controller for facing angle commands
+        facingAngle.HeadingController.setPID(headingP, headingI, headingD);
     }
 
     private void configureSetpointGenerator(){
@@ -366,6 +370,29 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             .withWheelForceFeedforwardsX(previousSetpoint.feedforwards().robotRelativeForcesXNewtons())
             .withWheelForceFeedforwardsY(previousSetpoint.feedforwards().robotRelativeForcesYNewtons()); // Method that will drive the robot given target module states
     }
+
+    public Command driveFacingAngle(Supplier<Rotation2d> angleSupplier, DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
+        return this.applyRequest(() -> 
+            facingAngle.withTargetDirection(angleSupplier.get())
+                .withVelocityX(xSpeeds.getAsDouble())
+                .withVelocityY(ySpeeds.getAsDouble())
+        );
+    }
+
+    public Command driveFacingIntake(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
+        Supplier<Rotation2d> angleSupplier = () -> {
+            Rotation2d returnAngle;
+            if (getState().Pose.getY() > (FieldConstants.compFieldWidth / 2)) {
+                returnAngle = FieldConstants.CoralStation.leftCenterFace.getRotation();
+            } else {
+                returnAngle = FieldConstants.CoralStation.rightCenterFace.getRotation();
+            }
+
+            return AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldRotation(returnAngle): returnAngle;
+        };
+
+        return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);
+    }   
 
     public Command preciseTargetPose(Supplier<Pose2d> targetPose){
         return new DriveToPose(

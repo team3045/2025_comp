@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
-import frc.robot.commands.DriveWheelRadiusCharacterization;
 import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
@@ -92,7 +91,7 @@ public class RobotContainer {
         // joystick.share().and(joystick.square()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.share().and(joystick.cross()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
+        joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)).unless(claw.hasCoral));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
         scoringState.whileTrue(
@@ -138,6 +137,9 @@ public class RobotContainer {
         );
 
         intakeState.whileTrue(
+            drivetrain.driveFacingIntake(
+                () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
+                () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed).alongWith(
             elevatorPivot.goToIntake()
             .andThen(claw.clawIntake()
                 .andThen(Commands.waitUntil(claw.hasCoral))
@@ -146,7 +148,8 @@ public class RobotContainer {
                 .andThen(claw.slowBackup())
                 .andThen(Commands.waitUntil(claw.hasCoral))
                 .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)))
-        );
+        ));
+
 
         intakeState.onFalse(claw.stop());
         
