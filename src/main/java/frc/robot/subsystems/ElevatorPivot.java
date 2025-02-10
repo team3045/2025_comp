@@ -10,6 +10,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.ChassisReference;
@@ -47,6 +48,7 @@ public class ElevatorPivot extends SubsystemBase {
   private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
   private TalonFX pivotMotor = new TalonFX(pivotMotorId, canbus);
   private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
+  private CANrange algeaSensor = new CANrange(canRangeId, canbus);
 
   private double targetHeight;
   private double targetAngleDegrees;
@@ -62,6 +64,7 @@ public class ElevatorPivot extends SubsystemBase {
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
   public Trigger atTargetAngle = new Trigger(() -> atTargetAngle());
+  public Trigger hasAlgea = new Trigger(() -> hasAlgea());
 
   /** Creates a new Elevator. */
   public ElevatorPivot() {
@@ -86,6 +89,7 @@ public class ElevatorPivot extends SubsystemBase {
     leftMotor.getConfigurator().apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted)));
     pivotMotor.getConfigurator().apply(pivotMotorConfig);
     pivotCancoder.getConfigurator().apply(pivotCancoderConfig);
+    algeaSensor.getConfigurator().apply(canRangeConfig);
 
 
     //Clear Sticky faults
@@ -193,6 +197,10 @@ public class ElevatorPivot extends SubsystemBase {
   public double convertHeightToRotations(double height){
     return (height - minimumHeight) / rotationToLengthRatio;
   }
+
+  public boolean hasAlgea(){
+    return algeaSensor.getIsDetected(true).getValue();
+}
 
   /**
    * Convert a velocity in meters per second to rotations per second
@@ -327,8 +335,11 @@ public class ElevatorPivot extends SubsystemBase {
     if(atTargetHeight()){
       tempTargetAngle = targetAngleDegrees;
     }
-      
 
+    if(hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle){
+      tempTargetAngle = algeaTravelAngle;
+    };
+      
     setHeightTarget(tempTargetHeight);
     setAngleTargetDegrees(tempTargetAngle);
   }
