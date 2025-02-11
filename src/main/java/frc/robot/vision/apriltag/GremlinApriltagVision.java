@@ -324,12 +324,12 @@ public class GremlinApriltagVision extends SubsystemBase {
   }
 
   private void logLimelights(){
-    if(limelights[0].getBotPoseEstimateMT2().get().pose != null){
+    if(limelights[0].getBotPoseEstimateMT2().isPresent() && limelights[0].getBotPoseEstimateMT2().get().pose != null){
       LLrightCalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().get().pose);
     }
       
 
-    if(limelights[1].getBotPoseEstimateMT2().get().pose != null){
+    if(limelights[1].getBotPoseEstimateMT2().isPresent() && limelights[1].getBotPoseEstimateMT2().get().pose != null){
       LLlleftCalculatedPosePublisher.set(limelights[1].getBotPoseEstimateMT2().get().pose);
     }
   }

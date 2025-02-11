@@ -140,7 +140,7 @@ public class RobotContainer {
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed).alongWith(
             elevatorPivot.goToIntake()
-            .andThen(claw.clawIntake()
+            .andThen(claw.fullIntake()
                 .andThen(Commands.waitUntil(claw.hasCoral))
                 .andThen(claw.slowIntake())
                 .andThen(Commands.waitUntil(claw.hasCoral.negate()))
@@ -150,7 +150,7 @@ public class RobotContainer {
         ));
 
 
-        intakeState.onFalse(claw.stop());
+        intakeState.onFalse(claw.fullHold());
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }

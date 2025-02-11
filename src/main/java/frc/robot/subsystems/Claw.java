@@ -4,6 +4,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -23,6 +24,7 @@ import static frc.robot.constants.ClawConstants.*;
 public class Claw extends SubsystemBase {
     private TalonFX clawMotor = new TalonFX(clawID,canbus); 
     private CANrange coralSensor = new CANrange(canRangeId, canbus);
+    private TalonFX hopperMotor = new TalonFX(hopperId,canbus);
     private double targetSpeed;
   
     private static final FlywheelSim CLAW_MOTOR_SIM = new FlywheelSim(
@@ -43,9 +45,11 @@ public class Claw extends SubsystemBase {
     public void configDevices(){
         clawMotor.getConfigurator().apply(motorConfig);
         coralSensor.getConfigurator().apply(canRangeConfig);
+        hopperMotor.getConfigurator().apply(motorConfig.withMotorOutput(
+            MotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive)));
     }
 
-    public void setTargetSpeed(double speedRPS){
+    public void setClawTargetSpeed(double speedRPS){
         targetSpeed = speedRPS;
         VelocityVoltage request = new VelocityVoltage(speedRPS)
             .withEnableFOC(true)
@@ -55,24 +59,60 @@ public class Claw extends SubsystemBase {
         clawMotor.setControl(request);
     }
 
+    public void setHopperTargetSpeed(double speedRPS){
+        targetSpeed = speedRPS;
+        VelocityVoltage request = new VelocityVoltage(speedRPS)
+            .withEnableFOC(true)
+            .withSlot(0)
+            .withUpdateFreqHz(1000);
+
+        hopperMotor.setControl(request);
+    }
+
+
+    public Command hopperIntake(){
+        return this.runOnce(() -> setHopperTargetSpeed(intakeSpeed));
+    }
+
     public Command clawIntake(){
-        return this.runOnce(() -> setTargetSpeed(intakeSpeed));
+        return this.runOnce(() -> setClawTargetSpeed(intakeSpeed));
     } 
 
+    public Command fullIntake(){
+        return this.runOnce(() -> {
+            setHopperTargetSpeed(hopperSpeed);
+            setClawTargetSpeed(intakeSpeed);
+        });
+    }
+
+    public Command fullOutake(){
+        return this.runOnce(() -> {
+            setHopperTargetSpeed(outtakeSpeed);
+            setClawTargetSpeed(outtakeSpeed);
+        });
+    }
+
+    public Command fullHold(){
+        return this.runOnce(() -> {
+            setHopperTargetSpeed(holdSpeed);
+            setClawTargetSpeed(holdSpeed);
+        });
+    }
+
     public Command clawOutake(){
-        return this.runOnce(() -> setTargetSpeed(outtakeSpeed));
+        return this.runOnce(() -> setClawTargetSpeed(outtakeSpeed));
     } 
 
     public Command hold(){
-        return this.runOnce(() -> setTargetSpeed(holdSpeed));
+        return this.runOnce(() -> setClawTargetSpeed(holdSpeed));
     }
 
     public Command slowIntake(){
-        return this.runOnce(() -> setTargetSpeed(slowSpeed));
+        return this.runOnce(() -> setClawTargetSpeed(slowSpeed));
     }
 
     public Command slowBackup(){
-        return this.runOnce(() -> setTargetSpeed(-slowSpeed));
+        return this.runOnce(() -> setClawTargetSpeed(-slowSpeed));
     }
 
     public Command runAndHold() {
