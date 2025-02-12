@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
@@ -29,6 +30,9 @@ import frc.robot.vision.apriltag.GremlinApriltagVision;
 import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
+
+import javax.naming.Name;
+
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
@@ -93,16 +97,7 @@ public class RobotContainer {
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)).unless(claw.hasCoral));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
-        scoringState.whileTrue(
-            autoScoreFactory.pathFindWithApriltagFeeback(VisionConstants.limelights[0], VisionConstants.limelights[1]) //righ and left
-            .alongWith(autoScoreFactory.setElevatorHeight())
-            .andThen(claw.clawOutake())
-            .andThen(Commands.waitSeconds(0.4))
-            .andThen(drivetrain.driveBack())
-            .finallyDo(() -> {
-                M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-                }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
-            );
+        scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
 
         scoringState.onFalse(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
@@ -110,7 +105,7 @@ public class RobotContainer {
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        joystick.L1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)));
+        joystick.L1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)).unless(ElevatorPivot.hasAlgea));
         joystick.L1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
 
         algeaState.whileTrue(
@@ -120,13 +115,13 @@ public class RobotContainer {
                 }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER REMOVAL
         );
 
+        algeaState.onFalse(
+            Commands.print("False").andThen(
+            elevatorPivot.stowArm().alongWith(claw.fullHold()))
+        );
+
         joystick.povDown().onTrue(elevatorPivot.zeroHeight());
         joystick.square().onTrue(elevatorPivot.stowArm());
-                
-        // joystick.circle().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        // joystick.cross().whileTrue(elevatorPivot.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        // joystick.square().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        // joystick.triangle().whileTrue(elevatorPivot.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         joystick.R2().onTrue(
             new ConditionalCommand(
@@ -151,11 +146,51 @@ public class RobotContainer {
 
 
         intakeState.onFalse(claw.fullHold());
+
+        joystick.L2().OnPressTwice(
+
+            drivetrain.driveFacingProcessor(
+                () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
+                () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
+            .alongWith(elevatorPivot.goToProcessor()),
+
+            claw.algeaOuttake()
+                .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+                .andThen(drivetrain.driveBack())
+                .andThen(elevatorPivot.stowArm().alongWith(claw.hold()))
+        );
+
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
+    }
+
+    public void registerPathPlannerCommands(){
+        NamedCommands.registerCommand("autoScoreL4", 
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, 
+                VisionConstants.limelights[1], 
+                VisionConstants.limelights[0]));
+        
+        NamedCommands.registerCommand("autoScoreL3", 
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 2, 
+                VisionConstants.limelights[1], 
+                VisionConstants.limelights[0]));
+
+        NamedCommands.registerCommand("autoScoreL2", 
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 1, 
+                VisionConstants.limelights[1], 
+                VisionConstants.limelights[0]));
+        
+        NamedCommands.registerCommand("intake", 
+            elevatorPivot.goToIntake()
+                .andThen(claw.fullIntake()
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.slowIntake())
+                .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+                .andThen(claw.slowBackup())
+                .andThen(Commands.waitUntil(claw.hasCoral))));
     }
 }

@@ -25,7 +25,9 @@ public class ClawConstants {
     public static final double intakeSpeed = 20;
     public static final double outtakeSpeed = 6;
     public static final double slowSpeed = 6;
-    public static final double hopperSpeed = 10;
+    public static final double hopperSpeed = 20;
+    public static final double algeaIntakeSpeed = -20;
+    public static final double algeaOuttakeSpeed = 20;
     public static final double holdSpeed = 0;
 
     public static final double speedTolerance = 0.5; //RPS
@@ -56,6 +58,8 @@ public class ClawConstants {
     public static final int timeoutSeconds = 10; //10 sec
 
     public static final double updateFrequency = 50; //every 20 ms, this is overridden to 100 Hz when we're in ShortRange100hz mode
+
+    public static final double holdAlgeaVoltage = -0.8;
 
     public static final FovParamsConfigs fovConfigs = new FovParamsConfigs()
         .withFOVCenterX(fovCenterX)

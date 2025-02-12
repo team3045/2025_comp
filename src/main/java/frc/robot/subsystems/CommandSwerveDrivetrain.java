@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -392,7 +393,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         };
 
         return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);
-    }   
+    }  
+    
+    public Command driveFacingProcessor(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
+        Supplier<Rotation2d> angSupplier = () -> {
+            return AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldRotation(FieldConstants.Processor.centerFace.getRotation()) 
+                : FieldConstants.Processor.centerFace.getRotation();
+        };
+
+        return driveFacingAngle(angSupplier, xSpeeds, ySpeeds);
+    }
 
     public Command preciseTargetPose(Supplier<Pose2d> targetPose){
         return new DriveToPose(
@@ -419,6 +429,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command driveBack(){
         return applyRequest(() -> driveBack).withTimeout(0.2);
+    }
+
+    public Command driveBackAlgea(){
+        return applyRequest(() -> driveBack).withTimeout(0.4);
     }
 
     /**

@@ -4,9 +4,6 @@
 
 package frc.robot.constants;
 
-
-import static frc.robot.constants.ClawConstants.canbus;
-
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -36,7 +33,7 @@ public class ElevatorPivotConstants {
     public static final int leftMotorId = 12;
     public static final int pivotMotorId = 14;
     public static final int pivotCancoderId = 16;
-    public static final int canRangeId = 17;
+    public static final int canRangeId = 18;
     public static final String canbus = "Canivore 3045";
 
     public static final String elevatorTable = "elevator";
@@ -54,12 +51,13 @@ public class ElevatorPivotConstants {
     public static final double maxAngleDegrees = 120;
     public static final double stowAngle = 119;
     public static final double intakingAngle = 119;
-    
+    public static final double processingAngle = -65;
+
     /*Collision */
     public static final double maxUpperCollisionAngle = 84;
-    public static final double maxAlgeaCollisionAngle = 60;
-    public static final double algeaTravelAngle = 55;
-    public static final double travelAngle = maxUpperCollisionAngle - 5;
+    public static final double maxAlgeaCollisionAngle = 20;
+    public static final double algeaTravelAngle = 10;
+    public static final double travelAngle = maxUpperCollisionAngle - 10;
     public static final double stageToCarriageMax = 0.15;
 
     
@@ -76,6 +74,7 @@ public class ElevatorPivotConstants {
     public static final double stowHeight = minimumHeight;
     public static final double intakingReadyHeight = 0.973; 
     public static final double intakingHeight = minimumHeight;
+    public static final double processingHeight = minimumHeight+0.1;
 
     public static final double maxHeight = 2.100; // m
 
@@ -152,7 +151,9 @@ public class ElevatorPivotConstants {
     public enum HeightPositions{
         L4(1.985),
         L3(1.187),
-        L2(0.82);
+        L2(0.82),
+        LOW_ALGEA(1.032),
+        HIGH_ALGEA(1.487);
 
         private final double height;
         HeightPositions(double height){
@@ -167,7 +168,9 @@ public class ElevatorPivotConstants {
     public enum AnglePositions{
         L4(46),
         L3(83),
-        L2(87);
+        L2(87),
+        LOW_ALGEA(-70),
+        HIGH_ALGEA(-70);
 
         private final double angle;
         AnglePositions(double angle){
@@ -274,9 +277,10 @@ public class ElevatorPivotConstants {
 
     public static final double minSignalStrength = 0;
     public static final double proximityHysterisis = 0.01; //1 cm
-    public static final double proximityThreshold = 0.1; //10cm
+    public static final double proximityThreshold = 0.075; //7.5cm
 
     public static final double updateFrequency = 50; //every 20 ms, this is overridden to 100 Hz when we're in ShortRange100hz mode
+    public static final double debounceTime = 0.4;
 
     public static final FovParamsConfigs fovConfigs = new FovParamsConfigs()
         .withFOVCenterX(fovCenterX)

@@ -16,6 +16,7 @@ import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -48,7 +49,7 @@ public class ElevatorPivot extends SubsystemBase {
   private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
   private TalonFX pivotMotor = new TalonFX(pivotMotorId, canbus);
   private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
-  private CANrange algeaSensor = new CANrange(canRangeId, canbus);
+  private static CANrange algeaSensor = new CANrange(canRangeId, canbus);
 
   private double targetHeight;
   private double targetAngleDegrees;
@@ -64,7 +65,7 @@ public class ElevatorPivot extends SubsystemBase {
 
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
   public Trigger atTargetAngle = new Trigger(() -> atTargetAngle());
-  public Trigger hasAlgea = new Trigger(() -> hasAlgea());
+  public static Trigger hasAlgea = new Trigger(() -> hasAlgea()).debounce(debounceTime, DebounceType.kFalling);
 
   /** Creates a new Elevator. */
   public ElevatorPivot() {
@@ -198,7 +199,7 @@ public class ElevatorPivot extends SubsystemBase {
     return (height - minimumHeight) / rotationToLengthRatio;
   }
 
-  public boolean hasAlgea(){
+  public static boolean hasAlgea(){
     return algeaSensor.getIsDetected(true).getValue();
 }
 
@@ -390,8 +391,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command to stow the arm
    */
   public Command stowArm(){
-    return goToAngleDegrees(() -> stowAngle).until(() -> getPivotAngleDegrees() > 0)
-      .andThen(goToPosition(() -> stowHeight, () -> stowAngle));
+    return goToPosition(() -> stowHeight, () -> stowAngle);
   }
 
   /**Send the elevatorPivot to the intaking ready height and angle.
@@ -416,6 +416,10 @@ public class ElevatorPivot extends SubsystemBase {
    */
   public Command goToIntake(){
     return goToPosition(() -> intakingHeight, () -> intakingAngle);
+  }
+
+  public Command goToProcessor(){
+    return goToPosition(() -> processingHeight, () -> processingAngle);
   }
 
 
@@ -471,6 +475,8 @@ public class ElevatorPivot extends SubsystemBase {
     else if(getVerticalVelocity() < -0.2) travellingUpward = false;
 
     updateMechanism2d();
+
+    SmartDashboard.putBoolean("Has Algea", hasAlgea());
   } 
 
   /*SIMULATION*/

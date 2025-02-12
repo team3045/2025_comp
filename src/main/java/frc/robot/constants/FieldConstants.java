@@ -20,7 +20,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class FieldConstants {
-        public static final boolean isShopField = false;
+        public static final boolean isShopField = true;
         public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
         public static final double shopFieldLength = 7.89225625;
@@ -108,7 +108,7 @@ public class FieldConstants {
                 new Pose2d(3,4, Rotation2d.kZero),
                 new Pose2d(3.75, 2.8, Rotation2d.fromDegrees(60)),
                 new Pose2d(5.37, 2.5, Rotation2d.fromDegrees(120) ),
-                new Pose2d(5.97, 3.98, Rotation2d.k180deg),
+                new Pose2d(5.78, 3.97, Rotation2d.k180deg),
                 new Pose2d(5.3, 5.375, Rotation2d.fromDegrees(240)),
                 new Pose2d(3.75, 5.375, Rotation2d.fromDegrees(300))
         );
@@ -128,4 +128,8 @@ public class FieldConstants {
                         Rotation2d.fromDegrees(144.011 - 90));
               }
 
+        public static class Processor {
+                public static final Pose2d centerFace =
+                    new Pose2d(Units.inchesToMeters(235.726), 0, Rotation2d.fromDegrees(90));
+        }
 }

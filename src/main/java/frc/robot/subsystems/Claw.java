@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -78,6 +79,14 @@ public class Claw extends SubsystemBase {
         return this.runOnce(() -> setClawTargetSpeed(intakeSpeed));
     } 
 
+    public Command algeaIntake(){
+        return this.runOnce(() -> setClawTargetSpeed(algeaIntakeSpeed));
+    }
+
+    public Command algeaOuttake(){
+        return this.runOnce(() -> setClawTargetSpeed(algeaOuttakeSpeed));
+    }
+
     public Command fullIntake(){
         return this.runOnce(() -> {
             setHopperTargetSpeed(hopperSpeed);
@@ -94,9 +103,18 @@ public class Claw extends SubsystemBase {
 
     public Command fullHold(){
         return this.runOnce(() -> {
-            setHopperTargetSpeed(holdSpeed);
-            setClawTargetSpeed(holdSpeed);
+            if(!ElevatorPivot.hasAlgea()){
+                setHopperTargetSpeed(holdSpeed);
+                setClawTargetSpeed(holdSpeed);
+            } else {
+                setHopperTargetSpeed(holdSpeed);
+                holdAlgea();
+            }
         });
+    }
+
+    public void holdAlgea(){
+        clawMotor.setVoltage(holdAlgeaVoltage);
     }
 
     public Command clawOutake(){
