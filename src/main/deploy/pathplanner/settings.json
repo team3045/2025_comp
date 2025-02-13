@@ -4,9 +4,13 @@
   "holonomicMode": true,
   "pathFolders": [
     "Curvy Square",
+    "Clear Algae",
+    "ScoreFromTop",
     "Square"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "ScoreFromTop"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 540.0,

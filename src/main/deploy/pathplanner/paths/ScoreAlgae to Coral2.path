@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.381842543990523,
+        "y": 6.004468318797924
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.74199230617947,
+        "y": 5.690102996826172
+      },
+      "isLocked": true,
+      "linkedName": "ScoreAlgae"
+    },
+    {
+      "anchor": {
+        "x": 5.3262298923068565,
+        "y": 5.177407921685113
+      },
+      "prevControl": {
+        "x": 6.438450868394638,
+        "y": 5.95463213885272
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Coral2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -122.75857734024825
+  },
+  "reversed": false,
+  "folder": "ScoreFromTop",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
