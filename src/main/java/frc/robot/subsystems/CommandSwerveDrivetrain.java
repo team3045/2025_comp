@@ -389,7 +389,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 returnAngle = Rotation2d.fromDegrees(55);
             }
 
-            return AutoBuilder.shouldFlip() ? returnAngle.times(-1): returnAngle;
+            return AutoBuilder.shouldFlip() ? returnAngle.times(-1).plus(Rotation2d.k180deg): returnAngle;
         };
 
         return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);
