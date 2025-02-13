@@ -127,7 +127,7 @@ public class RobotContainer {
             new ConditionalCommand(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.INTAKE)), 
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
-                intakeState.negate().and(claw.hasCoral.negate()))
+                intakeState.negate())
         );
 
         intakeState.whileTrue(
