@@ -39,8 +39,8 @@ public class AutoScoreConstants {
     static{
         kScorePoseMap.put(9, new Pose2d(5.29,5.15,Rotation2d.fromDegrees(-120)));
         kScorePoseMap.put(10, new Pose2d(4.99,5.29,Rotation2d.fromDegrees(-120)));
-        kScorePoseMap.put(11, new Pose2d(3.87,5.24,Rotation2d.fromDegrees(-60)));
-        kScorePoseMap.put(12, new Pose2d(3.60,5.06,Rotation2d.fromDegrees(-60)));
+        kScorePoseMap.put(11, new Pose2d(3.93,5.28,Rotation2d.fromDegrees(-60)));
+        kScorePoseMap.put(12, new Pose2d(3.68,5.1,Rotation2d.fromDegrees(-60)));
         kScorePoseMap.put(1, new Pose2d(3.17,4.17,Rotation2d.kZero));
         kScorePoseMap.put(2, new Pose2d(3.17,3.830,Rotation2d.kZero));
         kScorePoseMap.put(3, new Pose2d(3.69,2.92,Rotation2d.fromDegrees(60)));

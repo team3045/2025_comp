@@ -384,9 +384,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Supplier<Rotation2d> angleSupplier = () -> {
             Rotation2d returnAngle;
             if (getState().Pose.getY() > (FieldConstants.compFieldWidth / 2)) {
-                returnAngle = FieldConstants.CoralStation.leftCenterFace.getRotation();
+                returnAngle = new Rotation2d(-125);
             } else {
-                returnAngle = FieldConstants.CoralStation.rightCenterFace.getRotation();
+                returnAngle = new Rotation2d(-100);
             }
 
             return AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldRotation(returnAngle): returnAngle;
