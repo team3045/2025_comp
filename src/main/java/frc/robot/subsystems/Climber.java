@@ -31,23 +31,15 @@ public class Climber extends SubsystemBase {
         climberMotor.setControl(request);
     }
 
-    public Command startMotorClimb() {
-        return this.runOnce(() -> setTargetSpeed(climberClimbVelocity));
+    public void startMotorClimb() {
+        setTargetSpeed(climberClimbVelocity);
     }
 
-    public Command startMotorLower() {
-        return this.runOnce(() -> setTargetSpeed(-climberClimbVelocity));
+    public void startMotorLower() {
+        setTargetSpeed(-climberClimbVelocity);
     }
 
-    public Command stopMotor() {
-        return this.runOnce(() -> setTargetSpeed(0));
-    }
-
-    private boolean isDoneClimbing() {
-        return Math.abs(climberMotor.getVelocity().getValueAsDouble()) <= climbDoneVelocityThreshold;
-    }
-
-    public Command climb() {
-       return this.runOnce(() -> startMotorClimb()).until(() -> {return isDoneClimbing();}).andThen(stopMotor());
+    public void stopMotor() {
+        setTargetSpeed(0);
     }
 }
