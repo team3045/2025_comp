@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     Pathfinding.setPathfinder(pathfinder);
     m_robotContainer = new RobotContainer();
-    m_robotContainer.drivetrain.resetPose(FlippingUtil.flipFieldPose(new Pose2d(1.73,4.08, Rotation2d.kZero)));
+    m_robotContainer.drivetrain.resetPose(new Pose2d(1.73,4.08, Rotation2d.kZero));
    // m_robotContainer.drivetrain.resetPose(new Pose2d(10.1,3.7,Rotation2d.kZero));
     SmartDashboard.putData(CommandScheduler.getInstance());
   }

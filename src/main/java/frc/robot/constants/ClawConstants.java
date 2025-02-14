@@ -22,10 +22,10 @@ public class ClawConstants {
     public static final String canbus = "Canivore 3045";
 
 
-    public static final double intakeSpeed = 20;
-    public static final double outtakeSpeed = 6;
+    public static final double intakeSpeed = 30;
+    public static final double outtakeSpeed = 10;
     public static final double slowSpeed = 6;
-    public static final double hopperSpeed = 20;
+    public static final double hopperSpeed = 30;
     public static final double algeaIntakeSpeed = -20;
     public static final double algeaOuttakeSpeed = 20;
     public static final double holdSpeed = 0;
