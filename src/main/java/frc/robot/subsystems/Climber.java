@@ -31,15 +31,15 @@ public class Climber extends SubsystemBase {
         climberMotor.setControl(request);
     }
 
-    private Command startMotorClimb() {
+    public Command startMotorClimb() {
         return this.runOnce(() -> setTargetSpeed(climberClimbVelocity));
     }
 
-    private Command startMotorLower() {
+    public Command startMotorLower() {
         return this.runOnce(() -> setTargetSpeed(-climberClimbVelocity));
     }
 
-    private Command stopMotor() {
+    public Command stopMotor() {
         return this.runOnce(() -> setTargetSpeed(0));
     }
 

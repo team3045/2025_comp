@@ -110,7 +110,9 @@ public class RobotContainer {
         joystick.L1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)).unless(ElevatorPivot.hasAlgea));
         joystick.L1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
 
-        joystick.triangle().onTrue(climber.climb());
+        joystick.cross().onTrue(climber.climb());
+        joystick.triangle().onTrue(climber.startMotorLower());
+        joystick.triangle().onFalse(climber.stopMotor());
 
         algeaState.whileTrue(
             autoScoreFactory.getAlgeaRemoveCommand(VisionConstants.limelights[0])
