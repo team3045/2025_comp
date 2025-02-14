@@ -24,6 +24,7 @@ import frc.robot.constants.DriveConstants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.vision.apriltag.GremlinApriltagVision;
@@ -51,6 +52,7 @@ public class RobotContainer {
         (drivetrain::addVisionMeasurements));
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
+    public final Climber climber = new Climber();
 
     /*Auto Score Stuff */
     public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
@@ -107,6 +109,8 @@ public class RobotContainer {
 
         joystick.L1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)).unless(ElevatorPivot.hasAlgea));
         joystick.L1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+
+        joystick.triangle().onTrue(climber.climb());
 
         algeaState.whileTrue(
             autoScoreFactory.getAlgeaRemoveCommand(VisionConstants.limelights[0])

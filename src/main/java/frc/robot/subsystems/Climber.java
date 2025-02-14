@@ -15,10 +15,6 @@ public class Climber extends SubsystemBase {
 
     public Climber(){
         configDevices();
-
-        if(Utils.isSimulation()){
-            // configSim();
-        }
     }
 
     private void configDevices() {
