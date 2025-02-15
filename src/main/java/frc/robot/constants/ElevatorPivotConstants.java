@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import static frc.robot.constants.ElevatorPivotConstants.minimumHeight;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -49,9 +51,17 @@ public class ElevatorPivotConstants {
     public static final double carriageHeightToPivot = Units.inchesToMeters(-1.25);
     public static final double minAngleDegrees = -73;
     public static final double maxAngleDegrees = 120;
-    public static final double stowAngle = 119;
-    public static final double intakingAngle = 119;
+    public static final double stowAngle = 120;
+    public static final double intakingAngle = 120;
     public static final double processingAngle = -65;
+
+    public static final double carriageToGround = 0.476306;//Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
+    public static final double minimumHeight = carriageToGround; //m
+    public static final double stowHeight = minimumHeight;
+    public static final double intakingReadyHeight = 0.973; 
+    public static final double intakingHeight = minimumHeight;
+    public static final double processingHeight = minimumHeight+0.1;
+    public static final double maxHeight = 2.100; // m
 
     /*Collision */
     public static final double maxUpperCollisionAngle = 84;
@@ -59,6 +69,7 @@ public class ElevatorPivotConstants {
     public static final double algeaTravelAngle = 10;
     public static final double travelAngle = maxUpperCollisionAngle - 10;
     public static final double stageToCarriageMax = 0.15;
+    public static final double maxCollisionHeight = minimumHeight + 0.10;
 
     
     public static final double rotorToSensorRatio = 1.0; 
@@ -68,15 +79,6 @@ public class ElevatorPivotConstants {
     public static final double pivotRotorToSensorRatio = (56 * 56 * 48) / (12.0 * 18 * 24); 
     public static final double pivotSensorToMechanismRatio = 1;
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
-
-    public static final double carriageToGround = 0.476306;//Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
-    public static final double minimumHeight = carriageToGround; //m
-    public static final double stowHeight = minimumHeight;
-    public static final double intakingReadyHeight = 0.973; 
-    public static final double intakingHeight = minimumHeight;
-    public static final double processingHeight = minimumHeight+0.1;
-
-    public static final double maxHeight = 2.100; // m
 
     public static final double heightTolerance = 0.03; //3cm
     public static final double angleToleranceDegrees = 0.5; //0.5 degree tolerance
@@ -145,7 +147,7 @@ public class ElevatorPivotConstants {
     public static final double pivotKA = 0;
     public static final double pivotKV = 2.8;
 
-    public static final double magnetOffset = -0.193;
+    public static final double magnetOffset = -0.178955;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     public enum HeightPositions{

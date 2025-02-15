@@ -99,16 +99,18 @@ public class RobotContainer {
         
         scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
 
-        scoringState.onFalse(
+        scoringState.negate().and(intakeState.negate()).and(algeaState.negate()).onTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
         
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        joystick.L1().onTrue(new ConditionalCommand(
-            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
-            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
-            ElevatorPivot.hasAlgea.negate()));
+        joystick.L1().OnPressTwice(
+            new ConditionalCommand(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
+                ElevatorPivot.hasAlgea.negate()),
+            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
 
         algeaState.whileTrue(
             autoScoreFactory.getAlgeaRemoveCommand(
@@ -121,9 +123,7 @@ public class RobotContainer {
         );
 
         algeaState.onFalse(
-            Commands.print("False").andThen(
-            elevatorPivot.stowArm().alongWith(claw.fullHold()))
-        );
+            elevatorPivot.stowArm().alongWith(claw.fullHold()));
 
         joystick.povDown().onTrue(elevatorPivot.zeroHeight());
         joystick.square().onTrue(elevatorPivot.stowArm());
@@ -153,16 +153,14 @@ public class RobotContainer {
         intakeState.onFalse(claw.fullHold());
 
         joystick.L2().OnPressTwice(
-
             drivetrain.driveFacingProcessor(
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .alongWith(elevatorPivot.goToProcessor()),
-
             claw.algeaOuttake()
                 .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+                .andThen(claw.hold())
                 .andThen(drivetrain.driveBack())
-                .andThen(elevatorPivot.stowArm().alongWith(claw.hold()))
         );
 
         

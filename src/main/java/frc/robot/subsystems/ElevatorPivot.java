@@ -330,7 +330,7 @@ public class ElevatorPivot extends SubsystemBase {
     //If we're greater than collision angle than just be safe no matter what
     if(getPivotAngleDegrees() > maxUpperCollisionAngle){
       tempTargetAngle = travelAngle;
-      tempTargetHeight = getHeight();
+      tempTargetHeight = Math.min(getHeight(),maxCollisionHeight);
     }
 
     if(atTargetHeight()){

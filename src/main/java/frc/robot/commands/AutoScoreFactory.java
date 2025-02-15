@@ -244,9 +244,9 @@ public class AutoScoreFactory{
     };
 
     return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
-      .alongWith(
-        elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
-      .alongWith(claw.algeaIntake()).until(ElevatorPivot.hasAlgea)
+      .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
+      .alongWith(claw.algeaIntake())
+      .until(ElevatorPivot.hasAlgea)
       .andThen(drivetrain.driveBackAlgea());
   }
 
