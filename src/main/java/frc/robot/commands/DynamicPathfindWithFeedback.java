@@ -14,10 +14,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.commons.GeomUtil;
@@ -106,12 +108,16 @@ public class DynamicPathfindWithFeedback extends Command {
         }
 
         currentPathfindCommand = null;
+        SmartDashboard.putBoolean("At Pose", false);
     }
 
     @Override
     public boolean isFinished() {
       Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 
         targetPoseSupplier.get() : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
+
+      SmartDashboard.putBoolean("At Pose", GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance));
+
       return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance);
     }
 

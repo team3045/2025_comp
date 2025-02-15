@@ -46,7 +46,7 @@ public class AutoScoreConstants {
         kScorePoseMap.put(3, new Pose2d(3.656,2.94,Rotation2d.fromDegrees(60)));
         kScorePoseMap.put(4, new Pose2d(3.98,2.79,Rotation2d.fromDegrees(60)));
         kScorePoseMap.put(5, new Pose2d(5.023,2.76,Rotation2d.fromDegrees(120)));
-        kScorePoseMap.put(6, new Pose2d(5.3,2.92,Rotation2d.fromDegrees(120)));
+        kScorePoseMap.put(6, new Pose2d(5.287,2.928,Rotation2d.fromDegrees(120)));
         kScorePoseMap.put(7, new Pose2d(5.900 - 0.0254*3.5,3.830+0.0254,Rotation2d.k180deg));
         kScorePoseMap.put(8, new Pose2d(5.900 - 0.0254*3.5,4.163 + 0.0254,Rotation2d.k180deg)); //TODO: flip all these based on alliance color
 
