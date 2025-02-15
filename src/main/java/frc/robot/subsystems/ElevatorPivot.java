@@ -477,6 +477,8 @@ public class ElevatorPivot extends SubsystemBase {
     updateMechanism2d();
 
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
+    SmartDashboard.putBoolean("At Height", atTargetHeight());
+    SmartDashboard.putBoolean("At Angle", atTargetAngle());
   } 
 
   /*SIMULATION*/

@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.DriveConstants.drive;
+
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -194,18 +196,9 @@ public class AutoScoreFactory{
     );
   }
 
-  public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera){
-    return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
-      .alongWith(
-        Commands.either(
-          elevatorPivot.goToPosition(
-            () -> ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight(), 
-            () -> ElevatorPivotConstants.AnglePositions.HIGH_ALGEA.getAngle()), 
-          elevatorPivot.goToPosition(
-            () -> ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight(), 
-            () -> ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle()), 
-            () -> {
-              List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+  public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera, DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
+    DoubleSupplier heightSupplier = () -> {
+      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
 
               Pose2d closest = poseList.get(0);
               int closestNum = 0;
@@ -219,11 +212,41 @@ public class AutoScoreFactory{
                   closestNum = i;
                 }
               }
+
+              if(closestNum % 2 == 0){
+                return ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight();
+              } else {
+                return ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight();
+              }
+    };
+
+    DoubleSupplier AngleSupplier = () -> {
+      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+
+              Pose2d closest = poseList.get(0);
+              int closestNum = 0;
         
-              return closestNum % 2 == 0; //basically the even poles are L3 and the odd poles are L2
-            })
-      .alongWith(claw.algeaIntake())
-      .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea)))
+              for(int i = 1; i < poseList.size(); i++){
+                if(
+                  poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 
+                  closest.getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) 
+                {
+                  closest = poseList.get(i);
+                  closestNum = i;
+                }
+              }
+
+              if(closestNum % 2 == 0){
+                return ElevatorPivotConstants.AnglePositions.HIGH_ALGEA.getAngle();
+              } else {
+                return ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle();
+              }
+    };
+
+    return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
+      .alongWith(
+        elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
+      .alongWith(claw.algeaIntake()).until(ElevatorPivot.hasAlgea)
       .andThen(drivetrain.driveBackAlgea());
   }
 

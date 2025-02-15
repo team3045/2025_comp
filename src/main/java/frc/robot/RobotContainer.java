@@ -105,11 +105,16 @@ public class RobotContainer {
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        joystick.L1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)).unless(ElevatorPivot.hasAlgea));
-        joystick.L1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+        joystick.L1().onTrue(new ConditionalCommand(
+            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
+            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
+            ElevatorPivot.hasAlgea.negate()));
 
         algeaState.whileTrue(
-            autoScoreFactory.getAlgeaRemoveCommand(VisionConstants.limelights[0])
+            autoScoreFactory.getAlgeaRemoveCommand(
+                VisionConstants.limelights[0],
+                () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed,
+                () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .finallyDo(() -> {
                 M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
                 }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER REMOVAL

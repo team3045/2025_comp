@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -389,7 +388,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 returnAngle = Rotation2d.fromDegrees(235);
             }
 
-            return AutoBuilder.shouldFlip() ? returnAngle.times(-1).plus(Rotation2d.k180deg): returnAngle;
+            return AutoBuilder.shouldFlip() ? returnAngle.times(-1).plus(Rotation2d.k180deg): returnAngle.minus(Rotation2d.k180deg);
         };
 
         return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);
@@ -398,10 +397,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command driveFacingProcessor(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
         Supplier<Rotation2d> angSupplier = () -> {
             return AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldRotation(FieldConstants.Processor.centerFace.getRotation()) 
-                : FieldConstants.Processor.centerFace.getRotation();
+                : FieldConstants.Processor.centerFace.getRotation().times(-1);
         };
 
         return driveFacingAngle(angSupplier, xSpeeds, ySpeeds);
+    }
+
+    public Command driveFacingAlgea(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
+        Supplier<Rotation2d> angleSupplier = () -> {
+            List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+
+            Pose2d closest = poseList.get(0);
+            int closestNum = 0;
+
+            for(int i = 1; i < poseList.size(); i++){
+                if(
+                poseList.get(i).getTranslation().getDistance(getState().Pose.getTranslation()) < 
+                closest.getTranslation().getDistance(getState().Pose.getTranslation())) 
+                {
+                closest = poseList.get(i);
+                closestNum = i;
+                }
+            }
+
+            return FieldConstants.algeaPoses.get(closestNum).getRotation();
+        };
+
+        return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);
     }
 
     public Command preciseTargetPose(Supplier<Pose2d> targetPose){
