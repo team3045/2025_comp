@@ -88,10 +88,12 @@ public class DynamicPathfindWithFeedback extends Command {
     public void execute() {
       if(overrideWithFeedback.getAsBoolean()){
         feedbackPosePublisher.set(feedbackPoseSupplier.get());
-        drivetrain.addVisionMeasurement(
-          feedbackPoseSupplier.get(), 
-          Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
-          VecBuilder.fill(0.001,0.001,0.001));
+        if(feedbackPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 4){
+          drivetrain.addVisionMeasurement(
+            feedbackPoseSupplier.get(), 
+            Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
+            VecBuilder.fill(0.001,0.001,0.001));
+        }
       } else {
         PPHolonomicDriveController.clearFeedbackOverrides();
       }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -67,6 +68,21 @@ public class Claw extends SubsystemBase {
             .withUpdateFreqHz(1000);
 
         hopperMotor.setControl(request);
+    }
+
+    public void driveBack(double numRotations){
+        PositionVoltage request = new PositionVoltage(clawMotor.getPosition().getValueAsDouble() - numRotations)
+            .withSlot(1)
+            .withUpdateFreqHz(1000);
+
+        clawMotor.setControl(request);
+
+    }
+
+    public Command driveBack(){
+        return this.runOnce(() ->
+            driveBack(0.5)
+        );
     }
 
 

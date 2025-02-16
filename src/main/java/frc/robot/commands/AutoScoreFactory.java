@@ -243,7 +243,13 @@ public class AutoScoreFactory{
               }
     };
 
-    return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
+    // return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
+    //   .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
+    //   .alongWith(claw.algeaIntake())
+    //   .until(ElevatorPivot.hasAlgea)
+    //   .andThen(drivetrain.driveBackAlgea());
+
+    return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
       .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
       .alongWith(claw.algeaIntake())
       .until(ElevatorPivot.hasAlgea)

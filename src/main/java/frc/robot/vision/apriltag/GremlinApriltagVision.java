@@ -117,11 +117,9 @@ public class GremlinApriltagVision extends SubsystemBase {
     if(!shouldRejectAllUpdates){
       processVisionUpdates();
       visionConsumer.accept(visionUpdates);
-      GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
     }
 
-    logLimelights();
-    GremlinLogger.logSD("VISION/shouldRejectAllUpdates", shouldRejectAllUpdates);    
+    //logLimelights();
   }
 
   @SuppressWarnings("unused")
@@ -138,7 +136,7 @@ public class GremlinApriltagVision extends SubsystemBase {
       // Camera specific variables
       Transform3d camToRobotTransform = GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()).inverse();
       List<PhotonPipelineResult> unreadResults = cameras[i].getAllUnreadResults();
-      GremlinLogger.logSD(logPath + "/Unread results", unreadResults.size());
+      GremlinLogger.log(logPath + "/Unread results", unreadResults.size());
 
       for (int j = 0; j < unreadResults.size(); j++) {
         Pose3d cameraPose;
@@ -148,8 +146,8 @@ public class GremlinApriltagVision extends SubsystemBase {
         double timestamp = unprocessedResult.getTimestampSeconds();
         double singleTagAdjustment = 1.0;
 
-        GremlinLogger.logSD(logPath + "/Hastargets", unprocessedResult.hasTargets());
-        GremlinLogger.logSD(logPath + "/Timestamp", timestamp);
+        GremlinLogger.log(logPath + "/Hastargets", unprocessedResult.hasTargets());
+        GremlinLogger.log(logPath + "/Timestamp", timestamp);
 
         // Continue if the camera doesn't have any targets
         if (!unprocessedResult.hasTargets()) {
@@ -170,7 +168,7 @@ public class GremlinApriltagVision extends SubsystemBase {
             tagPose3ds.add(LAYOUT.getTagPose(id).get());
           }
 
-          GremlinLogger.logSD(logPath + "/Multitag", true);
+          GremlinLogger.log(logPath + "/Multitag", true);
         } else {
           PhotonTrackedTarget target = unprocessedResult.getBestTarget();
 
@@ -205,7 +203,7 @@ public class GremlinApriltagVision extends SubsystemBase {
           tagPose3ds.add(tagPose);
           singleTagAdjustment = SingleTagAdjusters.getAdjustmentForTag(target.getFiducialId());
 
-          GremlinLogger.logSD(logPath + "/Multitag", false);
+          GremlinLogger.log(logPath + "/Multitag", false);
         }
 
         if (cameraPose == null || calculatedRobotPose == null)
@@ -258,7 +256,7 @@ public class GremlinApriltagVision extends SubsystemBase {
                 stdDevs));
 
         logPoses(i, cameraPose, calculatedRobotPose, tagPose3ds.toArray(Pose3d[]::new));
-        GremlinLogger.logSD(logPath + "/TagsUsed", tagPose3ds.size());
+        GremlinLogger.log(logPath + "/TagsUsed", tagPose3ds.size());
         GremlinLogger.logStdDevs(logPath + "/StdDevs", stdDevs);
       }
     }
@@ -364,17 +362,17 @@ public class GremlinApriltagVision extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    // visionSystemSim.update(poseSupplier.get());
-    // Field2d debugField = visionSystemSim.getDebugField();
-    // debugField.getObject("EstimatedRobot").setPose(poseSupplier.get());
-    // debugField.getRobotObject().setPose(poseSupplier.get());
+    visionSystemSim.update(poseSupplier.get());
+    Field2d debugField = visionSystemSim.getDebugField();
+    debugField.getObject("EstimatedRobot").setPose(poseSupplier.get());
+    debugField.getRobotObject().setPose(poseSupplier.get());
 
-    // for(GremlinLimelightCamera ll : limelights)
-    //   ll.processSimUpdates();
+    for(GremlinLimelightCamera ll : limelights)
+      ll.processSimUpdates();
 
-    // processVisionUpdates();
+    processVisionUpdates();
 
-    // visionConsumer.accept(visionUpdates);
-    // GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
+    visionConsumer.accept(visionUpdates);
+    GremlinLogger.log("VISION/visionUpdatesSize", visionUpdates.size());
   }
 }

@@ -614,7 +614,6 @@ public class ElevatorPivot extends SubsystemBase {
     SmartDashboard.putNumber("Target Heght", targetHeight);
     SmartDashboard.putNumber("Arm Target", targetAngleDegrees);
     SmartDashboard.putNumber("Arm Angle", currentAngle);
-    SmartDashboard.putNumber("Stage 3 height", stage3Height);
   }
 
 

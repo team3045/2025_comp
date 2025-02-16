@@ -105,12 +105,11 @@ public class RobotContainer {
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        joystick.L1().OnPressTwice(
+        joystick.L1().onTrue(
             new ConditionalCommand(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
-                ElevatorPivot.hasAlgea.negate()),
-            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+                algeaState.negate()));
 
         algeaState.whileTrue(
             autoScoreFactory.getAlgeaRemoveCommand(
@@ -146,6 +145,7 @@ public class RobotContainer {
                 .andThen(Commands.waitUntil(claw.hasCoral.negate()))
                 .andThen(claw.slowBackup())
                 .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.driveBack())
                 .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)))
         ));
 

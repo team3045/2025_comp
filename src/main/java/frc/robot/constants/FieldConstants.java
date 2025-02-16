@@ -105,12 +105,12 @@ public class FieldConstants {
                 compFieldWidth);
 
         public static final List<Pose2d> algeaPoses = List.of(
-                new Pose2d(3,4, Rotation2d.kZero),
-                new Pose2d(3.75, 2.8, Rotation2d.fromDegrees(60)),
-                new Pose2d(5.37, 2.5, Rotation2d.fromDegrees(120) ),
-                new Pose2d(5.78, 3.97, Rotation2d.k180deg),
-                new Pose2d(5.3, 5.375, Rotation2d.fromDegrees(240)),
-                new Pose2d(3.75, 5.375, Rotation2d.fromDegrees(300))
+                new Pose2d(3.189,4.031, Rotation2d.kZero),
+                new Pose2d(3.836, 2.904, Rotation2d.fromDegrees(60)),
+                new Pose2d(5.119, 2.904, Rotation2d.fromDegrees(120) ),
+                new Pose2d(5.8, 4.007, Rotation2d.k180deg),
+                new Pose2d(5.167, 5.146, Rotation2d.fromDegrees(240)),
+                new Pose2d(3.836, 5.134, Rotation2d.fromDegrees(300))
         );
 
         public static final List<Pose2d> flippedAlgeaPoses = algeaPoses.stream().map((pose) -> FlippingUtil.flipFieldPose(pose)).toList();

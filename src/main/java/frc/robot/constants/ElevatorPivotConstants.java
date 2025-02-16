@@ -82,7 +82,7 @@ public class ElevatorPivotConstants {
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
     public static final double heightTolerance = 0.03; //3cm
-    public static final double angleToleranceDegrees = 0.5; //0.5 degree tolerance
+    public static final double angleToleranceDegrees = 1; //0.5 degree tolerance
 
     public static final double statorCurrentLimit = 60; //Amps
     public static final double supplyCurrentLimit = 80; //Amps
@@ -148,7 +148,7 @@ public class ElevatorPivotConstants {
     public static final double pivotKA = !Utils.isSimulation() ? 0 : 0.02;
     public static final double pivotKV = !Utils.isSimulation() ? 2.8 : 0.55;
 
-    public static final double magnetOffset = !Utils.isSimulation() ? -0.178955 : 0;
+    public static final double magnetOffset = !Utils.isSimulation() ? 0.309814 : 0;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     public enum HeightPositions{

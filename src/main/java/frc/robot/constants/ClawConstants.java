@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.ProximityParamsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.ToFParamsConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -100,6 +101,15 @@ public class ClawConstants {
     public static final double kS = 0;
     public static final double kA = 0;
     public static final double kV = 12 / 93.8;
+    
+    public static final double slot1kP = 10;
+    public static final double slot1kI = 0;
+    public static final double slot1kD = 0;
+    public static final double slot1kG = 0;
+    public static final double slot1kS = 0;
+    public static final double slot1kA = 0;
+    public static final double slot1kV = 12 / 93.8;
+
 
     public static final MotionMagicConfigs clawMotionMagicConfigs = new MotionMagicConfigs()
         .withMotionMagicAcceleration(clawMaxAccelerationRotations)
@@ -114,6 +124,15 @@ public class ClawConstants {
         .withKS(kS)
         .withKV(kV);
 
+    public static final Slot1Configs clawSlot1Configs = new Slot1Configs()
+        .withKA(slot1kA)
+        .withKD(slot1kD)
+        .withKG(slot1kG)
+        .withKI(slot1kI)
+        .withKP(slot1kP)
+        .withKS(slot1kS)
+        .withKV(slot1kV);
+
     public static final FeedbackConfigs clawFeedbackConfigs = new FeedbackConfigs();
 
     public static final TalonFXConfiguration motorConfig = new TalonFXConfiguration()
@@ -121,7 +140,8 @@ public class ClawConstants {
         .withMotorOutput(MotorOutputConfigs)
         .withMotionMagic(clawMotionMagicConfigs)
         .withFeedback(clawFeedbackConfigs)
-        .withSlot0(clawSlot0Configs);
+        .withSlot0(clawSlot0Configs)
+        .withSlot1(clawSlot1Configs);
 
 
      
