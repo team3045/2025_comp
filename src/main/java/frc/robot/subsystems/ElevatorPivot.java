@@ -13,6 +13,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.CANcoderSimState;
+import com.ctre.phoenix6.sim.CANrangeSimState;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -282,9 +283,9 @@ public class ElevatorPivot extends SubsystemBase {
    * 
    * @param targetHeight the desired height in meters
    */
-  private void setHeightTarget(double desiredHeight){
+  private void setHeightTarget(double localDesiredHeight){
 
-    double targetRotations = convertHeightToRotations(targetHeight);
+    double targetRotations = convertHeightToRotations(localDesiredHeight);
 
     MotionMagicVoltage request = new MotionMagicVoltage(targetRotations)
       .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); //every  1 ms
@@ -330,7 +331,7 @@ public class ElevatorPivot extends SubsystemBase {
     //If we're greater than collision angle than just be safe no matter what
     if(getPivotAngleDegrees() > maxUpperCollisionAngle){
       tempTargetAngle = travelAngle;
-      tempTargetHeight = Math.min(getHeight(),maxCollisionHeight);
+      tempTargetHeight = getHeight();
     }
 
     if(atTargetHeight()){
@@ -340,7 +341,8 @@ public class ElevatorPivot extends SubsystemBase {
     if(hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle){
       tempTargetAngle = algeaTravelAngle;
     };
-      
+    
+
     setHeightTarget(tempTargetHeight);
     setAngleTargetDegrees(tempTargetAngle);
   }
@@ -493,7 +495,7 @@ public class ElevatorPivot extends SubsystemBase {
     minimumHeight);
 
   private final SingleJointedArmSim armSim = new SingleJointedArmSim(
-    DCMotor.getKrakenX60(1), 
+    DCMotor.getKrakenX60Foc(1), 
     pivotTotalGearing,
     pivotMOI, 
     pivotArmLength, 
@@ -506,6 +508,7 @@ public class ElevatorPivot extends SubsystemBase {
   private TalonFXSimState leftMotorSim;
   private TalonFXSimState pivotMotorSim;
   private CANcoderSimState pivotCancoderSim;
+  private CANrangeSimState algeaSensorSim;
 
   private Mechanism2d pivotMechanism = new Mechanism2d(canvasWidth, canvasHeight);
 
@@ -523,11 +526,12 @@ public class ElevatorPivot extends SubsystemBase {
     leftMotorSim = leftMotor.getSimState();
     pivotMotorSim = pivotMotor.getSimState();
     pivotCancoderSim = pivotCancoder.getSimState();
+    algeaSensorSim = algeaSensor.getSimState();
 
     rightMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
     leftMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
-    pivotMotorSim.Orientation = ChassisReference.Clockwise_Positive;
-    pivotCancoderSim.Orientation = ChassisReference.Clockwise_Positive;
+    pivotMotorSim.Orientation = ChassisReference.CounterClockwise_Positive;
+    pivotCancoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
     elevatorSim.setState(stowHeight, 0);
 
@@ -543,12 +547,16 @@ public class ElevatorPivot extends SubsystemBase {
     leftMotorSim = leftMotor.getSimState();
     pivotMotorSim = pivotMotor.getSimState();
     pivotCancoderSim = pivotCancoder.getSimState();
+    algeaSensorSim = algeaSensor.getSimState();
 
     //update with latest simulated supply voltage
     rightMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     leftMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     pivotMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     pivotCancoderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    algeaSensorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    algeaSensorSim.setDistance(proximityThreshold + 0.1);
 
     //get output voltage for motors, we assume both output same amount 
     //since they are identical just two different sides
@@ -598,7 +606,7 @@ public class ElevatorPivot extends SubsystemBase {
       new Pose3d(0,0,carriageZ, new Rotation3d()),
       new Pose3d(0,0,stage3Z, new Rotation3d()),
       new Pose3d(0,0,stage2Z, new Rotation3d()),
-      new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ + pivotOffsetZ, new Rotation3d(-getPivotAngleRadians() + Units.degreesToRadians(0),0,0))
+      new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ+pivotOffsetZ, new Rotation3d(0,-getPivotAngleRadians(),0))
     });
 
 

@@ -364,17 +364,17 @@ public class GremlinApriltagVision extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    visionSystemSim.update(poseSupplier.get());
-    Field2d debugField = visionSystemSim.getDebugField();
-    debugField.getObject("EstimatedRobot").setPose(poseSupplier.get());
-    debugField.getRobotObject().setPose(poseSupplier.get());
+    // visionSystemSim.update(poseSupplier.get());
+    // Field2d debugField = visionSystemSim.getDebugField();
+    // debugField.getObject("EstimatedRobot").setPose(poseSupplier.get());
+    // debugField.getRobotObject().setPose(poseSupplier.get());
 
-    for(GremlinLimelightCamera ll : limelights)
-      ll.processSimUpdates();
+    // for(GremlinLimelightCamera ll : limelights)
+    //   ll.processSimUpdates();
 
-    processVisionUpdates();
+    // processVisionUpdates();
 
-    visionConsumer.accept(visionUpdates);
-    GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
+    // visionConsumer.accept(visionUpdates);
+    // GremlinLogger.logSD("VISION/visionUpdatesSize", visionUpdates.size());
   }
 }

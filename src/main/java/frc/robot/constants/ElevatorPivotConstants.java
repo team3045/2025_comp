@@ -6,6 +6,7 @@ package frc.robot.constants;
 
 import static frc.robot.constants.ElevatorPivotConstants.minimumHeight;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -109,8 +110,8 @@ public class ElevatorPivotConstants {
     public static final double stage2StageLength = Units.inchesToMeters(21);
     public static final double verticalTimerThreshold = 0.5;
 
-    public static final double pivotOffsetX = 0;
-    public static final double pivotOffsetY = Units.inchesToMeters(-11);
+    public static final double pivotOffsetX = Units.inchesToMeters(11);
+    public static final double pivotOffsetY = Units.inchesToMeters(0);
     public static final double pivotOffsetZ = Units.inchesToMeters(17.5);
 
 
@@ -139,15 +140,15 @@ public class ElevatorPivotConstants {
     public static final double kA = 0;
     public static final double kV = 0.60932;
 
-    public static final double pivotKP = 45;
-    public static final double pivotKI = 0;
-    public static final double pivotKD = 0.3;
-    public static final double pivotKG = 0.4;
-    public static final double pivotKS = 0.08;
-    public static final double pivotKA = 0;
-    public static final double pivotKV = 2.8;
+    public static final double pivotKP = !Utils.isSimulation() ? 45 : 40;
+    public static final double pivotKI = !Utils.isSimulation() ? 0 : 0;
+    public static final double pivotKD = !Utils.isSimulation() ? 0.3 : 0;
+    public static final double pivotKG = !Utils.isSimulation() ? 0.4 : 0.65;
+    public static final double pivotKS = !Utils.isSimulation() ? 0.08 : 0;
+    public static final double pivotKA = !Utils.isSimulation() ? 0 : 0.02;
+    public static final double pivotKV = !Utils.isSimulation() ? 2.8 : 0.55;
 
-    public static final double magnetOffset = -0.178955;
+    public static final double magnetOffset = !Utils.isSimulation() ? -0.178955 : 0;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     public enum HeightPositions{
