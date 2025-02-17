@@ -16,7 +16,8 @@ public class GremlinRobotState {
         TELEOP,
         AUTOSCORE,
         INTAKE,
-        ALGEA
+        ALGEA,
+        PROCESSOR
     }
 
     private GremlinRobotState(){

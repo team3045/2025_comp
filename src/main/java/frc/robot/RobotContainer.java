@@ -68,6 +68,7 @@ public class RobotContainer {
     public final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
     public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     public final Trigger teleopState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TELEOP);
+    public final Trigger processorState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.PROCESSOR);
     public final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
 
     public RobotContainer() {
@@ -112,7 +113,7 @@ public class RobotContainer {
         
         scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
 
-        scoringState.negate().and(intakeState.negate()).and(algeaState.negate()).and(isAuton.negate()).whileTrue(
+        teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
         
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
@@ -166,18 +167,23 @@ public class RobotContainer {
 
         intakeState.onFalse(claw.fullHold());
 
-        joystick.L2().OnPressTwice(
-            drivetrain.driveFacingProcessor(
+        joystick.L2().onTrue(
+            Commands.either(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.PROCESSOR)), 
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)),
+                processorState.negate()
+            ));
+
+        processorState.onTrue(drivetrain.driveFacingProcessor(
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
-            .alongWith(elevatorPivot.goToProcessor()),
-            claw.algeaOuttake()
-                .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
-                .andThen(claw.hold())
-                .andThen(drivetrain.driveBack())
-        );
-
+            .alongWith(elevatorPivot.goToProcessor()));
         
+        processorState.onFalse(claw.algeaOuttake()
+            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+            .andThen(claw.hold())
+            .andThen(drivetrain.driveBack()));
+
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
@@ -214,6 +220,16 @@ public class RobotContainer {
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5,
             VisionConstants.limelights[1], 
             VisionConstants.limelights[0]).withName("StartScoreE"));
+
+        NamedCommands.registerCommand("StartScoreD",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4,
+            VisionConstants.limelights[1], 
+            VisionConstants.limelights[0]).withName("StartScoreE"));
+
+        NamedCommands.registerCommand("StartScoreC",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3,
+            VisionConstants.limelights[1], 
+            VisionConstants.limelights[0]).withName("StartScoreE"));
         
         NamedCommands.registerCommand("StartIntake", 
             elevatorPivot.goToIntake()
@@ -223,6 +239,10 @@ public class RobotContainer {
                 .andThen(Commands.waitUntil(claw.hasCoral.negate()))
                 .andThen(claw.driveBack())
                 .andThen(Commands.waitUntil(claw.hasCoral))));
+
+        NamedCommands.registerCommand("StowArm", 
+            elevatorPivot.stowArm().alongWith(claw.hold())
+        );
     }
 
     public void configureAutoTriggers(){

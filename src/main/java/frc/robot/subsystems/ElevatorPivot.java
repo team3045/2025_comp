@@ -233,7 +233,7 @@ public class ElevatorPivot extends SubsystemBase {
           //Stage2Height remains the same
       } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top){
           stage3Height = carriageHeight - stage3StageLength;
-          stage2Height = carriageHeight - stage2StageLength;
+          stage2Height = carriageHeight - stage2StageLength-stage3StageLength;
       } else {
         try {
           throw new Exception("Something weird happened with the elevator sim heights");

@@ -68,13 +68,70 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake-Echo"
+                  "pathName": "Intake-Charlie"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "StartScoreE"
+                  "name": "StartScoreC"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartIntake"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Charlie-Intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Intake-Delta"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartScoreC"
                 }
               }
             ]
