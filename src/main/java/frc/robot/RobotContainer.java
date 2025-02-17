@@ -6,9 +6,12 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,6 +63,7 @@ public class RobotContainer {
     public final IntakeSequenceFactory intakeSequenceFactory = new IntakeSequenceFactory(drivetrain, elevatorPivot, claw);
 
     /*Triggers */
+    public final Trigger isAuton = new Trigger(() -> DriverStation.isAutonomous());
     public final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
     public final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
     public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
@@ -72,13 +76,16 @@ public class RobotContainer {
             .withCaptureNt(GremlinLogger.isDebug())
             .withCaptureConsole(GremlinLogger.isDebug())
             .withLogExtras(GremlinLogger.isDebug()));
+
+        registerPathPlannerCommands();
+        configureAutoTriggers();
+
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
-
-
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
+
     }
 
     private void configureBindings() {
@@ -105,7 +112,7 @@ public class RobotContainer {
         
         scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
 
-        scoringState.negate().and(intakeState.negate()).and(algeaState.negate()).onTrue(
+        scoringState.negate().and(intakeState.negate()).and(algeaState.negate()).and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
         
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
@@ -179,21 +186,6 @@ public class RobotContainer {
     }
 
     public void registerPathPlannerCommands(){
-        NamedCommands.registerCommand("autoScoreL4", 
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, 
-                VisionConstants.limelights[1], 
-                VisionConstants.limelights[0]));
-        
-        NamedCommands.registerCommand("autoScoreL3", 
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 2, 
-                VisionConstants.limelights[1], 
-                VisionConstants.limelights[0]));
-
-        NamedCommands.registerCommand("autoScoreL2", 
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 1, 
-                VisionConstants.limelights[1], 
-                VisionConstants.limelights[0]));
-        
         NamedCommands.registerCommand("intake", 
             elevatorPivot.goToIntake()
                 .andThen(claw.fullIntake()
@@ -202,5 +194,44 @@ public class RobotContainer {
                 .andThen(Commands.waitUntil(claw.hasCoral.negate()))
                 .andThen(claw.slowBackup())
                 .andThen(Commands.waitUntil(claw.hasCoral))));
+
+        NamedCommands.registerCommand("waitUntilScored", 
+            Commands.waitUntil(claw.hasCoral.negate()).andThen(Commands.waitSeconds(0.3)));
+        
+        NamedCommands.registerCommand("waitUntilIntake", 
+            Commands.waitUntil(claw.hasCoral).withTimeout(2).withName("waitUntilIntake"));
+
+        NamedCommands.registerCommand("ScoreCoral",
+            claw.clawOutake()
+            .andThen(Commands.waitSeconds(0.4)).withName("Score Coral"));
+        
+        NamedCommands.registerCommand("StartScoreF",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
+            VisionConstants.limelights[1], 
+            VisionConstants.limelights[0]).withName("StartScoreF"));
     }
+
+    public void configureAutoTriggers(){
+        new EventTrigger("StartScoreF").onTrue(
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
+            VisionConstants.limelights[1], 
+            VisionConstants.limelights[0]));
+
+        new EventTrigger("StartScoreE").onTrue(
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5, 
+            VisionConstants.limelights[1], 
+            VisionConstants.limelights[0]));
+
+        new EventTrigger("StartIntake").onTrue(
+            elevatorPivot.goToIntake()
+                .andThen(claw.fullIntake()
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.slowIntake())
+                .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+                .andThen(claw.driveBack())
+                .andThen(Commands.waitUntil(claw.hasCoral)))
+        );
+        
+    }
+
 }

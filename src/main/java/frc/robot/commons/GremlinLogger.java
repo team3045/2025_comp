@@ -15,12 +15,34 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class GremlinLogger extends DogLog {
     private static final String PID_KEY = "PID";
-    private static final Boolean DEBUG = false;
+
+    // Create a NetworkTable instance and entry for the DEBUG flag
+    private static final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
+    private static final NetworkTable debugTable = ntInstance.getTable("Debug");
+    private static final NetworkTableEntry debugEntry = debugTable.getEntry("Enabled");
+
+    public static boolean DEBUG = false;
+    private static Notifier debugNotifier;
+
+    static{
+        debugEntry.setBoolean(false);
+        // Create a Notifier to update the DEBUG flag on a separate thread
+        debugNotifier = new Notifier(() -> {
+            DEBUG = debugEntry.getBoolean(false);
+        });
+        debugNotifier.startPeriodic(0.5); // Update every 500ms
+    }
+    
+
 
     public static void logTalonFX(String motorName, TalonFX motor) {
         GremlinLogger.logSD(motorName + "/DeviceID", motor.getDeviceID());
@@ -180,5 +202,10 @@ public class GremlinLogger extends DogLog {
 
     public static boolean isDebug(){
         return DEBUG;
+    }
+
+    public static void updateDebug(){
+        // Update the DEBUG value from NetworkTables
+        DEBUG = debugEntry.getBoolean(false);
     }
 }

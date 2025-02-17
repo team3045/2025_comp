@@ -3,38 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 16.281403718171294,
-        "y": 1.147695674189814
+        "x": 5.287,
+        "y": 2.928
       },
       "prevControl": null,
       "nextControl": {
-        "x": 17.282762225115736,
-        "y": 2.230695529513887
+        "x": 5.2985655737704915,
+        "y": 2.088985655737704
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Foxtrot"
     },
     {
       "anchor": {
-        "x": 1.1535879629629617,
-        "y": 1.1698238570601847
+        "x": 1.5703893442622954,
+        "y": 0.722387295081968
       },
       "prevControl": {
-        "x": 0.15358796296296173,
-        "y": 1.1698238570601847
+        "x": 2.2057377049180324,
+        "y": 1.141956967213115
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "BotIntake"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 0.12424037812289472,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -55.0
+    "rotation": 55.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Processor Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 125.00000000000001
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }

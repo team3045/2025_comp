@@ -1,0 +1,214 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.17,
+        "y": 4.17
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7421394700549975,
+        "y": 4.17
+      },
+      "isLocked": false,
+      "linkedName": "Alpha"
+    },
+    {
+      "anchor": {
+        "x": 3.17,
+        "y": 3.83
+      },
+      "prevControl": {
+        "x": 2.3240140952651966,
+        "y": 4.2586919952682605
+      },
+      "nextControl": {
+        "x": 4.015985904734803,
+        "y": 3.401308004731739
+      },
+      "isLocked": false,
+      "linkedName": "Bravo"
+    },
+    {
+      "anchor": {
+        "x": 3.656,
+        "y": 2.94
+      },
+      "prevControl": {
+        "x": 3.2080888282008284,
+        "y": 3.149721251478668
+      },
+      "nextControl": {
+        "x": 4.103911171799172,
+        "y": 2.730278748521332
+      },
+      "isLocked": false,
+      "linkedName": "Charlie"
+    },
+    {
+      "anchor": {
+        "x": 3.98,
+        "y": 2.79
+      },
+      "prevControl": {
+        "x": 3.5291904741584434,
+        "y": 2.8456496089129164
+      },
+      "nextControl": {
+        "x": 4.430809525841557,
+        "y": 2.7343503910870837
+      },
+      "isLocked": false,
+      "linkedName": "Delta"
+    },
+    {
+      "anchor": {
+        "x": 5.023,
+        "y": 2.76
+      },
+      "prevControl": {
+        "x": 4.6540962097966885,
+        "y": 2.8262969972147136
+      },
+      "nextControl": {
+        "x": 5.391903790203311,
+        "y": 2.693703002785286
+      },
+      "isLocked": false,
+      "linkedName": "Echo"
+    },
+    {
+      "anchor": {
+        "x": 5.287,
+        "y": 2.928
+      },
+      "prevControl": {
+        "x": 5.056072198701644,
+        "y": 3.0237723894841664
+      },
+      "nextControl": {
+        "x": 5.517927801298356,
+        "y": 2.8322276105158335
+      },
+      "isLocked": false,
+      "linkedName": "Foxtrot"
+    },
+    {
+      "anchor": {
+        "x": 5.811100000000001,
+        "y": 3.8554
+      },
+      "prevControl": {
+        "x": 5.615509146180482,
+        "y": 4.011105548719858
+      },
+      "nextControl": {
+        "x": 6.006690853819519,
+        "y": 3.6996944512801426
+      },
+      "isLocked": false,
+      "linkedName": "Gamma"
+    },
+    {
+      "anchor": {
+        "x": 5.811,
+        "y": 4.188400000000001
+      },
+      "prevControl": {
+        "x": 5.820090374789801,
+        "y": 4.489779516025045
+      },
+      "nextControl": {
+        "x": 5.8019096252101985,
+        "y": 3.887020483974956
+      },
+      "isLocked": false,
+      "linkedName": "Horse"
+    },
+    {
+      "anchor": {
+        "x": 5.31,
+        "y": 5.11
+      },
+      "prevControl": {
+        "x": 5.2551274908493895,
+        "y": 5.449106401242174
+      },
+      "nextControl": {
+        "x": 5.36487250915061,
+        "y": 4.7708935987578265
+      },
+      "isLocked": false,
+      "linkedName": "Igloo"
+    },
+    {
+      "anchor": {
+        "x": 5.02,
+        "y": 5.27
+      },
+      "prevControl": {
+        "x": 4.859865892080768,
+        "y": 5.82771674961182
+      },
+      "nextControl": {
+        "x": 5.180134107919232,
+        "y": 4.712283250388179
+      },
+      "isLocked": false,
+      "linkedName": "JohnnyBoi"
+    },
+    {
+      "anchor": {
+        "x": 3.95,
+        "y": 5.27
+      },
+      "prevControl": {
+        "x": 3.7502601416959624,
+        "y": 5.799401015746306
+      },
+      "nextControl": {
+        "x": 4.149739858304038,
+        "y": 4.740598984253693
+      },
+      "isLocked": false,
+      "linkedName": "Kayla"
+    },
+    {
+      "anchor": {
+        "x": 3.66,
+        "y": 5.08
+      },
+      "prevControl": {
+        "x": 4.340169424153586,
+        "y": 5.08
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Llama"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

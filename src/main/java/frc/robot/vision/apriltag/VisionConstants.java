@@ -84,28 +84,28 @@ public class VisionConstants {
         public static final Pose3d[] cameraPoses = {
                         new Pose3d( // Front Left
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886),
-                                                        Units.inchesToMeters(9.362),
+                                                        Units.inchesToMeters(10.886+0.75),
+                                                        Units.inchesToMeters(9.362+0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(30))),
                         new Pose3d( // Front Right
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886),
-                                                       -Units.inchesToMeters(9.362),
+                                                        Units.inchesToMeters(10.886+0.75),
+                                                       -Units.inchesToMeters(9.362+0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-30))),
                         new Pose3d( // Back Left
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886),
-                                                        Units.inchesToMeters(9.362),
+                                                        -Units.inchesToMeters(10.886+0.75),
+                                                        Units.inchesToMeters(9.362+0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(150))),
                         new Pose3d( // Back Right
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886),
-                                                        -Units.inchesToMeters(9.362),
+                                                        -Units.inchesToMeters(10.886+0.75),
+                                                        -Units.inchesToMeters(9.362+0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-150))),
@@ -129,10 +129,10 @@ public class VisionConstants {
         };
 
         public static final GremlinPhotonCamera[] cameras = { //Retain this Order
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };    
 
         public static final GremlinLimelightCamera[] limelights = { //retain this order

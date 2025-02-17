@@ -82,7 +82,7 @@ public class ElevatorPivotConstants {
     public static final double pivotTotalGearing = pivotSensorToMechanismRatio * pivotRotorToSensorRatio;
 
     public static final double heightTolerance = 0.03; //3cm
-    public static final double angleToleranceDegrees = 1; //0.5 degree tolerance
+    public static final double angleToleranceDegrees = 5; //3 degree tolerance
 
     public static final double statorCurrentLimit = 60; //Amps
     public static final double supplyCurrentLimit = 80; //Amps
@@ -132,7 +132,7 @@ public class ElevatorPivotConstants {
     public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
 
-    public static final double kP = 8;
+    public static final double kP = 16;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0.3;
@@ -234,7 +234,7 @@ public class ElevatorPivotConstants {
         .withSupplyCurrentLowerLimit(pivotSupplyCurrentLimitLowerLimit);
     
     public static final FeedbackConfigs pivotFeedbackConfigs = new FeedbackConfigs()
-        .withRemoteCANcoder(new CoreCANcoder(pivotCancoderId, canbus))
+        .withFusedCANcoder(new CoreCANcoder(pivotCancoderId, canbus))
         .withRotorToSensorRatio(pivotRotorToSensorRatio)
         .withSensorToMechanismRatio(pivotSensorToMechanismRatio);
 

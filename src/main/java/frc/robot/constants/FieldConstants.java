@@ -21,7 +21,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 
 public class FieldConstants {
         public static final boolean isShopField = false;
-        public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+        public static final AprilTagFieldLayout compLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
         public static final double shopFieldLength = 7.89225625;
         public static final double shopFieldWidth = 4.68122;
@@ -106,8 +106,8 @@ public class FieldConstants {
 
         public static final List<Pose2d> algeaPoses = List.of( 
                 new Pose2d(3.189,4.031, Rotation2d.kZero),
-                new Pose2d(3.836, 2.904, Rotation2d.fromDegrees(60)),
-                new Pose2d(5.119, 2.904, Rotation2d.fromDegrees(120) ),
+                new Pose2d(3.845, 2.938, Rotation2d.fromDegrees(60)),
+                new Pose2d(5.119, 2.928, Rotation2d.fromDegrees(120) ),
                 new Pose2d(5.75, 4.007, Rotation2d.k180deg),
                 new Pose2d(5.16, 5.138, Rotation2d.fromDegrees(240)),
                 new Pose2d(3.87, 5.11, Rotation2d.fromDegrees(300))

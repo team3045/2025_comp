@@ -256,16 +256,11 @@ public class AutoScoreFactory{
       .andThen(drivetrain.driveBackAlgea());
   }
 
-  public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera){
+  public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, Supplier<Integer> poleNumSupplier, GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera){
     //Basically we alternate between right or left cameras, depending on the pole number.
     //Odd pole numbers use rightCamera, Even pole numbers use leftCamera
     Supplier<Pose2d> robotPoseSupplier = () -> {
-      int poleNumber =(int) poleNumberSub.get();
-
-      Pose2d targetPose = AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose);
-
-      SmartDashboard.putNumberArray("targetposition", new double[]{targetPose.getX(), targetPose.getY()});
-      SmartDashboard.putNumber("polenum", (int) poleNumberSub.get());
+      int poleNumber =(int) poleNumSupplier.get();
 
       if(poleNumber % 2 == 0){
         return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
@@ -297,15 +292,14 @@ public class AutoScoreFactory{
     return Commands.run(
         () -> {
           if(shouldOverride.getAsBoolean()){
-            drivetrain.addVisionMeasurement(
-              robotPoseSupplier.get(), 
-              Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
-              VecBuilder.fill(0.001,0.001,0.001));
+            if(robotPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 4){
+              drivetrain.addVisionMeasurement(
+                robotPoseSupplier.get(), 
+                Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
+                VecBuilder.fill(0.001,0.001,0.001));
+            }
           }
         }
-    ).alongWith(setElevatorHeight(heightSup))
-      .andThen(claw.clawOutake())
-      .andThen(Commands.waitSeconds(0.4))
-      .andThen(drivetrain.driveBack());
+    ).alongWith(setElevatorHeight(heightSup));
   }
 }

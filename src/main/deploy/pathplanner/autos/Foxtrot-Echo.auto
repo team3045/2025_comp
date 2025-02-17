@@ -1,0 +1,62 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right-Foxtrot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartScoreF"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Foxtrot-Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitUntilIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intake-Echo"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoral"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Processor Side",
+  "choreoAuto": false
+}
