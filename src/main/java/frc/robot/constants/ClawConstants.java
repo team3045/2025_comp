@@ -53,7 +53,7 @@ public class ClawConstants {
 
     public static final double minSignalStrength = 0;
     public static final double proximityHysterisis = 0.01; //1 cm
-    public static final double proximityThreshold = 0.1; //10cm
+    public static final double proximityThreshold = 0.05; //10cm
 
     public static final double outputWaitTime = 0.5; //500 ms
     public static final int timeoutSeconds = 10; //10 sec

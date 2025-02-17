@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /** Add your docs here. */
 public class GremlinRobotState {
 
@@ -35,5 +37,9 @@ public class GremlinRobotState {
 
     public void setDriveState(DriveState newDriveState){
         this.driveState = newDriveState;
+        SmartDashboard.putBoolean("Algea State", getDriveState() == DriveState.ALGEA);
+        SmartDashboard.putBoolean("Intake State", getDriveState() == DriveState.INTAKE);
+        SmartDashboard.putBoolean("Teleop State", getDriveState() == DriveState.TELEOP);
+        SmartDashboard.putBoolean("Scoring State", getDriveState() == DriveState.AUTOSCORE);
     }
 }

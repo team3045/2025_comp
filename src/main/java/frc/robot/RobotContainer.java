@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.IntakeSequenceFactory;
+import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.DriveConstants;
@@ -59,13 +60,18 @@ public class RobotContainer {
     public final IntakeSequenceFactory intakeSequenceFactory = new IntakeSequenceFactory(drivetrain, elevatorPivot, claw);
 
     /*Triggers */
-    private final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
-    private final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
-    private final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
-    private final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
+    public final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
+    public final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
+    public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
+    public final Trigger teleopState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TELEOP);
+    public final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
 
     public RobotContainer() {
-        DogLog.setOptions(new DogLogOptions());
+        DogLog.setOptions(new DogLogOptions()
+            .withNtPublish(false)
+            .withCaptureNt(GremlinLogger.isDebug())
+            .withCaptureConsole(GremlinLogger.isDebug())
+            .withLogExtras(GremlinLogger.isDebug()));
         // Build an auto chooser. This will use Commands.none() as the default option.
         autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -148,6 +154,7 @@ public class RobotContainer {
                 .andThen(claw.driveBack())
                 .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)))
         ));
+
 
 
         intakeState.onFalse(claw.fullHold());

@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.GremlinUtil;
 
 import static edu.wpi.first.units.Units.*;
@@ -476,7 +477,8 @@ public class ElevatorPivot extends SubsystemBase {
     if(getVerticalVelocity() > 0.2) travellingUpward = true;
     else if(getVerticalVelocity() < -0.2) travellingUpward = false;
 
-    updateMechanism2d();
+    if(GremlinLogger.isDebug())
+      updateMechanism2d();
 
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
     SmartDashboard.putBoolean("At Height", atTargetHeight());

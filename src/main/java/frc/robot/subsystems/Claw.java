@@ -81,7 +81,7 @@ public class Claw extends SubsystemBase {
 
     public Command driveBack(){
         return this.runOnce(() ->
-            driveBack(0.5)
+            driveBack(0.25)
         );
     }
 

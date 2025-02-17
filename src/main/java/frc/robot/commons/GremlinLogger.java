@@ -5,6 +5,7 @@
 package frc.robot.commons;
 
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /** Add your docs here. */
 public class GremlinLogger extends DogLog {
     private static final String PID_KEY = "PID";
+    private static final Boolean DEBUG = false;
 
     public static void logTalonFX(String motorName, TalonFX motor) {
         GremlinLogger.logSD(motorName + "/DeviceID", motor.getDeviceID());
@@ -47,6 +49,25 @@ public class GremlinLogger extends DogLog {
     public static void logStdDevs(String path, Vector<N3> stddevs) {
         GremlinLogger.logSD(path + "/Stddevs/XY", stddevs.getData()[0]);
         GremlinLogger.logSD(path + "/Stddevs/Theta", stddevs.getData()[2]);
+    }
+
+    public static void debugLog(String key, double value){
+        if (DEBUG) {
+            log(key,value);
+        }
+    }
+
+    public static void debugLog(String key, boolean value){
+        if (DEBUG) {
+            log(key,value);
+        }
+    }
+
+    public static void debugLog(String path, Vector<N3> stddevs) {
+        if(DEBUG){
+            GremlinLogger.logSD(path + "/Stddevs/XY", stddevs.getData()[0]);
+            GremlinLogger.logSD(path + "/Stddevs/Theta", stddevs.getData()[2]);
+        }
     }
 
     /**
@@ -155,5 +176,9 @@ public class GremlinLogger extends DogLog {
     public static void logSD(String key, int value) {
         log(key, value);
         SmartDashboard.putNumber(key, value);
+    }
+
+    public static boolean isDebug(){
+        return DEBUG;
     }
 }

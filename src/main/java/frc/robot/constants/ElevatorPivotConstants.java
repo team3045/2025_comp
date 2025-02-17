@@ -52,8 +52,8 @@ public class ElevatorPivotConstants {
     public static final double carriageHeightToPivot = Units.inchesToMeters(-1.25);
     public static final double minAngleDegrees = -73;
     public static final double maxAngleDegrees = 120;
-    public static final double stowAngle = 120;
-    public static final double intakingAngle = 120;
+    public static final double stowAngle = 119;
+    public static final double intakingAngle = 119;
     public static final double processingAngle = -65;
 
     public static final double carriageToGround = 0.476306;//Units.inchesToMeters(16.752); //This is from the top of carriage to the ground, when at lowest position
@@ -140,7 +140,7 @@ public class ElevatorPivotConstants {
     public static final double kA = 0;
     public static final double kV = 0.60932;
 
-    public static final double pivotKP = !Utils.isSimulation() ? 45 : 40;
+    public static final double pivotKP = !Utils.isSimulation() ? 55 : 40;
     public static final double pivotKI = !Utils.isSimulation() ? 0 : 0;
     public static final double pivotKD = !Utils.isSimulation() ? 0.3 : 0;
     public static final double pivotKG = !Utils.isSimulation() ? 0.4 : 0.65;

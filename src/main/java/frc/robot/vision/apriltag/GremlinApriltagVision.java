@@ -136,7 +136,7 @@ public class GremlinApriltagVision extends SubsystemBase {
       // Camera specific variables
       Transform3d camToRobotTransform = GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()).inverse();
       List<PhotonPipelineResult> unreadResults = cameras[i].getAllUnreadResults();
-      GremlinLogger.log(logPath + "/Unread results", unreadResults.size());
+      GremlinLogger.debugLog(logPath + "/Unread results", unreadResults.size());
 
       for (int j = 0; j < unreadResults.size(); j++) {
         Pose3d cameraPose;
@@ -146,8 +146,8 @@ public class GremlinApriltagVision extends SubsystemBase {
         double timestamp = unprocessedResult.getTimestampSeconds();
         double singleTagAdjustment = 1.0;
 
-        GremlinLogger.log(logPath + "/Hastargets", unprocessedResult.hasTargets());
-        GremlinLogger.log(logPath + "/Timestamp", timestamp);
+        GremlinLogger.debugLog(logPath + "/Hastargets", unprocessedResult.hasTargets());
+        GremlinLogger.debugLog(logPath + "/Timestamp", timestamp);
 
         // Continue if the camera doesn't have any targets
         if (!unprocessedResult.hasTargets()) {
@@ -168,7 +168,7 @@ public class GremlinApriltagVision extends SubsystemBase {
             tagPose3ds.add(LAYOUT.getTagPose(id).get());
           }
 
-          GremlinLogger.log(logPath + "/Multitag", true);
+          GremlinLogger.debugLog(logPath + "/Multitag", true);
         } else {
           PhotonTrackedTarget target = unprocessedResult.getBestTarget();
 
@@ -203,7 +203,7 @@ public class GremlinApriltagVision extends SubsystemBase {
           tagPose3ds.add(tagPose);
           singleTagAdjustment = SingleTagAdjusters.getAdjustmentForTag(target.getFiducialId());
 
-          GremlinLogger.log(logPath + "/Multitag", false);
+          GremlinLogger.debugLog(logPath + "/Multitag", false);
         }
 
         if (cameraPose == null || calculatedRobotPose == null)
@@ -256,8 +256,8 @@ public class GremlinApriltagVision extends SubsystemBase {
                 stdDevs));
 
         logPoses(i, cameraPose, calculatedRobotPose, tagPose3ds.toArray(Pose3d[]::new));
-        GremlinLogger.log(logPath + "/TagsUsed", tagPose3ds.size());
-        GremlinLogger.logStdDevs(logPath + "/StdDevs", stdDevs);
+        GremlinLogger.debugLog(logPath + "/TagsUsed", tagPose3ds.size());
+        GremlinLogger.debugLog(logPath + "/StdDevs", stdDevs);
       }
     }
   }
@@ -373,6 +373,6 @@ public class GremlinApriltagVision extends SubsystemBase {
     processVisionUpdates();
 
     visionConsumer.accept(visionUpdates);
-    GremlinLogger.log("VISION/visionUpdatesSize", visionUpdates.size());
+    GremlinLogger.debugLog("VISION/visionUpdatesSize", visionUpdates.size());
   }
 }
