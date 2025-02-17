@@ -209,6 +209,20 @@ public class RobotContainer {
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
             VisionConstants.limelights[1], 
             VisionConstants.limelights[0]).withName("StartScoreF"));
+
+        NamedCommands.registerCommand("StartScoreE",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5,
+            VisionConstants.limelights[1], 
+            VisionConstants.limelights[0]).withName("StartScoreE"));
+        
+        NamedCommands.registerCommand("StartIntake", 
+            elevatorPivot.goToIntake()
+                .andThen(claw.fullIntake()
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.slowIntake())
+                .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+                .andThen(claw.driveBack())
+                .andThen(Commands.waitUntil(claw.hasCoral))));
     }
 
     public void configureAutoTriggers(){

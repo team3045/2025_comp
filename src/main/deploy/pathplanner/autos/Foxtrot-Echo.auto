@@ -30,21 +30,41 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Foxtrot-Intake"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartIntake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Foxtrot-Intake"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "waitUntilIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Intake-Echo"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Intake-Echo"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartScoreE"
+                }
+              }
+            ]
           }
         },
         {
