@@ -153,29 +153,34 @@ public class GeomUtil {
     return new Transform3d(translation, new Rotation3d());
   }
 
-  /** Check if poses are close to each other
+  /**
+   * Check if poses are close to each other
    * Currently only checks their translations
    * 
    * @param targetPose Targetted Pose
    * @param actualPose Actual Pose
-   * @param tolerance tolerance to be considered close enough
+   * @param tolerance  tolerance to be considered close enough
    * @return whether or not the poses are near each other
    */
-  public static boolean isNearPose(Pose2d targetPose, Pose2d actualPose, double tolerance){
+  public static boolean isNearPose(Pose2d targetPose, Pose2d actualPose, double tolerance) {
     return targetPose.getTranslation().getDistance(actualPose.getTranslation()) < tolerance;
   }
 
-  /** Check if poses are close to each other
+  /**
+   * Check if poses are close to each other
    * Checks both rotation and translation
    * 
-   * @param targetPose Targetted Pose
-   * @param actualPose Actual Pose
-   * @param translationToleranceMeters tolerance to be considered close enough in meters
-   * @param rotationToleranceDegrees tolerance to be considered close enough in Degrees
+   * @param targetPose                 Targetted Pose
+   * @param actualPose                 Actual Pose
+   * @param translationToleranceMeters tolerance to be considered close enough in
+   *                                   meters
+   * @param rotationToleranceDegrees   tolerance to be considered close enough in
+   *                                   Degrees
    * @return whether or not the poses are near each other
    */
-  public static boolean isNearPoseWithRotation(Pose2d targetPose, Pose2d actualPose, double translationToleranceMeters, double rotationToleranceDegrees){
+  public static boolean isNearPoseWithRotation(Pose2d targetPose, Pose2d actualPose, double translationToleranceMeters,
+      double rotationToleranceDegrees) {
     return targetPose.getTranslation().getDistance(actualPose.getTranslation()) < translationToleranceMeters
-      && Math.abs(targetPose.getRotation().minus(actualPose.getRotation()).getDegrees()) < rotationToleranceDegrees;
+        && Math.abs(targetPose.getRotation().minus(actualPose.getRotation()).getDegrees()) < rotationToleranceDegrees;
   }
 }

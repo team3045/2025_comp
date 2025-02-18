@@ -33,10 +33,11 @@ public class DynamicPathfindCommand extends Command {
         updatePathfindCommand();
         if (currentPathfindCommand != null) {
             currentPathfindCommand.initialize();
-        } 
+        }
 
-        //TODO: add a check to make sure we're within field bounds, 
-        //as well as the target pose is within field bounds other wise pathPlanner will fail I think
+        // TODO: add a check to make sure we're within field bounds,
+        // as well as the target pose is within field bounds other wise pathPlanner will
+        // fail I think
     }
 
     @Override

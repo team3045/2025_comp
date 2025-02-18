@@ -44,10 +44,9 @@ import static frc.robot.constants.ElevatorPivotConstants.*;
 
 import java.util.function.DoubleSupplier;
 
-
 /* */
 public class ElevatorPivot extends SubsystemBase {
-  private TalonFX rightMotor = new TalonFX(rightMotorId,canbus);
+  private TalonFX rightMotor = new TalonFX(rightMotorId, canbus);
   private TalonFX leftMotor = new TalonFX(leftMotorId, canbus);
   private TalonFX pivotMotor = new TalonFX(pivotMotorId, canbus);
   private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
@@ -73,13 +72,13 @@ public class ElevatorPivot extends SubsystemBase {
   public ElevatorPivot() {
     configDevices();
 
-    if(Utils.isSimulation()){
+    if (Utils.isSimulation()) {
       configSim();
     }
 
-    targetHeight = getHeight(); //This should go after configDevices to make sure that the elevator is zeroed
+    targetHeight = getHeight(); // This should go after configDevices to make sure that the elevator is zeroed
     targetAngleDegrees = getPivotAngleDegrees();
-    //setTargetHeightAndAngle(targetHeight, targetAngleDegrees);
+    // setTargetHeightAndAngle(targetHeight, targetAngleDegrees);
     travellingUpward = true;
   }
 
@@ -87,84 +86,97 @@ public class ElevatorPivot extends SubsystemBase {
    * Configure the Can devices for this subsystem
    * Also Resets position to zero
    */
-  public void configDevices(){
-    rightMotor.getConfigurator().apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted)));
-    leftMotor.getConfigurator().apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted)));
+  public void configDevices() {
+    rightMotor.getConfigurator()
+        .apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted)));
+    leftMotor.getConfigurator()
+        .apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted)));
     pivotMotor.getConfigurator().apply(pivotMotorConfig);
     pivotCancoder.getConfigurator().apply(pivotCancoderConfig);
     algeaSensor.getConfigurator().apply(canRangeConfig);
 
-
-    //Clear Sticky faults
+    // Clear Sticky faults
     rightMotor.clearStickyFaults();
     leftMotor.clearStickyFaults();
     pivotMotor.clearStickyFaults();
 
-    //We assume elevator starts at lowest position
+    // We assume elevator starts at lowest position
     rightMotor.setPosition(0);
     leftMotor.setPosition(0);
-    
-    BaseStatusSignal.setUpdateFrequencyForAll(200, 
-      rightMotor.getPosition(),
-      leftMotor.getPosition(),
-      pivotMotor.getPosition(),
-      pivotCancoder.getPosition());
+
+    BaseStatusSignal.setUpdateFrequencyForAll(200,
+        rightMotor.getPosition(),
+        leftMotor.getPosition(),
+        pivotMotor.getPosition(),
+        pivotCancoder.getPosition());
   }
 
-  /** 
-   * Get the Height of the top of the elevator carriage from the rotations of the Right Motor Encoder.
-   * Elevator should be zeroes so that zero rotations is minimum height. 
+  /**
+   * Get the Height of the top of the elevator carriage from the rotations of the
+   * Right Motor Encoder.
+   * Elevator should be zeroes so that zero rotations is minimum height.
    * 
    * @return the height of the carriage of the elevator in meters
    */
-  public double getHeight(){
+  public double getHeight() {
     return rightMotor.getPosition().getValueAsDouble() * rotationToLengthRatio + minimumHeight;
   }
 
   /**
-   * Get the velocity of the elevator from the rotations of the Right Motor Encoder.
-   * Units are meters per second, upwards is positive, downwards is negative. 
+   * Get the velocity of the elevator from the rotations of the Right Motor
+   * Encoder.
+   * Units are meters per second, upwards is positive, downwards is negative.
    * 
    * @return the velocity of the elevator in meters per second
    */
-  public double getVerticalVelocity(){
+  public double getVerticalVelocity() {
     return rightMotor.getVelocity().getValueAsDouble() * rotationToLengthRatio;
   }
 
-  /**Returns whether or not the elevator is traveling upwards,
-   * defined as whether its velocity is positive or negative. 
+  /**
+   * Returns whether or not the elevator is traveling upwards,
+   * defined as whether its velocity is positive or negative.
    * Positive velocity is upwards.
    * 
    * @return whether or not the elevator is travelling upwards.
    */
-  public boolean travelingUpwards(){
+  public boolean travelingUpwards() {
     return travellingUpward;
   }
 
-  /** Get the Angle of pivot in Rotations.
+  /**
+   * Get the Angle of pivot in Rotations.
    * 0 is defined as when the pivot is horizontal to the ground facing forward.
-   * Will return a positive number between 0 - 1 
-   * @return the current angle of the pivot in Rotations as a positve number between 0 - 1
+   * Will return a positive number between 0 - 1
+   * 
+   * @return the current angle of the pivot in Rotations as a positve number
+   *         between 0 - 1
    */
-  public double getPivotAngleRotations(){
+  public double getPivotAngleRotations() {
     return pivotCancoder.getPosition().getValueAsDouble();
   }
 
-  /** Get the Angle of pivot in Degrees.
+  /**
+   * Get the Angle of pivot in Degrees.
    * 0 is defined as when the pivot is horizontal to the ground facing forward.
-   * Will return a positive number between 0 - 360 
-   * @return the current angle of the pivot in Rotations as a positve number between 0 - 360
+   * Will return a positive number between 0 - 360
+   * 
+   * @return the current angle of the pivot in Rotations as a positve number
+   *         between 0 - 360
    */
-  public double getPivotAngleDegrees(){
+  public double getPivotAngleDegrees() {
     return Units.rotationsToDegrees(pivotCancoder.getPosition().getValueAsDouble());
   }
 
-  /** Get the Angle of pivot in Radians.
+  /**
+   * Get the Angle of pivot in Radians.
    * 0 is defined as when the pivot is horizontal to the ground facing forward.
-   * Will return a positive number between 0 - 2pi 
-   * @return the current angle of the pivot in Rotations as a positve number between 0 - 2pi
+   * Will return a positive number between 0 - 2pi
+   * 
+   * @return the current angle of the pivot in Rotations as a positve number
+   *         between 0 - 2pi
    */
-  public double getPivotAngleRadians(){
+  public double getPivotAngleRadians() {
     return Units.rotationsToRadians(pivotCancoder.getPosition().getValueAsDouble());
   }
 
@@ -175,65 +187,70 @@ public class ElevatorPivot extends SubsystemBase {
    * 
    * @return whether the current height of the elevator is at the target
    */
-  public boolean atTargetHeight(){
+  public boolean atTargetHeight() {
     return Math.abs(getHeight() - targetHeight) < heightTolerance;
   }
 
-   /**
+  /**
    * Determine whether our current Angle is at the currently
    * set target angle. If it is within a constant threshold than it is considered
    * at the target angle
    * 
    * @return whether the current angle of the pivot is at the target
    */
-  public boolean atTargetAngle(){
+  public boolean atTargetAngle() {
     return Math.abs(getPivotAngleDegrees() - targetAngleDegrees) < angleToleranceDegrees;
   }
 
-  /** 
-   * Convert a height in meters to rotations for the encoder 
+  /**
+   * Convert a height in meters to rotations for the encoder
    * that will position the elevator at that height
    * 
    * @param height the height in meters you want to turn into rotations
-   * @return the number of rotations of the encoder that correspond to the passed in height
+   * @return the number of rotations of the encoder that correspond to the passed
+   *         in height
    */
-  public double convertHeightToRotations(double height){
+  public double convertHeightToRotations(double height) {
     return (height - minimumHeight) / rotationToLengthRatio;
   }
 
-  public static boolean hasAlgea(){
+  public static boolean hasAlgea() {
     return algeaSensor.getIsDetected(true).getValue();
-}
+  }
 
   /**
    * Convert a velocity in meters per second to rotations per second
+   * 
    * @param velocityMPS
-   * @return the number of rotations per second that correspond to the passed in velocity
+   * @return the number of rotations per second that correspond to the passed in
+   *         velocity
    */
-  public double convertVelocityToRotations(double velocityMPS){
+  public double convertVelocityToRotations(double velocityMPS) {
     return velocityMPS / rotationToLengthRatio;
   }
 
-  /**Update the heights of each stage, used for sim, as well as collision logic*/
-  public void updateStageHeights(){
+  /**
+   * Update the heights of each stage, used for sim, as well as collision logic
+   */
+  public void updateStageHeights() {
     carriageHeight = getHeight();
 
     boolean travellingUpwards = travelingUpwards();
 
-    //Update the max Heights
+    // Update the max Heights
     double stage3Top = stage3Height + stage3StageLength;
-    double stage2Top = stage2Height + stage2StageLength - stage3StageLength; 
+    double stage2Top = stage2Height + stage2StageLength - stage3StageLength;
 
-    //Logic to handle the position of the elevator stages
-    if(travellingUpwards){
-      if(carriageHeight < stage3Top){
-          //Do Nothing, carriageHeight is just carriage Height
+    // Logic to handle the position of the elevator stages
+    if (travellingUpwards) {
+      if (carriageHeight < stage3Top) {
+        // Do Nothing, carriageHeight is just carriage Height
       } else if (carriageHeight >= stage3Top && stage3Height < stage2Top) {
-          stage3Height = carriageHeight - stage3StageLength;
-          //Stage2Height remains the same
-      } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top){
-          stage3Height = carriageHeight - stage3StageLength;
-          stage2Height = carriageHeight - stage2StageLength-stage3StageLength;
+        stage3Height = carriageHeight - stage3StageLength;
+        // Stage2Height remains the same
+      } else if (carriageHeight >= stage3Top && stage3Height >= stage2Top) {
+        stage3Height = carriageHeight - stage3StageLength;
+        stage2Height = carriageHeight - stage2StageLength - stage3StageLength;
       } else {
         try {
           throw new Exception("Something weird happened with the elevator sim heights");
@@ -242,26 +259,27 @@ public class ElevatorPivot extends SubsystemBase {
         }
       }
     } else {
-      if(carriageHeight > stage3Height){
-          //Do nothing, hasnt hit the bottom yet
+      if (carriageHeight > stage3Height) {
+        // Do nothing, hasnt hit the bottom yet
       } else if (carriageHeight <= stage3Height && stage3Height > stage2Height) {
-          stage3Height = carriageHeight;
-      } else if (carriageHeight <= stage3Height && stage3Height <= stage2Height){
-          stage3Height = carriageHeight;
-          stage2Height = carriageHeight;
+        stage3Height = carriageHeight;
+      } else if (carriageHeight <= stage3Height && stage3Height <= stage2Height) {
+        stage3Height = carriageHeight;
+        stage2Height = carriageHeight;
       }
     }
 
     lastCarriageHeight = carriageHeight;
   }
 
-  /**Returns the most recently calculated stage height
+  /**
+   * Returns the most recently calculated stage height
    * 1 is the outermost stage, 2 is next, 3 is next, 4 is carriage
    * 
    * @param stage the stage outlined as above
    * @return the height of the stage in meters
    */
-  public double getStageHeight(int stage){
+  public double getStageHeight(int stage) {
     updateStageHeights();
     switch (stage) {
       case 1:
@@ -284,65 +302,92 @@ public class ElevatorPivot extends SubsystemBase {
    * 
    * @param targetHeight the desired height in meters
    */
-  private void setHeightTarget(double localDesiredHeight){
+  private void setHeightTarget(double localDesiredHeight) {
 
     double targetRotations = convertHeightToRotations(localDesiredHeight);
 
     MotionMagicVoltage request = new MotionMagicVoltage(targetRotations)
-      .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); //every  1 ms
+        .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); // every 1 ms
     Follower followerRequest = new Follower(rightMotorId, rightInverted != leftInverted).withUpdateFreqHz(1000);
 
     rightMotor.setControl(request);
     leftMotor.setControl(followerRequest);
   }
 
-  private void resetHeight(){
+  /**
+   * Makes whatever the current height is the new zero height.
+   * This is useful for when the elevator is at the bottom and you want to reset
+   * the height
+   */
+  private void resetHeight() {
     rightMotor.setPosition(0);
     leftMotor.setPosition(0);
   }
 
-  public Command zeroHeight(){
+  /**
+   * A Command that runs once to reset the height of the elevator.
+   * 
+   * @return A command that resets the height of the elevator.
+   */
+  public Command zeroHeight() {
     return this.runOnce(() -> resetHeight());
   }
 
-  private void setAngleTargetDegrees(double targetAngleDegrees){
-    //TODO: add check if travelling downwards then make sure the pivot wont hit the next stage bar
+  /**
+   * Sets the target angle of the pivot. This should never be called directly, all
+   * traffic should go through
+   * setTargetHeightAndAngle to prevent collision issues.
+   */
+  private void setAngleTargetDegrees(double targetAngleDegrees) {
+    // TODO: add check if travelling downwards then make sure the pivot wont hit the
+    // next stage bar
 
     double targetAngleRotations = Units.degreesToRotations(targetAngleDegrees);
 
     MotionMagicVoltage request = new MotionMagicVoltage(targetAngleRotations)
-      .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); //every 1 ms
-    
+        .withEnableFOC(true).withSlot(0).withUpdateFreqHz(1000); // every 1 ms
+
     pivotMotor.setControl(request);
   }
 
-  private void setTargetHeightAndAngle(double heightMeters, double angleDegrees){
+  /**
+   * Sets the target height and angle of the elevator. This function is the only
+   * way to set the target height and angle.
+   * Has all the collision code which sets intermediate local setpoints to avoid
+   * collisions.
+   * Note: this assumes that the target height and angle are valid and not a
+   * collision state themselves.
+   * 
+   * @param heightMeters the final desired height in meters
+   * @param angleDegrees the final desired angle in degrees
+   */
+  private void setTargetHeightAndAngle(double heightMeters, double angleDegrees) {
     this.targetHeight = GremlinUtil.clampWithLogs(maxHeight, minimumHeight, heightMeters);
     this.targetAngleDegrees = GremlinUtil.clampWithLogs(maxAngleDegrees, minAngleDegrees, angleDegrees);
 
     double tempTargetHeight = heightMeters;
     double tempTargetAngle = angleDegrees;
 
-  
-    if(targetAngleDegrees > getPivotAngleDegrees() && heightMeters <= getHeight() && getPivotAngleDegrees() < maxUpperCollisionAngle){
-        tempTargetAngle = travelAngle;
-        tempTargetHeight = heightMeters;
+    if (targetAngleDegrees > getPivotAngleDegrees() && heightMeters <= getHeight()
+        && getPivotAngleDegrees() < maxUpperCollisionAngle) {
+      tempTargetAngle = travelAngle;
+      tempTargetHeight = heightMeters;
     }
 
-    //If we're greater than collision angle than just be safe no matter what
-    if(getPivotAngleDegrees() > maxUpperCollisionAngle){
+    // If we're greater than collision angle than just be safe no matter what
+    if (getPivotAngleDegrees() > maxUpperCollisionAngle) {
       tempTargetAngle = travelAngle;
       tempTargetHeight = getHeight();
     }
 
-    if(atTargetHeight()){
+    if (atTargetHeight()) {
       tempTargetAngle = targetAngleDegrees;
     }
 
-    if(hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle){
+    if (hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle) {
       tempTargetAngle = algeaTravelAngle;
-    };
-    
+    }
+    ;
 
     setHeightTarget(tempTargetHeight);
     setAngleTargetDegrees(tempTargetAngle);
@@ -350,121 +395,161 @@ public class ElevatorPivot extends SubsystemBase {
 
   /**
    * The public command we expose to direct the elevator to a height.
-   * All subsystem actions should be controlled through commands not direct functions. 
+   * All subsystem actions should be controlled through commands not direct
+   * functions.
    * Command Doesnt end until height is at target Height
    * 
    * @param desiredHeight the desired height in meters
    * @return a command directing this subsytem to go to desiredheight
    */
-  public Command goToHeight(DoubleSupplier desiredHeight){
+  public Command goToHeight(DoubleSupplier desiredHeight) {
     return goToPosition(desiredHeight, () -> getPivotAngleDegrees());
   }
 
   /**
    * The public command we expose to direct the pivot to an angle.
-   * All subsystem actions should be controlled through commands not direct functions. 
+   * All subsystem actions should be controlled through commands not direct
+   * functions.
    * Command Doesnt end until angle is at target angle
    * 
    * @param desiredAngle the desired angle in degrees
    * @return a command directing this subsytem to go to desiredAngle
    */
-  public Command goToAngleDegrees(DoubleSupplier desiredAngle){
+  public Command goToAngleDegrees(DoubleSupplier desiredAngle) {
     return goToPosition(() -> getHeight(), desiredAngle);
   }
 
   /**
    * The public command we expose to direct the elevator to a position;
    * A Position includes both a height and a pivot Angle;
-   * All subsystem actions should be controlled through commands not direct functions. 
    * Command Doesnt end until height and angle are at targets
    * 
-   * @param desiredAngle the desired angle in degrees
+   * @param desiredAngle  the desired angle in degrees
    * @param desiredHeight the desired height in meters
    * @return a command directing this subsytem to go to the desired position
    */
-  public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle){
+  public Command goToPosition(DoubleSupplier desiredHeight, DoubleSupplier desiredAngle) {
     return this.run(() -> {
       setTargetHeightAndAngle(desiredHeight.getAsDouble(), desiredAngle.getAsDouble());
     }).until(atTargetAngle.and(atTargetHeight));
   }
 
-  /**Stows the arm, making sure that the arm doesnt hit the bottom of the elevator.
+  /**
+   * Stows the arm.
    * Ends when both height and angle are within tolerance.
    * 
    * @return a command to stow the arm
    */
-  public Command stowArm(){
+  public Command stowArm() {
     return goToPosition(() -> stowHeight, () -> stowAngle);
   }
 
-  /**Send the elevatorPivot to the intaking ready height and angle.
-   * First goes down then up to avoid collisions, this logic should be improved later. 
+  /**
+   * Send the elevatorPivot to the intaking height and angle.
    * 
    * @return a command for the elevatorPivot to go to intaking position
    */
-  public Command goToIntakeReady(){
-    return stowArm().andThen(
-      goToPosition(() -> intakingReadyHeight, () -> 0.0).until(atTargetHeight)
-      .andThen(goToPosition(() -> intakingReadyHeight, () -> intakingAngle)));
-  }
-
-  public Command goDownToScore(){
-    return goToPosition(() -> getHeight() - 0.15, () -> getPivotAngleDegrees());
-  }
-
-   /**Send the elevatorPivot to the intaking height and angle.
-   * Assumes go to Intaje ready was called before so has no collision avoidance logic
-   * 
-   * @return a command for the elevatorPivot to go to intaking position
-   */
-  public Command goToIntake(){
+  public Command goToIntake() {
     return goToPosition(() -> intakingHeight, () -> intakingAngle);
   }
 
-  public Command goToProcessor(){
+  /**
+   * Send the elevatorPivot to the Processing height and angle.
+   * 
+   * @return a command for the elevatorPivot to go to intaking position
+   */
+  public Command goToProcessor() {
     return goToPosition(() -> processingHeight, () -> processingAngle);
   }
 
-
-  public Command increaseHeight(){
+  /**
+   * Increases the Elevator height by 20cm
+   * 
+   * @return A Command to increase the elevator height
+   */
+  public Command increaseHeight() {
     return goToPosition(() -> getHeight() + 0.2, () -> getPivotAngleDegrees());
   }
 
-  public Command decreaseHeight(){
+  /**
+   * Decreases the Elevator height by 20cm
+   * 
+   * @return A Command to decreease the elevator height
+   */
+  public Command decreaseHeight() {
     return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees());
   }
 
-  public Command increaseAngle(){
+  /**
+   * Increases the Pivot angle by 15 degrees
+   * 
+   * @return A Command to increase the pivot angle.
+   */
+  public Command increaseAngle() {
     return goToPosition(() -> getHeight(), () -> getPivotAngleDegrees() + 15);
   }
 
-  public Command decreaseAngle(){
+  /**
+   * Dcreases the Pivot angle by 15 degrees
+   * 
+   * @return A Command to decrease the pivot angle.
+   */
+  public Command decreaseAngle() {
     return goToPosition(() -> getHeight(), () -> getPivotAngleDegrees() - 15);
   }
 
-  public Command increasePosition(){
+  /**
+   * Increases both the elevator height and the pivot angle by 20 cm and 15
+   * degrees respectively
+   * 
+   * @return A Command to increase both the elevator height and the pivot angle
+   */
+  public Command increasePosition() {
     return goToPosition(() -> getHeight() + 0.2, () -> getPivotAngleDegrees() + 15);
   }
 
-  public Command decreasePosition(){
+  /**
+   * Decreases both the elevator height and the pivot angle by 20 cm and 15
+   * degrees respectively
+   * 
+   * @return A Command to decrease both the elevator height and the pivot angle
+   */
+  public Command decreasePosition() {
     return goToPosition(() -> getHeight() - 0.2, () -> getPivotAngleDegrees() - 15);
   }
 
-  public Command increaseVoltage(){
+  /**
+   * Applies a Voltage to the pivot motor to increase the angle.
+   * Every timne this is called the voltage applied is increased by 0.1 V.
+   * 
+   * @return A commnad to increase the voltage applied to the pivot motor.
+   */
+  public Command increaseVoltage() {
     return this.runOnce(() -> {
       voltage += 0.1;
       pivotMotor.setVoltage(voltage);
     });
   }
 
-  public Command decreaseVoltage(){
+  /**
+   * Applies a Voltage to the pivot motor to decreases the angle.
+   * Every timne this is called the voltage applied is decreased by 0.1 V.
+   * 
+   * @return A commnad to decrease the voltage applied to the pivot motor.
+   */
+  public Command decreaseVoltage() {
     return this.runOnce(() -> {
       voltage -= 0.1;
       pivotMotor.setVoltage(voltage);
     });
   }
 
-  public Command zeroVoltage(){
+  /**
+   * Sets the applied voltage of the pivot motor to zero.
+   * 
+   * @return A command to zero the voltage applied by the pivot motor.
+   */
+  public Command zeroVoltage() {
     return this.runOnce(() -> {
       voltage = 0;
       pivotMotor.setVoltage(voltage);
@@ -473,39 +558,41 @@ public class ElevatorPivot extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //if zero retain last value basically
-    if(getVerticalVelocity() > 0.2) travellingUpward = true;
-    else if(getVerticalVelocity() < -0.2) travellingUpward = false;
+    // if zero retain last value basically
+    if (getVerticalVelocity() > 0.2)
+      travellingUpward = true;
+    else if (getVerticalVelocity() < -0.2)
+      travellingUpward = false;
 
-    if(GremlinLogger.isDebug())
+    if (GremlinLogger.isDebug())
       updateMechanism2d();
 
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
     SmartDashboard.putBoolean("At Height", atTargetHeight());
     SmartDashboard.putBoolean("At Angle", atTargetAngle());
-  } 
+  }
 
-  /*SIMULATION*/
+  /* SIMULATION */
   private final ElevatorSim elevatorSim = new ElevatorSim(
-    DCMotor.getKrakenX60Foc(2), 
-    totalGearing,   
-    carriageMass, 
-    drumRadius, 
-    minimumHeight, 
-    maxHeight, 
-    true, 
-    minimumHeight);
+      DCMotor.getKrakenX60Foc(2),
+      totalGearing,
+      carriageMass,
+      drumRadius,
+      minimumHeight,
+      maxHeight,
+      true,
+      minimumHeight);
 
   private final SingleJointedArmSim armSim = new SingleJointedArmSim(
-    DCMotor.getKrakenX60Foc(1), 
-    pivotTotalGearing,
-    pivotMOI, 
-    pivotArmLength, 
-    Units.degreesToRadians(minAngleDegrees), 
-    Units.degreesToRadians(maxAngleDegrees), 
-    true, 
-    Units.degreesToRadians(0));
-  
+      DCMotor.getKrakenX60Foc(1),
+      pivotTotalGearing,
+      pivotMOI,
+      pivotArmLength,
+      Units.degreesToRadians(minAngleDegrees),
+      Units.degreesToRadians(maxAngleDegrees),
+      true,
+      Units.degreesToRadians(0));
+
   private TalonFXSimState rightMotorSim;
   private TalonFXSimState leftMotorSim;
   private TalonFXSimState pivotMotorSim;
@@ -514,16 +601,15 @@ public class ElevatorPivot extends SubsystemBase {
 
   private Mechanism2d pivotMechanism = new Mechanism2d(canvasWidth, canvasHeight);
 
-  private StructArrayPublisher<Pose3d> componentPosesPublisher = NetworkTableInstance.getDefault().getTable(elevatorTable)
-    .getStructArrayTopic("componentPoses", Pose3d.struct).publish();
+  private StructArrayPublisher<Pose3d> componentPosesPublisher = NetworkTableInstance.getDefault()
+      .getTable(elevatorTable)
+      .getStructArrayTopic("componentPoses", Pose3d.struct).publish();
 
   private MechanismRoot2d pivotRoot = pivotMechanism.getRoot("pivotRoot", 2, 3);
   private MechanismLigament2d pivotLigament = pivotRoot.append(
-    new MechanismLigament2d("pivotLigament", pivotArmLength, minAngleDegrees)
-  );
-  
+      new MechanismLigament2d("pivotLigament", pivotArmLength, minAngleDegrees));
 
-  public void configSim(){
+  public void configSim() {
     rightMotorSim = rightMotor.getSimState();
     leftMotorSim = leftMotor.getSimState();
     pivotMotorSim = pivotMotor.getSimState();
@@ -543,15 +629,15 @@ public class ElevatorPivot extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic(){
-    //Update sim states
+  public void simulationPeriodic() {
+    // Update sim states
     rightMotorSim = rightMotor.getSimState();
     leftMotorSim = leftMotor.getSimState();
     pivotMotorSim = pivotMotor.getSimState();
     pivotCancoderSim = pivotCancoder.getSimState();
     algeaSensorSim = algeaSensor.getSimState();
 
-    //update with latest simulated supply voltage
+    // update with latest simulated supply voltage
     rightMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     leftMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     pivotMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
@@ -560,27 +646,30 @@ public class ElevatorPivot extends SubsystemBase {
 
     algeaSensorSim.setDistance(proximityThreshold + 0.1);
 
-    //get output voltage for motors, we assume both output same amount 
-    //since they are identical just two different sides
+    // get output voltage for motors, we assume both output same amount
+    // since they are identical just two different sides
     Voltage motorOutputvoltage = rightMotorSim.getMotorVoltageMeasure();
-    
+
     Voltage pivotMotorOutputVoltage = pivotMotorSim.getMotorVoltageMeasure();
 
-    //Update physics sim, assuming 20 ms default loop time
+    // Update physics sim, assuming 20 ms default loop time
     elevatorSim.setInputVoltage(motorOutputvoltage.in(Volts));
-    elevatorSim.update(0.020); 
+    elevatorSim.update(0.020);
     armSim.setInputVoltage(pivotMotorOutputVoltage.in(Volts));
     armSim.update(0.020);
 
-    //Apply the elevator sims calculations to the cancoder
-    //Since Talonfx use cancoder as remote sensor this should also apply to the motors
-    //If directly applying to motors note that motors require rotor position/velocity (before gear ratio), but
-    //DCMotorSim returns mechanism position/velocity (after gear ratio)
+    // Apply the elevator sims calculations to the cancoder
+    // Since Talonfx use cancoder as remote sensor this should also apply to the
+    // motors
+    // If directly applying to motors note that motors require rotor
+    // position/velocity (before gear ratio), but
+    // DCMotorSim returns mechanism position/velocity (after gear ratio)
     rightMotorSim.setRawRotorPosition(convertHeightToRotations(elevatorSim.getPositionMeters()) * totalGearing);
     leftMotorSim.setRawRotorPosition(convertHeightToRotations(elevatorSim.getPositionMeters()) * totalGearing);
     rightMotorSim.setRotorVelocity(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * totalGearing);
-    leftMotorSim.setRawRotorPosition(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * totalGearing);
-    
+    leftMotorSim
+        .setRawRotorPosition(convertVelocityToRotations(elevatorSim.getVelocityMetersPerSecond()) * totalGearing);
+
     pivotCancoderSim.setRawPosition(Units.radiansToRotations(armSim.getAngleRads() * pivotSensorToMechanismRatio));
     pivotCancoderSim.setVelocity(Units.radiansToRotations(armSim.getVelocityRadPerSec() * pivotSensorToMechanismRatio));
     pivotMotorSim.setRawRotorPosition(Units.radiansToRotations(armSim.getAngleRads() * pivotTotalGearing));
@@ -589,28 +678,27 @@ public class ElevatorPivot extends SubsystemBase {
     updateMechanism2d();
   }
 
-
-  /** 
-   * Updates the mechanism2d which visualizes our mechanism in SmartDashboard, generally used for simulation
+  /**
+   * Updates the mechanism2d which visualizes our mechanism in SmartDashboard,
+   * generally used for simulation
    */
-  public void updateMechanism2d(){
+  public void updateMechanism2d() {
     double currentAngle = getPivotAngleDegrees();
 
     updateStageHeights();
 
-    double carriageZ = carriageHeight - carriageToGround; //Same no matter what
-    double stage3Z = stage3Height - carriageToGround; //The heights of our stages are not the same as their z positions
+    double carriageZ = carriageHeight - carriageToGround; // Same no matter what
+    double stage3Z = stage3Height - carriageToGround; // The heights of our stages are not the same as their z positions
     double stage2Z = stage2Height - carriageToGround;
 
     pivotLigament.setAngle(180 - currentAngle);
 
-    componentPosesPublisher.set(new Pose3d[]{
-      new Pose3d(0,0,carriageZ, new Rotation3d()),
-      new Pose3d(0,0,stage3Z, new Rotation3d()),
-      new Pose3d(0,0,stage2Z, new Rotation3d()),
-      new Pose3d(pivotOffsetX,pivotOffsetY,carriageZ+pivotOffsetZ, new Rotation3d(0,-getPivotAngleRadians(),0))
+    componentPosesPublisher.set(new Pose3d[] {
+        new Pose3d(0, 0, carriageZ, new Rotation3d()),
+        new Pose3d(0, 0, stage3Z, new Rotation3d()),
+        new Pose3d(0, 0, stage2Z, new Rotation3d()),
+        new Pose3d(pivotOffsetX, pivotOffsetY, carriageZ + pivotOffsetZ, new Rotation3d(0, -getPivotAngleRadians(), 0))
     });
-
 
     SmartDashboard.putNumber("Elevator Height", carriageHeight);
     SmartDashboard.putNumber("Target Heght", targetHeight);
@@ -618,31 +706,26 @@ public class ElevatorPivot extends SubsystemBase {
     SmartDashboard.putNumber("Arm Angle", currentAngle);
   }
 
-
-//elevtor sysid 
-private final SysIdRoutine m_sysIdRoutine =
-   new SysIdRoutine(
+  // elevtor sysid
+  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
-         Volts.of(0.5).per(Second),        // Use default ramp rate (1 V/s)
-         Volts.of(2), // Reduce dynamic step voltage to 4 to prevent brownout
-         null,        // Use default timeout (10 s)
-                      // Log state with Phoenix SignalLogger class
-         (state) -> SignalLogger.writeString("state", state.toString())
-      ),
+          Volts.of(0.5).per(Second), // Use default ramp rate (1 V/s)
+          Volts.of(2), // Reduce dynamic step voltage to 4 to prevent brownout
+          null, // Use default timeout (10 s)
+                // Log state with Phoenix SignalLogger class
+          (state) -> SignalLogger.writeString("state", state.toString())),
       new SysIdRoutine.Mechanism(
-         (volts) ->  {
-                    pivotMotor.setVoltage(volts.in(Volts));
-                 },
-         null,
-         this
-      )
-   );
+          (volts) -> {
+            pivotMotor.setVoltage(volts.in(Volts));
+          },
+          null,
+          this));
 
-public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutine.quasistatic(direction);
-}
- 
-public  Command sysIdDynamic(SysIdRoutine.Direction direction) {
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutine.dynamic(direction);
-}
+  }
 }

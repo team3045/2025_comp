@@ -25,7 +25,10 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  */
 public class DriveToPose extends Command {
 
-  /** Default constraints are 90% of max speed, accelerate to full speed in 1/3 second */
+  /**
+   * Default constraints are 90% of max speed, accelerate to full speed in 1/3
+   * second
+   */
   private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
       DriveConstants.MAX_VELO_AUTOSCORE,
       DriveConstants.MAX_ACCEL_AUTOSCORE);
@@ -47,33 +50,35 @@ public class DriveToPose extends Command {
       .getStructTopic("DriveState/targetPose", Pose2d.struct).publish();
 
   public DriveToPose(
-        CommandSwerveDrivetrain drivetrainSubsystem,
-        Supplier<Pose2d> poseProvider,
-        Supplier<Pose2d> goalPoseSup) {
+      CommandSwerveDrivetrain drivetrainSubsystem,
+      Supplier<Pose2d> poseProvider,
+      Supplier<Pose2d> goalPoseSup) {
     this(drivetrainSubsystem, poseProvider, goalPoseSup, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS);
   }
 
   public DriveToPose(
-        CommandSwerveDrivetrain drivetrainSubsystem,
-        Supplier<Pose2d> poseProvider,
-        Supplier<Pose2d> goalPoseSup,
-        TrapezoidProfile.Constraints xyConstraints,
-        TrapezoidProfile.Constraints omegaConstraints) {
+      CommandSwerveDrivetrain drivetrainSubsystem,
+      Supplier<Pose2d> poseProvider,
+      Supplier<Pose2d> goalPoseSup,
+      TrapezoidProfile.Constraints xyConstraints,
+      TrapezoidProfile.Constraints omegaConstraints) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.poseProvider = poseProvider;
     this.goalPoseSupplier = goalPoseSup;
 
-    xController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseTranslationkD, xyConstraints);
-    yController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseTranslationkD, xyConstraints);
+    xController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI,
+        DriveConstants.preciseTranslationkD, xyConstraints);
+    yController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI,
+        DriveConstants.preciseTranslationkD, xyConstraints);
     xController.setTolerance(DriveConstants.preciseTranslationTolerance);
     yController.setTolerance(DriveConstants.preciseTranslationTolerance);
-    thetaController = new ProfiledPIDController(DriveConstants.preciseRotationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseRotationkD, omegaConstraints);
+    thetaController = new ProfiledPIDController(DriveConstants.preciseRotationkP, DriveConstants.preciseRotationkI,
+        DriveConstants.preciseRotationkD, omegaConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(Units.degreesToRadians(DriveConstants.preciseRotationTolerance));
 
     addRequirements(drivetrainSubsystem);
   }
-
 
   @Override
   public void initialize() {
@@ -85,8 +90,8 @@ public class DriveToPose extends Command {
     }
     thetaController.setGoal(goalPose.getRotation().getRadians());
     xController.setGoal(goalPose.getX());
-    yController.setGoal(goalPose.getY()); 
-    
+    yController.setGoal(goalPose.getY());
+
     targetPosePublisher.set(goalPose);
   }
 
@@ -121,7 +126,7 @@ public class DriveToPose extends Command {
     }
 
     drivetrainSubsystem.setControl(DriveConstants.APPLY_FIELD_SPEEDS
-      .withSpeeds(new ChassisSpeeds(xSpeed,ySpeed,omegaSpeed)));
+        .withSpeeds(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed)));
   }
 
   @Override

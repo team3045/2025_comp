@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
-import frc.robot.commands.IntakeSequenceFactory;
 import frc.robot.commons.GremlinAutoBuilder;
 import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.GremlinPS4Controller;
@@ -58,9 +57,6 @@ public class RobotContainer {
 
     /*Auto Score Stuff */
     public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
-
-    /* intake sequence */
-    public final IntakeSequenceFactory intakeSequenceFactory = new IntakeSequenceFactory(drivetrain, elevatorPivot, claw);
 
     /*Triggers */
     public final Trigger isAuton = new Trigger(() -> DriverStation.isAutonomous());

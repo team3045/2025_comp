@@ -21,7 +21,9 @@ import org.json.simple.parser.JSONParser;
 /**
  * Implementation of AD* running locally in a background thread
  *
- * <p>I would like to apologize to anyone trying to understand this code. The implementation I
+ * <p>
+ * I would like to apologize to anyone trying to understand this code. The
+ * implementation I
  * translated it from was much worse.
  */
 public class GremlinPathFinder implements Pathfinder {
@@ -128,7 +130,8 @@ public class GremlinPathFinder implements Pathfinder {
   }
 
   /**
-   * Get if a new path has been calculated since the last time a path was retrieved
+   * Get if a new path has been calculated since the last time a path was
+   * retrieved
    *
    * @return True if a new path is available
    */
@@ -140,9 +143,10 @@ public class GremlinPathFinder implements Pathfinder {
   /**
    * Get the most recently calculated path
    *
-   * @param constraints The path constraints to use when creating the path
+   * @param constraints  The path constraints to use when creating the path
    * @param goalEndState The goal end state to use when creating the path
-   * @return The PathPlannerPath created from the points calculated by the pathfinder
+   * @return The PathPlannerPath created from the points calculated by the
+   *         pathfinder
    */
   @Override
   public PathPlannerPath getCurrentPath(PathConstraints constraints, GoalEndState goalEndState) {
@@ -165,8 +169,9 @@ public class GremlinPathFinder implements Pathfinder {
   /**
    * Set the start position to pathfind from
    *
-   * @param startPosition Start position on the field. If this is within an obstacle it will be
-   *     moved to the nearest non-obstacle node.
+   * @param startPosition Start position on the field. If this is within an
+   *                      obstacle it will be
+   *                      moved to the nearest non-obstacle node.
    */
   @Override
   public void setStartPosition(Translation2d startPosition) {
@@ -185,8 +190,9 @@ public class GremlinPathFinder implements Pathfinder {
   /**
    * Set the goal position to pathfind to
    *
-   * @param goalPosition Goal position on the field. f this is within an obstacle it will be moved
-   *     to the nearest non-obstacle node.
+   * @param goalPosition Goal position on the field. f this is within an obstacle
+   *                     it will be moved
+   *                     to the nearest non-obstacle node.
    */
   @Override
   public void setGoalPosition(Translation2d goalPosition) {
@@ -207,10 +213,13 @@ public class GremlinPathFinder implements Pathfinder {
   /**
    * Set the dynamic obstacles that should be avoided while pathfinding.
    *
-   * @param obs A List of Translation2d pairs representing obstacles. Each Translation2d represents
-   *     opposite corners of a bounding box.
-   * @param currentRobotPos The current position of the robot. This is needed to change the start
-   *     position of the path if the robot is now within an obstacle.
+   * @param obs             A List of Translation2d pairs representing obstacles.
+   *                        Each Translation2d represents
+   *                        opposite corners of a bounding box.
+   * @param currentRobotPos The current position of the robot. This is needed to
+   *                        change the start
+   *                        position of the path if the robot is now within an
+   *                        obstacle.
    */
   @Override
   public void setDynamicObstacles(
@@ -319,8 +328,7 @@ public class GremlinPathFinder implements Pathfinder {
       computeOrImprovePath(sStart, sGoal, obstacles);
 
       List<GridPosition> pathPositions = extractPath(sStart, sGoal, obstacles);
-      List<Waypoint> waypoints =
-          createWaypoints(pathPositions, realStartPos, realGoalPos, obstacles);
+      List<Waypoint> waypoints = createWaypoints(pathPositions, realStartPos, realGoalPos, obstacles);
 
       pathLock.writeLock().lock();
       currentPathFull = pathPositions;
@@ -338,8 +346,7 @@ public class GremlinPathFinder implements Pathfinder {
         computeOrImprovePath(sStart, sGoal, obstacles);
 
         List<GridPosition> pathPositions = extractPath(sStart, sGoal, obstacles);
-        List<Waypoint> waypoints =
-            createWaypoints(pathPositions, realStartPos, realGoalPos, obstacles);
+        List<Waypoint> waypoints = createWaypoints(pathPositions, realStartPos, realGoalPos, obstacles);
 
         pathLock.writeLock().lock();
         currentPathFull = pathPositions;

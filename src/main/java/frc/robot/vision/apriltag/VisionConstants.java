@@ -69,7 +69,7 @@ public class VisionConstants {
                 return properties;
         }
 
-        public static SimCameraProperties getLL3(){
+        public static SimCameraProperties getLL3() {
                 SimCameraProperties properties = new SimCameraProperties();
                 properties.setCalibration(LL3_RES_HORIZONTAL, LL3_RES_VERTICAL, Rotation2d.fromDegrees(LL3_FOV_DIAG));
                 properties.setCalibError(0.25, 0.08);
@@ -84,59 +84,57 @@ public class VisionConstants {
         public static final Pose3d[] cameraPoses = {
                         new Pose3d( // Front Left
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886+0.75),
-                                                        Units.inchesToMeters(9.362+0.75),
+                                                        Units.inchesToMeters(10.886 + 0.75),
+                                                        Units.inchesToMeters(9.362 + 0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(30))),
                         new Pose3d( // Front Right
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886+0.75),
-                                                       -Units.inchesToMeters(9.362+0.75),
+                                                        Units.inchesToMeters(10.886 + 0.75),
+                                                        -Units.inchesToMeters(9.362 + 0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-30))),
                         new Pose3d( // Back Left
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886+0.75),
-                                                        Units.inchesToMeters(9.362+0.75),
+                                                        -Units.inchesToMeters(10.886 + 0.75),
+                                                        Units.inchesToMeters(9.362 + 0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(150))),
                         new Pose3d( // Back Right
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886+0.75),
-                                                        -Units.inchesToMeters(9.362+0.75),
+                                                        -Units.inchesToMeters(10.886 + 0.75),
+                                                        -Units.inchesToMeters(9.362 + 0.75),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-150))),
         };
 
         public static final Pose3d[] limelightPoses = {
-                new Pose3d( //right
-                        new Translation3d(
-                                Units.inchesToMeters(7.819),
-                                Units.inchesToMeters(6.5),
-                                Units.inchesToMeters(6.972)),
-                        new Rotation3d(0, Units.degreesToRadians(-20),0)
-                ),
-                new Pose3d(
-                        new Translation3d(
-                                Units.inchesToMeters(7.819),
-                                Units.inchesToMeters(-6.5),
-                                Units.inchesToMeters(6.972)),
-                        new Rotation3d(0, Units.degreesToRadians(-20),0)
-                ) // left
+                        new Pose3d( // right
+                                        new Translation3d(
+                                                        Units.inchesToMeters(7.819),
+                                                        Units.inchesToMeters(6.5),
+                                                        Units.inchesToMeters(6.972)),
+                                        new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+                        new Pose3d(
+                                        new Translation3d(
+                                                        Units.inchesToMeters(7.819),
+                                                        Units.inchesToMeters(-6.5),
+                                                        Units.inchesToMeters(6.972)),
+                                        new Rotation3d(0, Units.degreesToRadians(-20), 0)) // left
         };
 
-        public static final GremlinPhotonCamera[] cameras = { //Retain this Order
+        public static final GremlinPhotonCamera[] cameras = { // Retain this Order
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
-        };    
+        };
 
-        public static final GremlinLimelightCamera[] limelights = { //retain this order
-                new GremlinLimelightCamera("limelight-right", limelightPoses[0]),
-                new GremlinLimelightCamera("limelight-left", limelightPoses[1])
+        public static final GremlinLimelightCamera[] limelights = { // retain this order
+                        new GremlinLimelightCamera("limelight-right", limelightPoses[0]),
+                        new GremlinLimelightCamera("limelight-left", limelightPoses[1])
         };
 }

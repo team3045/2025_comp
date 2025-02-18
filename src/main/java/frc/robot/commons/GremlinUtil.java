@@ -13,22 +13,24 @@ public class GremlinUtil {
     private GremlinUtil() {
     }
 
-    /** Square Driver input retaining sign. 
+    /**
+     * Square Driver input retaining sign.
      * 
      * @param input
      * @return input squared
      */
-    public static double squareDriverInput(double input){
-        return Math.copySign(input*input, input);
+    public static double squareDriverInput(double input) {
+        return Math.copySign(input * input, input);
     }
 
-    /** cube Driver input retaining sign. 
+    /**
+     * cube Driver input retaining sign.
      * 
      * @param input
      * @return input cubed
      */
-    public static double cubeDriverInput(double input){
-        return Math.copySign(input*input*input, input);
+    public static double cubeDriverInput(double input) {
+        return Math.copySign(input * input * input, input);
     }
 
     /**
@@ -87,9 +89,12 @@ public class GremlinUtil {
     }
 
     public static <T extends Comparable<T>> T clamp(T val, T min, T max) {
-        if (val.compareTo(min) < 0) return min;
-        else if (val.compareTo(max) > 0) return max;
-        else return val;
+        if (val.compareTo(min) < 0)
+            return min;
+        else if (val.compareTo(max) > 0)
+            return max;
+        else
+            return val;
     }
 
     public static Pose2d movePoseForward(Pose2d seedPose, double dist) {
@@ -100,9 +105,9 @@ public class GremlinUtil {
             return new Pose2d(seedPose.getTranslation().minus(forwardTranslation), seedPose.getRotation());
         }
     }
-    public static boolean withinTolerance(double target, double actual, double tolerance){
+
+    public static boolean withinTolerance(double target, double actual, double tolerance) {
         return Math.abs(target - actual) < tolerance;
     }
-
 
 }

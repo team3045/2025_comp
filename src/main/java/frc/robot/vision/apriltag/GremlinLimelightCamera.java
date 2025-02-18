@@ -25,7 +25,7 @@ import frc.robot.vision.apriltag.LimelightHelpers.PoseEstimate;
 /** Add your docs here. */
 public class GremlinLimelightCamera implements AutoCloseable {
     private static int InstanceCount = 0;
-    public  String kTableName = "";
+    public String kTableName = "";
 
     private final String name;
     private final Pose3d cameraPose;
@@ -36,13 +36,12 @@ public class GremlinLimelightCamera implements AutoCloseable {
 
     private PhotonCamera simCamera;
 
-
     public GremlinLimelightCamera(String name, Pose3d cameraPose) {
         this.cameraPose = cameraPose;
         this.name = name;
         this.kTableName = name;
 
-        if(Utils.isSimulation()){
+        if (Utils.isSimulation()) {
             simCamera = new PhotonCamera(name);
         }
 
@@ -59,9 +58,9 @@ public class GremlinLimelightCamera implements AutoCloseable {
      * @return The botpose estimate using Megatag
      */
     public Optional<PoseEstimate> getBotPoseEstimate() {
-        if(LimelightHelpers.getBotPoseEstimate_wpiBlue(name) != null)
+        if (LimelightHelpers.getBotPoseEstimate_wpiBlue(name) != null)
             return Optional.of(LimelightHelpers.getBotPoseEstimate_wpiBlue(name));
-        else 
+        else
             return Optional.empty();
     }
 
@@ -70,15 +69,15 @@ public class GremlinLimelightCamera implements AutoCloseable {
      * 
      * @return
      */
-    public void setCamPoseRobotSpace(Pose3d camPose3d){
+    public void setCamPoseRobotSpace(Pose3d camPose3d) {
         LimelightHelpers.setCameraPose_RobotSpace(
-            name, 
-            camPose3d.getX(), 
-            camPose3d.getY(), 
-            camPose3d.getZ(), 
-            camPose3d.getRotation().getX(), 
-            camPose3d.getRotation().getY(), 
-            camPose3d.getRotation().getZ());
+                name,
+                camPose3d.getX(),
+                camPose3d.getY(),
+                camPose3d.getZ(),
+                camPose3d.getRotation().getX(),
+                camPose3d.getRotation().getY(),
+                camPose3d.getRotation().getZ());
     }
 
     /**
@@ -89,9 +88,9 @@ public class GremlinLimelightCamera implements AutoCloseable {
      * @return The botpose estimate using Megatag
      */
     public Optional<PoseEstimate> getBotPoseEstimateMT2() {
-        if(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name) != null)
+        if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name) != null)
             return Optional.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name));
-        else 
+        else
             return Optional.empty();
     }
 
@@ -228,12 +227,13 @@ public class GremlinLimelightCamera implements AutoCloseable {
         return cameraPose;
     }
 
-    /** Whether or not the limelight is detecting something. 
+    /**
+     * Whether or not the limelight is detecting something.
      * Could be an object or tag or anything else that it is configured to detect.
      * 
-     * @return whether or not limelight detects object. 
+     * @return whether or not limelight detects object.
      */
-    public boolean seesObject(){
+    public boolean seesObject() {
         return LimelightHelpers.getTV(name);
     }
 
@@ -261,13 +261,13 @@ public class GremlinLimelightCamera implements AutoCloseable {
         return (now - prevHeartbeatChangeTime) < HEARTBEAT_DEBOUNCE_SEC;
     }
 
-    public PhotonCamera getPhotonCamera(){
+    public PhotonCamera getPhotonCamera() {
         return simCamera;
     }
 
-    public void processSimUpdates(){
-        PhotonPipelineResult result = simCamera.getLatestResult(); //its just sim so idc too much about missing results
-        if(result.getBestTarget() != null){
+    public void processSimUpdates() {
+        PhotonPipelineResult result = simCamera.getLatestResult(); // its just sim so idc too much about missing results
+        if (result.getBestTarget() != null) {
             Transform3d best = result.getBestTarget().getBestCameraToTarget();
 
             Pose3d tagPose = FieldConstants.compLayout.getTagPose(result.getBestTarget().fiducialId).get();
@@ -277,21 +277,21 @@ public class GremlinLimelightCamera implements AutoCloseable {
             Pose3d bestRobotPose = bestCamPose.transformBy(camToRobotTransform);
 
             double[] poseData = {
-                bestRobotPose.getX(), //0: X
-                bestRobotPose.getY(), //1: Y
-                bestRobotPose.getZ(), //2: Z
-                bestRobotPose.getRotation().getX(), //3: Roll
-                bestRobotPose.getRotation().getY(), //4: Pitch
-                bestRobotPose.getRotation().getZ(), //5: Yaw
-                35, //6: latency ms
-                1, //7: tag count
-                0, //8: tag span
-                0, //9: average tag distance
-                0, //avg tag area
+                    bestRobotPose.getX(), // 0: X
+                    bestRobotPose.getY(), // 1: Y
+                    bestRobotPose.getZ(), // 2: Z
+                    bestRobotPose.getRotation().getX(), // 3: Roll
+                    bestRobotPose.getRotation().getY(), // 4: Pitch
+                    bestRobotPose.getRotation().getZ(), // 5: Yaw
+                    35, // 6: latency ms
+                    1, // 7: tag count
+                    0, // 8: tag span
+                    0, // 9: average tag distance
+                    0, // avg tag area
             };
 
             NetworkTableInstance.getDefault().getTable(kTableName).getEntry("botpose_orb_wpiblue")
-                .setDoubleArray(poseData); 
+                    .setDoubleArray(poseData);
         }
 
         NetworkTableInstance.getDefault().getTable(kTableName).getEntry("tx").setBoolean(result.hasTargets());

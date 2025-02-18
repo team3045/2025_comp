@@ -107,19 +107,18 @@ public class GremlinApriltagVision extends SubsystemBase {
     }
   }
 
-  public void setRejectAllUpdates(boolean shouldRejectAllUpdates){
+  public void setRejectAllUpdates(boolean shouldRejectAllUpdates) {
     this.shouldRejectAllUpdates = shouldRejectAllUpdates;
   }
 
-
   @Override
   public void periodic() {
-    if(!shouldRejectAllUpdates){
+    if (!shouldRejectAllUpdates) {
       processVisionUpdates();
       visionConsumer.accept(visionUpdates);
     }
 
-    if(GremlinLogger.isDebug())
+    if (GremlinLogger.isDebug())
       logLimelights();
   }
 
@@ -218,7 +217,7 @@ public class GremlinApriltagVision extends SubsystemBase {
           continue;
         }
 
-        //To promote stability throw out poses that are too far from the last pose
+        // To promote stability throw out poses that are too far from the last pose
         if (calculatedRobotPose.getTranslation()
             .getDistance(poseSupplier.get().getTranslation()) > maxChangeDistance)
           continue;
@@ -289,12 +288,12 @@ public class GremlinApriltagVision extends SubsystemBase {
       .getStructArrayTopic(CAMERA_LOG_PATH + "backRight" + "/Tag Poses", Pose3d.struct).publish();
   private static final StructPublisher<Pose2d> LLlleftCalculatedPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "limelightLeft" + "/Calculated Pose", Pose2d.struct).publish();
-  private static final StructPublisher<Pose2d> LLrightCalculatedPosePublisher  = NetworkTableInstance.getDefault()
-  .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/Calculated Pose", Pose2d.struct).publish();
+  private static final StructPublisher<Pose2d> LLrightCalculatedPosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/Calculated Pose", Pose2d.struct).publish();
   private static final StructPublisher<Pose2d> LLlleftMT1PosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "limelightLeft" + "/MT1 Pose", Pose2d.struct).publish();
-  private static final StructPublisher<Pose2d> LLrightMT1PosePublisher  = NetworkTableInstance.getDefault()
-  .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/MT1 Pose", Pose2d.struct).publish();
+  private static final StructPublisher<Pose2d> LLrightMT1PosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/MT1 Pose", Pose2d.struct).publish();
 
   /**
    * Log the CamPose, Calculated Pose, and TagPose
@@ -326,14 +325,13 @@ public class GremlinApriltagVision extends SubsystemBase {
     }
   }
 
-  private void logLimelights(){
-    if(limelights[0].getBotPoseEstimateMT2().isPresent() && limelights[0].getBotPoseEstimateMT2().get().pose != null){
+  private void logLimelights() {
+    if (limelights[0].getBotPoseEstimateMT2().isPresent() && limelights[0].getBotPoseEstimateMT2().get().pose != null) {
       LLrightCalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().get().pose);
       LLrightMT1PosePublisher.set(limelights[0].getBotPoseEstimate().get().pose);
     }
-      
 
-    if(limelights[1].getBotPoseEstimateMT2().isPresent() && limelights[1].getBotPoseEstimateMT2().get().pose != null){
+    if (limelights[1].getBotPoseEstimateMT2().isPresent() && limelights[1].getBotPoseEstimateMT2().get().pose != null) {
       LLlleftCalculatedPosePublisher.set(limelights[1].getBotPoseEstimateMT2().get().pose);
       LLlleftMT1PosePublisher.set(limelights[1].getBotPoseEstimate().get().pose);
     }
@@ -342,10 +340,10 @@ public class GremlinApriltagVision extends SubsystemBase {
   public void configSim() {
     visionSystemSim = new VisionSystemSim("ApriltagVision");
     visionSystemSim.addAprilTags(LAYOUT);
-  
+
     simCameras = new PhotonCameraSim[cameras.length + limelights.length];
     simCameraProperties = new SimCameraProperties[cameras.length + limelights.length];
-  
+
     for (int i = 0; i < cameras.length; i++) {
       simCameraProperties[i] = VisionConstants.getOV2311();
       simCameras[i] = new PhotonCameraSim(cameras[i].getPhotonCamera(), simCameraProperties[i]);
@@ -354,9 +352,9 @@ public class GremlinApriltagVision extends SubsystemBase {
       simCameras[i].enableProcessedStream(false);
       visionSystemSim.addCamera(simCameras[i], GeomUtil.pose3dToTransform3d(cameras[i].getCameraPose()));
     }
-  
+
     for (int i = 0; i < limelights.length; i++) {
-      int position = cameras.length + i; 
+      int position = cameras.length + i;
       simCameraProperties[position] = VisionConstants.getLL3();
       simCameras[position] = new PhotonCameraSim(limelights[i].getPhotonCamera(), simCameraProperties[position]);
       simCameras[position].enableDrawWireframe(false);
@@ -374,7 +372,7 @@ public class GremlinApriltagVision extends SubsystemBase {
     debugField.getObject("EstimatedRobot").setPose(poseSupplier.get());
     debugField.getRobotObject().setPose(poseSupplier.get());
 
-    for(GremlinLimelightCamera ll : limelights)
+    for (GremlinLimelightCamera ll : limelights)
       ll.processSimUpdates();
 
     processVisionUpdates();

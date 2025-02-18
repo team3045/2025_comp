@@ -23,102 +23,99 @@ import frc.robot.constants.ClawConstants;
 import static frc.robot.constants.ClawConstants.*;
 
 public class Claw extends SubsystemBase {
-    private TalonFX clawMotor = new TalonFX(clawID,canbus); 
+    private TalonFX clawMotor = new TalonFX(clawID, canbus);
     private CANrange coralSensor = new CANrange(canRangeId, canbus);
-    private TalonFX hopperMotor = new TalonFX(hopperId,canbus);
+    private TalonFX hopperMotor = new TalonFX(hopperId, canbus);
     private double targetSpeed;
-  
+
     private static final FlywheelSim CLAW_MOTOR_SIM = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(1), flywheelMOI, gearing),
-        DCMotor.getKrakenX60(1));
-    
+            LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(1), flywheelMOI, gearing),
+            DCMotor.getKrakenX60(1));
+
     public final Trigger hasCoral = new Trigger(() -> hasCoral());
     public final Trigger atSpeed = new Trigger(() -> atSpeed());
-    
-    public Claw(){
+
+    public Claw() {
         configDevices();
 
-        if(Utils.isSimulation()){
+        if (Utils.isSimulation()) {
             configSim();
-          }
+        }
     }
 
-    public void configDevices(){
+    public void configDevices() {
         clawMotor.getConfigurator().apply(motorConfig);
         coralSensor.getConfigurator().apply(canRangeConfig);
         hopperMotor.getConfigurator().apply(motorConfig.withMotorOutput(
-            MotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive)));
+                MotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive)));
     }
 
-    public void setClawTargetSpeed(double speedRPS){
+    public void setClawTargetSpeed(double speedRPS) {
         targetSpeed = speedRPS;
         VelocityVoltage request = new VelocityVoltage(speedRPS)
-            .withEnableFOC(true)
-            .withSlot(0)
-            .withUpdateFreqHz(1000);
+                .withEnableFOC(true)
+                .withSlot(0)
+                .withUpdateFreqHz(1000);
 
         clawMotor.setControl(request);
     }
 
-    public void setHopperTargetSpeed(double speedRPS){
+    public void setHopperTargetSpeed(double speedRPS) {
         targetSpeed = speedRPS;
         VelocityVoltage request = new VelocityVoltage(speedRPS)
-            .withEnableFOC(true)
-            .withSlot(0)
-            .withUpdateFreqHz(1000);
+                .withEnableFOC(true)
+                .withSlot(0)
+                .withUpdateFreqHz(1000);
 
         hopperMotor.setControl(request);
     }
 
-    public void driveBack(double numRotations){
+    public void driveBack(double numRotations) {
         PositionVoltage request = new PositionVoltage(clawMotor.getPosition().getValueAsDouble() - numRotations)
-            .withSlot(1)
-            .withUpdateFreqHz(1000);
+                .withSlot(1)
+                .withUpdateFreqHz(1000);
 
         clawMotor.setControl(request);
 
     }
 
-    public Command driveBack(){
-        return this.runOnce(() ->
-            driveBack(0.25)
-        );
+    public Command driveBack() {
+        return this.runOnce(() -> driveBack(0.25));
     }
 
-
-    public Command hopperIntake(){
+    public Command hopperIntake() {
         return this.runOnce(() -> setHopperTargetSpeed(intakeSpeed));
     }
 
-    public Command clawIntake(){
+    public Command clawIntake() {
         return this.runOnce(() -> setClawTargetSpeed(intakeSpeed));
-    } 
+    }
 
-    public Command algeaIntake(){
+    public Command algeaIntake() {
         return this.runOnce(() -> setClawTargetSpeed(algeaIntakeSpeed));
     }
 
-    public Command algeaOuttake(){
+    public Command algeaOuttake() {
         return this.runOnce(() -> setClawTargetSpeed(algeaOuttakeSpeed));
     }
 
-    public Command fullIntake(){
+    public Command fullIntake() {
         return this.runOnce(() -> {
             setHopperTargetSpeed(hopperSpeed);
             setClawTargetSpeed(intakeSpeed);
         });
     }
 
-    public Command fullOutake(){
+    public Command fullOutake() {
         return this.runOnce(() -> {
             setHopperTargetSpeed(outtakeSpeed);
             setClawTargetSpeed(outtakeSpeed);
         });
     }
 
-    public Command fullHold(){
+    public Command fullHold() {
         return this.runOnce(() -> {
-            if(!ElevatorPivot.hasAlgea()){
+            if (!ElevatorPivot.hasAlgea()) {
                 setHopperTargetSpeed(holdSpeed);
                 setClawTargetSpeed(holdSpeed);
             } else {
@@ -128,49 +125,53 @@ public class Claw extends SubsystemBase {
         });
     }
 
-    public void holdAlgea(){
+    public void holdAlgea() {
         clawMotor.setVoltage(holdAlgeaVoltage);
     }
 
-    public Command clawOutake(){
+    public Command clawOutake() {
         return this.runOnce(() -> setClawTargetSpeed(outtakeSpeed));
-    } 
+    }
 
-    public Command hold(){
+    public Command hold() {
         return this.runOnce(() -> setClawTargetSpeed(holdSpeed));
     }
 
-    public Command slowIntake(){
+    public Command slowIntake() {
         return this.runOnce(() -> setClawTargetSpeed(slowSpeed));
     }
 
-    public Command slowBackup(){
+    public Command slowBackup() {
         return this.runOnce(() -> setClawTargetSpeed(-slowSpeed));
     }
 
     public Command runAndHold() {
-        return clawIntake().until(() -> {return !hasCoral();}).andThen(hold()).withTimeout(ClawConstants.timeoutSeconds);
+        return clawIntake().until(() -> {
+            return !hasCoral();
+        }).andThen(hold()).withTimeout(ClawConstants.timeoutSeconds);
     }
 
     public Command outputAndStop() {
-        return clawOutake().until(() -> {return !hasCoral();}).andThen(Commands.waitSeconds(ClawConstants.outputWaitTime)).andThen(stop()).withTimeout(ClawConstants.timeoutSeconds);
+        return clawOutake().until(() -> {
+            return !hasCoral();
+        }).andThen(Commands.waitSeconds(ClawConstants.outputWaitTime)).andThen(stop())
+                .withTimeout(ClawConstants.timeoutSeconds);
     }
 
-    public boolean hasCoral(){
+    public boolean hasCoral() {
         return coralSensor.getIsDetected(true).getValue();
     }
 
-    public boolean atSpeed(){
+    public boolean atSpeed() {
         return GremlinUtil.withinTolerance(targetSpeed, clawMotor.getVelocity().getValueAsDouble(), speedTolerance);
     }
 
-
-    public void stopRunnable(){
+    public void stopRunnable() {
         clawMotor.stopMotor();
     }
 
-    public Command stop(){
-        return this.runOnce(()-> {
+    public Command stop() {
+        return this.runOnce(() -> {
             clawMotor.stopMotor();
             targetSpeed = 0;
         });
@@ -178,15 +179,14 @@ public class Claw extends SubsystemBase {
 
     private TalonFXSimState clawMotorSim;
 
-    public void configSim(){
+    public void configSim() {
         clawMotorSim = clawMotor.getSimState();
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         SmartDashboard.putBoolean("Has Coral", hasCoral());
     }
-
 
     @Override
     public void simulationPeriodic() {

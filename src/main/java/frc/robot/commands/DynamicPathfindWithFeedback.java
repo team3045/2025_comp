@@ -14,7 +14,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,116 +28,119 @@ import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class DynamicPathfindWithFeedback extends Command {
-    private final Supplier<Pose2d> targetPoseSupplier;
-    private final DoubleSupplier desiredEndVelocitySupplier;
-    private final PathConstraints constraints;
-    private CommandSwerveDrivetrain drivetrain;
+  private final Supplier<Pose2d> targetPoseSupplier;
+  private final DoubleSupplier desiredEndVelocitySupplier;
+  private final PathConstraints constraints;
+  private CommandSwerveDrivetrain drivetrain;
 
-
-    private static final ProfiledPIDController xController = new ProfiledPIDController(6, 0, 0, 
+  private static final ProfiledPIDController xController = new ProfiledPIDController(6, 0, 0,
       new Constraints(DriveConstants.MAX_VELOCITY_AUTO, DriveConstants.MAX_ACCEL_AUTO), 0.02);
-      private static final ProfiledPIDController yController = new ProfiledPIDController(6, 0, 0, 
+  private static final ProfiledPIDController yController = new ProfiledPIDController(6, 0, 0,
       new Constraints(DriveConstants.MAX_VELOCITY_AUTO, DriveConstants.MAX_ACCEL_AUTO), 0.02);
 
-    public static final StructPublisher<Pose2d> feedbackPosePublisher = NetworkTableInstance.getDefault()
+  public static final StructPublisher<Pose2d> feedbackPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic("VISION/LimelightPose", Pose2d.struct).publish();
 
-    private Command currentPathfindCommand;
+  private Command currentPathfindCommand;
 
-    private Supplier<Pose2d> feedbackPoseSupplier;
-    private DoubleSupplier timestampSupplier;
+  private Supplier<Pose2d> feedbackPoseSupplier;
+  private DoubleSupplier timestampSupplier;
 
-    private BooleanSupplier overrideWithFeedback;
+  private BooleanSupplier overrideWithFeedback;
 
-    public DynamicPathfindWithFeedback(
-        Supplier<Pose2d> targetPoseSupplier,
-        DoubleSupplier desiredEndVelocitySupplier,
-        PathConstraints constraints,
-        CommandSwerveDrivetrain drivetrain,
-        Supplier<Pose2d> feedbackPoseSupplier,
-        BooleanSupplier overrideWithFeedback,
-        DoubleSupplier timestampSupplier) {
+  public DynamicPathfindWithFeedback(
+      Supplier<Pose2d> targetPoseSupplier,
+      DoubleSupplier desiredEndVelocitySupplier,
+      PathConstraints constraints,
+      CommandSwerveDrivetrain drivetrain,
+      Supplier<Pose2d> feedbackPoseSupplier,
+      BooleanSupplier overrideWithFeedback,
+      DoubleSupplier timestampSupplier) {
 
-        this.targetPoseSupplier = targetPoseSupplier;
-        this.desiredEndVelocitySupplier = desiredEndVelocitySupplier;
-        this.constraints = constraints;
-        this.overrideWithFeedback = overrideWithFeedback;
-        this.feedbackPoseSupplier = feedbackPoseSupplier;
-        this.drivetrain = drivetrain;
-        this.timestampSupplier = timestampSupplier;
+    this.targetPoseSupplier = targetPoseSupplier;
+    this.desiredEndVelocitySupplier = desiredEndVelocitySupplier;
+    this.constraints = constraints;
+    this.overrideWithFeedback = overrideWithFeedback;
+    this.feedbackPoseSupplier = feedbackPoseSupplier;
+    this.drivetrain = drivetrain;
+    this.timestampSupplier = timestampSupplier;
 
-        addRequirements(drivetrain);
+    addRequirements(drivetrain);
+  }
+
+  @Override
+  public void initialize() {
+    updatePathfindCommand();
+    if (currentPathfindCommand != null) {
+      currentPathfindCommand.initialize();
     }
 
-    @Override
-    public void initialize() {
-        updatePathfindCommand();
-        if (currentPathfindCommand != null) {
-            currentPathfindCommand.initialize();
-        } 
+    xController.setGoal(targetPoseSupplier.get().getX());
+    yController.setGoal(targetPoseSupplier.get().getY());
 
-        xController.setGoal(targetPoseSupplier.get().getX());
-        yController.setGoal(targetPoseSupplier.get().getY());
+    // TODO: add a check to make sure we're within field bounds,
+    // as well as the target pose is within field bounds other wise pathPlanner will
+    // fail I think
+  }
 
-        //TODO: add a check to make sure we're within field bounds, 
-        //as well as the target pose is within field bounds other wise pathPlanner will fail I think
-    }
-
-    @Override
-    public void execute() {
-      if(overrideWithFeedback.getAsBoolean()){
-        feedbackPosePublisher.set(feedbackPoseSupplier.get());
-        if(feedbackPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 4){
-          drivetrain.addVisionMeasurement(
-            feedbackPoseSupplier.get(), 
+  @Override
+  public void execute() {
+    if (overrideWithFeedback.getAsBoolean()) {
+      feedbackPosePublisher.set(feedbackPoseSupplier.get());
+      if (feedbackPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 4) {
+        drivetrain.addVisionMeasurement(
+            feedbackPoseSupplier.get(),
             Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
-            VecBuilder.fill(0.001,0.001,0.001));
-        }
-      } else {
-        PPHolonomicDriveController.clearFeedbackOverrides();
+            VecBuilder.fill(0.001, 0.001, 0.001));
       }
-
-      if (currentPathfindCommand != null) {
-            currentPathfindCommand.execute();
-      }
+    } else {
+      PPHolonomicDriveController.clearFeedbackOverrides();
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        if (currentPathfindCommand != null) {
-            currentPathfindCommand.end(interrupted);
-        }
+    if (currentPathfindCommand != null) {
+      currentPathfindCommand.execute();
+    }
+  }
 
-        currentPathfindCommand = null;
-        SmartDashboard.putBoolean("At Pose", false);
+  @Override
+  public void end(boolean interrupted) {
+    if (currentPathfindCommand != null) {
+      currentPathfindCommand.end(interrupted);
     }
 
-    @Override
-    public boolean isFinished() {
-      Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 
-        targetPoseSupplier.get() : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
+    currentPathfindCommand = null;
+    SmartDashboard.putBoolean("At Pose", false);
+  }
 
-      SmartDashboard.putBoolean("At Pose", GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance));
+  @Override
+  public boolean isFinished() {
+    Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)
+        ? targetPoseSupplier.get()
+        : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
 
-      return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance);
+    SmartDashboard.putBoolean("At Pose",
+        GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance));
+
+    return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance);
+  }
+
+  private void updatePathfindCommand() {
+    // Get the dynamic pose and velocity
+    Pose2d targetPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(targetPoseSupplier.get())
+        : targetPoseSupplier.get();
+    double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
+
+    Robot.pathfinder.setGoalPosition(targetPose.getTranslation());
+    Robot.pathfinder.setStartPosition(drivetrain.getState().Pose.getTranslation());
+
+    if (drivetrain.getState().Pose.getTranslation()
+        .getDistance(targetPose.getTranslation()) < AutoScoreConstants.basicPIDDistance) {
+      currentPathfindCommand = drivetrain.preciseTargetPose(targetPoseSupplier);
+    } else {
+      // Create a new pathfinding command with the updated values
+      currentPathfindCommand = GremlinAutoBuilder.pathfindToPose(targetPose,
+          constraints,
+          desiredEndVelocity);
     }
-
-    private void updatePathfindCommand() {
-        // Get the dynamic pose and velocity
-        Pose2d targetPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(targetPoseSupplier.get()) 
-          : targetPoseSupplier.get();
-        double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
-
-        Robot.pathfinder.setGoalPosition(targetPose.getTranslation());
-        Robot.pathfinder.setStartPosition(drivetrain.getState().Pose.getTranslation());
-
-        if(drivetrain.getState().Pose.getTranslation().getDistance(targetPose.getTranslation()) < AutoScoreConstants.basicPIDDistance){
-           currentPathfindCommand = drivetrain.preciseTargetPose(targetPoseSupplier);
-        } else {
-          // Create a new pathfinding command with the updated values
-          currentPathfindCommand = GremlinAutoBuilder.pathfindToPose(targetPose, 
-            constraints, 
-            desiredEndVelocity);
-        }
-    }
+  }
 }

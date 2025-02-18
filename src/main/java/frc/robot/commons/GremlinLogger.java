@@ -5,8 +5,6 @@
 package frc.robot.commons;
 
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import dev.doglog.DogLog;
@@ -33,7 +31,7 @@ public class GremlinLogger extends DogLog {
     public static boolean DEBUG = false;
     private static Notifier debugNotifier;
 
-    static{
+    static {
         debugEntry.setBoolean(false);
         // Create a Notifier to update the DEBUG flag on a separate thread
         debugNotifier = new Notifier(() -> {
@@ -41,8 +39,6 @@ public class GremlinLogger extends DogLog {
         });
         debugNotifier.startPeriodic(0.5); // Update every 500ms
     }
-    
-
 
     public static void logTalonFX(String motorName, TalonFX motor) {
         GremlinLogger.logSD(motorName + "/DeviceID", motor.getDeviceID());
@@ -73,20 +69,20 @@ public class GremlinLogger extends DogLog {
         GremlinLogger.logSD(path + "/Stddevs/Theta", stddevs.getData()[2]);
     }
 
-    public static void debugLog(String key, double value){
+    public static void debugLog(String key, double value) {
         if (DEBUG) {
-            log(key,value);
+            log(key, value);
         }
     }
 
-    public static void debugLog(String key, boolean value){
+    public static void debugLog(String key, boolean value) {
         if (DEBUG) {
-            log(key,value);
+            log(key, value);
         }
     }
 
     public static void debugLog(String path, Vector<N3> stddevs) {
-        if(DEBUG){
+        if (DEBUG) {
             GremlinLogger.logSD(path + "/Stddevs/XY", stddevs.getData()[0]);
             GremlinLogger.logSD(path + "/Stddevs/Theta", stddevs.getData()[2]);
         }
@@ -143,13 +139,12 @@ public class GremlinLogger extends DogLog {
      * @param value
      */
     public static void logSD(String key, Pose3d value) {
-        log(key,  value);
-        SmartDashboard.putNumberArray(key, 
-            new double[]{
-                value.getX(),value.getY(),value.getZ(),
-                value.getRotation().getX(),value.getRotation().getY(),value.getRotation().getZ()
-            }
-        );
+        log(key, value);
+        SmartDashboard.putNumberArray(key,
+                new double[] {
+                        value.getX(), value.getY(), value.getZ(),
+                        value.getRotation().getX(), value.getRotation().getY(), value.getRotation().getZ()
+                });
     }
 
     /**
@@ -159,26 +154,30 @@ public class GremlinLogger extends DogLog {
      * @param value
      */
     public static void logSD(String key, List<Pose3d> values) {
-        int i =0;
+        int i = 0;
         for (Pose3d pose3d : values) {
             i++;
             logSD(key + "/Tag " + i, pose3d);
         }
     }
 
-    /**Logs a Transform3d and also puts it on Smartdashboard
+    /**
+     * Logs a Transform3d and also puts it on Smartdashboard
+     * 
      * @param key
      * @param value
      */
-    public static void logSD(String key, Transform3d value){
+    public static void logSD(String key, Transform3d value) {
         Pose3d pose = GeomUtil.transform3dToPose3d(value);
         logSD(key, pose);
     }
 
-    /**Logs a Pose2d and also puts it on Smartdashboard
+    /**
+     * Logs a Pose2d and also puts it on Smartdashboard
+     * 
      * @param key
      * @param value
-     */ // TODO: not sure if a 3 element array is correct
+     */
     public static void logSD(String key, Pose2d value) {
         log(key, value);
         SmartDashboard.putNumberArray(key,
@@ -200,11 +199,11 @@ public class GremlinLogger extends DogLog {
         SmartDashboard.putNumber(key, value);
     }
 
-    public static boolean isDebug(){
+    public static boolean isDebug() {
         return DEBUG;
     }
 
-    public static void updateDebug(){
+    public static void updateDebug() {
         // Update the DEBUG value from NetworkTables
         DEBUG = debugEntry.getBoolean(false);
     }

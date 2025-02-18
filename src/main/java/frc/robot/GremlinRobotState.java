@@ -12,7 +12,7 @@ public class GremlinRobotState {
     private DriveState driveState;
     private static GremlinRobotState mRobotState;
 
-    public enum DriveState{
+    public enum DriveState {
         TELEOP,
         AUTOSCORE,
         INTAKE,
@@ -20,23 +20,23 @@ public class GremlinRobotState {
         PROCESSOR
     }
 
-    private GremlinRobotState(){
+    private GremlinRobotState() {
         this.driveState = DriveState.TELEOP;
     }
 
-    public static GremlinRobotState getRobotState(){
-        if(mRobotState == null){
+    public static GremlinRobotState getRobotState() {
+        if (mRobotState == null) {
             mRobotState = new GremlinRobotState();
         }
 
         return mRobotState;
     }
 
-    public DriveState getDriveState(){
+    public DriveState getDriveState() {
         return driveState;
     }
 
-    public void setDriveState(DriveState newDriveState){
+    public void setDriveState(DriveState newDriveState) {
         this.driveState = newDriveState;
         SmartDashboard.putBoolean("Algea State", getDriveState() == DriveState.ALGEA);
         SmartDashboard.putBoolean("Intake State", getDriveState() == DriveState.INTAKE);
