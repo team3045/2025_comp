@@ -31,6 +31,7 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.vision.apriltag.GremlinLimelightCamera;
+import frc.robot.vision.apriltag.LimelightHelpers;
 import frc.robot.vision.apriltag.VisionConstants;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -99,15 +100,10 @@ public class AutoScoreFactory{
     Supplier<Pose2d> robotPoseSupplier = () -> {
       int poleNumber =(int) poleNumberSub.get();
 
-      Pose2d targetPose = AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose);
-
-      SmartDashboard.putNumberArray("targetposition", new double[]{targetPose.getX(), targetPose.getY()});
-      SmartDashboard.putNumber("polenum", (int) poleNumberSub.get());
-
       if(poleNumber % 2 == 0){
-        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
+        return leftFeedbackCamera.getBotPoseEstimate().isPresent() ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
       } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
+        return rightFeedbackCamera.getBotPoseEstimate().isPresent() ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
       }
     };
 
@@ -262,6 +258,7 @@ public class AutoScoreFactory{
     Supplier<Pose2d> robotPoseSupplier = () -> {
       int poleNumber =(int) poleNumSupplier.get();
 
+
       if(poleNumber % 2 == 0){
         return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent() ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose : drivetrain.getState().Pose;
       } else {
@@ -291,15 +288,20 @@ public class AutoScoreFactory{
     
     return Commands.run(
         () -> {
+          boolean used = false;
+
           if(shouldOverride.getAsBoolean()){
-            if(robotPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 4){
+            if(robotPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 3){
               drivetrain.addVisionMeasurement(
                 robotPoseSupplier.get(), 
                 Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
-                VecBuilder.fill(0.001,0.001,0.001));
+                VecBuilder.fill(0.0001,0.0001,0.001));
+                used = true;
             }
           }
+
+          SmartDashboard.putBoolean("Used", used);
         }
-    ).alongWith(setElevatorHeight(heightSup));
+    ).alongWith(setElevatorHeight(heightSup)); 
   }
 }

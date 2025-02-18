@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5703893442622954,
-        "y": 0.722387295081968
+        "x": 7.145,
+        "y": 2.724334016393442
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.805122950819672,
-        "y": 1.7413422131147538
+        "x": 6.545286885245901,
+        "y": 1.9091700819672122
       },
       "isLocked": false,
-      "linkedName": "BotIntake"
+      "linkedName": "ProcStart"
     },
     {
       "anchor": {
-        "x": 3.98,
-        "y": 2.79
+        "x": 5.023,
+        "y": 2.76
       },
       "prevControl": {
-        "x": 2.7691598360655743,
-        "y": 1.6933913934426232
+        "x": 5.730122950819672,
+        "y": 1.9810963114754099
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Delta"
+      "linkedName": "Echo"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5309168443496797,
+      "rotationDegrees": 119.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": "Processor Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

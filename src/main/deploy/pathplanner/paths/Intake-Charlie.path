@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 2.241700819672131,
-        "y": 1.3936987704918034
+        "y": 1.3936987704918042
       },
       "isLocked": false,
       "linkedName": "BotIntake"
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 1.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

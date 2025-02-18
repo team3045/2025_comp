@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 1.5703893442622954,
-        "y": 0.722387295081968
+        "y": 7.3298
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.805122950819672,
-        "y": 1.7413422131147538
+        "x": 2.292377448895941,
+        "y": 6.6781894444332774
       },
       "isLocked": false,
-      "linkedName": "BotIntake"
+      "linkedName": "TopIntake"
     },
     {
       "anchor": {
-        "x": 3.98,
-        "y": 2.79
+        "x": 3.95,
+        "y": 5.27
       },
       "prevControl": {
-        "x": 2.7691598360655743,
-        "y": 1.6933913934426232
+        "x": 3.5711673811519433,
+        "y": 5.6774164136994
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Delta"
+      "linkedName": "Kayla"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "Processor Side",
+  "folder": "Barge Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": -55.0
   },
   "useDefaultConstraints": true
 }

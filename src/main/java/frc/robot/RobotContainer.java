@@ -4,14 +4,13 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,10 +20,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commands.IntakeSequenceFactory;
+import frc.robot.commons.GremlinAutoBuilder;
 import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.ElevatorPivotConstants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
@@ -35,7 +36,6 @@ import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
 
-import javax.naming.Name;
 
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
@@ -69,7 +69,7 @@ public class RobotContainer {
     public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     public final Trigger teleopState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TELEOP);
     public final Trigger processorState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.PROCESSOR);
-    public final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance));
+    public final Trigger disableGlobalEstimation = (scoringState.or(algeaState).or(isAuton)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions()
@@ -82,7 +82,7 @@ public class RobotContainer {
         configureAutoTriggers();
 
         // Build an auto chooser. This will use Commands.none() as the default option.
-        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = GremlinAutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
@@ -237,13 +237,29 @@ public class RobotContainer {
                 .andThen(Commands.waitUntil(claw.hasCoral))
                 .andThen(claw.slowIntake())
                 .andThen(Commands.waitUntil(claw.hasCoral.negate()))
-                .andThen(claw.driveBack())
-                .andThen(Commands.waitUntil(claw.hasCoral))));
+                .andThen(claw.slowBackup())
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.fullHold())));
 
         NamedCommands.registerCommand("StowArm", 
             elevatorPivot.stowArm().alongWith(claw.hold())
         );
-    }
+
+        NamedCommands.registerCommand("IntakeAlgae", 
+            elevatorPivot.goToPosition(
+                () -> ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight(), 
+                () -> ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle())
+            .alongWith(claw.algeaIntake())
+            .until(ElevatorPivot.hasAlgea));
+
+        NamedCommands.registerCommand("ProcArm",
+            elevatorPivot.goToProcessor()
+        );
+
+        NamedCommands.registerCommand("AlgaeOut", 
+            claw.algeaOuttake()
+        );
+    }   
 
     public void configureAutoTriggers(){
         new EventTrigger("StartScoreF").onTrue(

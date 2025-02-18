@@ -43,7 +43,7 @@ public class DynamicPathfindWithMT2 extends Command {
         this.desiredEndVelocitySupplier = desiredEndVelocitySupplier;
         this.constraints = constraints;
         this.overrideWithFeedback = camera::seesObject;
-        this.feedbackPoseSupplier = () -> camera.getBotPoseEstimate().pose;
+        this.feedbackPoseSupplier = () -> camera.getBotPoseEstimate().get().pose;
         this.drivetrain = drivetrain;
         this.camera = camera;
 

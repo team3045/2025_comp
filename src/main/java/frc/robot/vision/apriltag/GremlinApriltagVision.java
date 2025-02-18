@@ -119,7 +119,8 @@ public class GremlinApriltagVision extends SubsystemBase {
       visionConsumer.accept(visionUpdates);
     }
 
-    //logLimelights();
+    if(GremlinLogger.isDebug())
+      logLimelights();
   }
 
   @SuppressWarnings("unused")
@@ -290,6 +291,10 @@ public class GremlinApriltagVision extends SubsystemBase {
       .getStructTopic(CAMERA_LOG_PATH + "limelightLeft" + "/Calculated Pose", Pose2d.struct).publish();
   private static final StructPublisher<Pose2d> LLrightCalculatedPosePublisher  = NetworkTableInstance.getDefault()
   .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/Calculated Pose", Pose2d.struct).publish();
+  private static final StructPublisher<Pose2d> LLlleftMT1PosePublisher = NetworkTableInstance.getDefault()
+      .getStructTopic(CAMERA_LOG_PATH + "limelightLeft" + "/MT1 Pose", Pose2d.struct).publish();
+  private static final StructPublisher<Pose2d> LLrightMT1PosePublisher  = NetworkTableInstance.getDefault()
+  .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/MT1 Pose", Pose2d.struct).publish();
 
   /**
    * Log the CamPose, Calculated Pose, and TagPose
@@ -324,11 +329,13 @@ public class GremlinApriltagVision extends SubsystemBase {
   private void logLimelights(){
     if(limelights[0].getBotPoseEstimateMT2().isPresent() && limelights[0].getBotPoseEstimateMT2().get().pose != null){
       LLrightCalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().get().pose);
+      LLrightMT1PosePublisher.set(limelights[0].getBotPoseEstimate().get().pose);
     }
       
 
     if(limelights[1].getBotPoseEstimateMT2().isPresent() && limelights[1].getBotPoseEstimateMT2().get().pose != null){
       LLlleftCalculatedPosePublisher.set(limelights[1].getBotPoseEstimateMT2().get().pose);
+      LLlleftMT1PosePublisher.set(limelights[1].getBotPoseEstimate().get().pose);
     }
   }
 

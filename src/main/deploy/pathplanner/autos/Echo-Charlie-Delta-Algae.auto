@@ -11,13 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ProcStart-Foxtrot"
+                  "pathName": "ProcStart-Echo"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "StartScoreF"
+                  "name": "StartScoreE"
                 }
               }
             ]
@@ -46,13 +46,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Foxtrot-Intake"
+                        "pathName": "Echo-Intake"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.3
+                        "waitTime": 1.5
                       }
                     }
                   ]
@@ -109,7 +109,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.3
+                        "waitTime": 1.5
                       }
                     }
                   ]
@@ -144,9 +144,47 @@
           }
         },
         {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeAlgae"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Delta-CAlgae"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "CAlgae-Proc"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ProcArm"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "StowArm"
+            "name": "AlgaeOut"
           }
         }
       ]

@@ -11,7 +11,7 @@
         "x": 2.7421394700549975,
         "y": 4.17
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Alpha"
     },
     {
@@ -27,7 +27,7 @@
         "x": 4.015985904734803,
         "y": 3.401308004731739
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Bravo"
     },
     {
@@ -43,7 +43,7 @@
         "x": 4.103911171799172,
         "y": 2.730278748521332
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Charlie"
     },
     {
@@ -59,7 +59,7 @@
         "x": 4.430809525841557,
         "y": 2.7343503910870837
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Delta"
     },
     {
@@ -75,7 +75,7 @@
         "x": 5.391903790203311,
         "y": 2.693703002785286
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Echo"
     },
     {
@@ -91,7 +91,7 @@
         "x": 5.517927801298356,
         "y": 2.8322276105158335
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Foxtrot"
     },
     {
@@ -107,7 +107,7 @@
         "x": 6.006690853819519,
         "y": 3.6996944512801426
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Gamma"
     },
     {
@@ -123,7 +123,7 @@
         "x": 5.8019096252101985,
         "y": 3.887020483974956
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Horse"
     },
     {
@@ -139,7 +139,7 @@
         "x": 5.36487250915061,
         "y": 4.7708935987578265
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Igloo"
     },
     {
@@ -155,7 +155,7 @@
         "x": 5.180134107919232,
         "y": 4.712283250388179
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "JohnnyBoi"
     },
     {
@@ -171,7 +171,7 @@
         "x": 4.149739858304038,
         "y": 4.740598984253693
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Kayla"
     },
     {
@@ -184,17 +184,58 @@
         "y": 5.08
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Llama"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": 59.99999999999999
+    },
+    {
+      "waypointRelativePos": 3,
+      "rotationDegrees": 59.99999999999999
+    },
+    {
+      "waypointRelativePos": 4,
+      "rotationDegrees": 119.99999999999999
+    },
+    {
+      "waypointRelativePos": 5,
+      "rotationDegrees": 119.99999999999999
+    },
+    {
+      "waypointRelativePos": 6,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 7,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 8,
+      "rotationDegrees": -119.99999999999999
+    },
+    {
+      "waypointRelativePos": 9,
+      "rotationDegrees": -119.99999999999999
+    },
+    {
+      "waypointRelativePos": 10,
+      "rotationDegrees": -59.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 1.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5703893442622954,
-        "y": 0.722387295081968
+        "x": 7.145,
+        "y": 6.0518
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.805122950819672,
-        "y": 1.7413422131147538
+        "x": 7.345367728563403,
+        "y": 5.892921645643639
       },
       "isLocked": false,
-      "linkedName": "BotIntake"
+      "linkedName": "ClimbStart"
     },
     {
       "anchor": {
-        "x": 3.98,
-        "y": 2.79
+        "x": 5.02,
+        "y": 5.27
       },
       "prevControl": {
-        "x": 2.7691598360655743,
-        "y": 1.6933913934426232
+        "x": 5.307805325930169,
+        "y": 5.932563067836665
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Delta"
+      "linkedName": "JohnnyBoi"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Processor Side",
+  "folder": "Barge Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

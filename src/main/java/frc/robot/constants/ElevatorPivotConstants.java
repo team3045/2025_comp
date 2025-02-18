@@ -119,7 +119,7 @@ public class ElevatorPivotConstants {
     public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; //1.2566370614359172m / 1 rot //0.05729478
 
     public static final double maxAccelerationLinear = 4; //m per sec^2
-    public static final double maxVelocityLinear = 2; //m per sec
+    public static final double maxVelocityLinear = 3; //m per sec
     public static final double maxAccelerationRotations =  maxAccelerationLinear / rotationToLengthRatio; //rot per sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; //rot per sec
 
@@ -148,7 +148,7 @@ public class ElevatorPivotConstants {
     public static final double pivotKA = !Utils.isSimulation() ? 0 : 0.02;
     public static final double pivotKV = !Utils.isSimulation() ? 2.8 : 0.55;
 
-    public static final double magnetOffset = !Utils.isSimulation() ? 0.309814 : 0;
+    public static final double magnetOffset = !Utils.isSimulation() ? 0.190430 : 0;
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     public enum HeightPositions{

@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ProcStart-Foxtrot"
+                  "pathName": "BargeStart-JohnnyBoi"
                 }
               },
               {
@@ -46,7 +46,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Foxtrot-Intake"
+                        "pathName": "JohnnyBoi-Intake"
                       }
                     },
                     {
@@ -68,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake-Charlie"
+                  "pathName": "Intake-Llama"
                 }
               },
               {
@@ -103,7 +103,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Charlie-Intake"
+                        "pathName": "Llama-Intake"
                       }
                     },
                     {
@@ -125,7 +125,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake-Delta"
+                  "pathName": "Intake-Kayla"
                 }
               },
               {
@@ -144,15 +144,47 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "StowArm"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeAlgae"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Kayla-KAlgae"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "KAlgae - ProcRdy"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ProcArm"
+                }
+              }
+            ]
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Processor Side",
+  "folder": "Barge Side",
   "choreoAuto": false
 }
