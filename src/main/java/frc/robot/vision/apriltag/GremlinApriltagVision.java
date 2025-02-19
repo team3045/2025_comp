@@ -42,6 +42,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
@@ -109,6 +110,7 @@ public class GremlinApriltagVision extends SubsystemBase {
 
   public void setRejectAllUpdates(boolean shouldRejectAllUpdates) {
     this.shouldRejectAllUpdates = shouldRejectAllUpdates;
+    GremlinLogger.debugLog("Reject Global Updates", shouldRejectAllUpdates);
   }
 
   @Override

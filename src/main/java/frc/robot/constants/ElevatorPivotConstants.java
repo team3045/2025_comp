@@ -116,8 +116,8 @@ public class ElevatorPivotConstants {
     public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; // 1.2566370614359172m / 1 rot
                                                                                        // //0.05729478
 
-    public static final double maxAccelerationLinear = 4; // m per sec^2
-    public static final double maxVelocityLinear = 3; // m per sec
+    public static final double maxAccelerationLinear = 3; // m per sec^2
+    public static final double maxVelocityLinear = 2; // m per sec
     public static final double maxAccelerationRotations = maxAccelerationLinear / rotationToLengthRatio; // rot per
                                                                                                          // sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; // rot per sec

@@ -101,11 +101,11 @@ public class AutoScoreFactory {
 
       if (poleNumber % 2 == 0) {
         return leftFeedbackCamera.getBotPoseEstimate().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
+            ? leftFeedbackCamera.getBotPoseEstimate().get().pose
             : drivetrain.getState().Pose;
       } else {
         return rightFeedbackCamera.getBotPoseEstimate().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
+            ? rightFeedbackCamera.getBotPoseEstimate().get().pose
             : drivetrain.getState().Pose;
       }
     };
