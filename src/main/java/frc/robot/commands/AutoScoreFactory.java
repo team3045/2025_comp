@@ -100,12 +100,12 @@ public class AutoScoreFactory {
       int poleNumber = (int) poleNumberSub.get();
 
       if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.getBotPoseEstimate().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimate().get().pose
+        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
             : drivetrain.getState().Pose;
       } else {
-        return rightFeedbackCamera.getBotPoseEstimate().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimate().get().pose
+        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
             : drivetrain.getState().Pose;
       }
     };

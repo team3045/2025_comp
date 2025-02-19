@@ -16,6 +16,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commons.GeomUtil;
@@ -75,9 +76,9 @@ public class GremlinLimelightCamera implements AutoCloseable {
                 camPose3d.getX(),
                 camPose3d.getY(),
                 camPose3d.getZ(),
-                camPose3d.getRotation().getX(),
-                camPose3d.getRotation().getY(),
-                camPose3d.getRotation().getZ());
+                Units.radiansToDegrees(camPose3d.getRotation().getX()),
+                Units.radiansToDegrees(camPose3d.getRotation().getY()),
+                Units.radiansToDegrees(camPose3d.getRotation().getZ()));
     }
 
     /**

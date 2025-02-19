@@ -114,23 +114,23 @@ public class VisionConstants {
         public static final Pose3d[] limelightPoses = {
                         new Pose3d( // right
                                         new Translation3d(
-                                                        Units.inchesToMeters(7.819),
-                                                        Units.inchesToMeters(6.5),
-                                                        Units.inchesToMeters(6.972)),
-                                        new Rotation3d(0, Units.degreesToRadians(-20), 0)),
+                                                        Units.inchesToMeters(8.055),
+                                                        Units.inchesToMeters(6.35),
+                                                        Units.inchesToMeters(6.9205)),
+                                        new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(7.5))),
                         new Pose3d(
                                         new Translation3d(
-                                                        Units.inchesToMeters(7.819),
-                                                        Units.inchesToMeters(-6.5),
-                                                        Units.inchesToMeters(6.972)),
-                                        new Rotation3d(0, Units.degreesToRadians(-20), 0)) // left
+                                                        Units.inchesToMeters(8.055),
+                                                        Units.inchesToMeters(-6.35),
+                                                        Units.inchesToMeters(6.9205)),
+                                        new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(-7.5))) // left
         };
 
         public static final GremlinPhotonCamera[] cameras = { // Retain this Order
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };
 
         public static final GremlinLimelightCamera[] limelights = { // retain this order
