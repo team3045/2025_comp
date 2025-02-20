@@ -67,6 +67,7 @@ public class ElevatorPivot extends SubsystemBase {
   public Trigger atTargetHeight = new Trigger(() -> atTargetHeight());
   public Trigger atTargetAngle = new Trigger(() -> atTargetAngle());
   public static Trigger hasAlgea = new Trigger(() -> hasAlgea()).debounce(debounceTime, DebounceType.kFalling);
+  public Trigger safeToMove = new Trigger(() -> isSafeToMove());
 
   /** Creates a new Elevator. */
   public ElevatorPivot() {
@@ -78,7 +79,6 @@ public class ElevatorPivot extends SubsystemBase {
 
     targetHeight = getHeight(); // This should go after configDevices to make sure that the elevator is zeroed
     targetAngleDegrees = getPivotAngleDegrees();
-    // setTargetHeightAndAngle(targetHeight, targetAngleDegrees);
     travellingUpward = true;
   }
 
@@ -389,8 +389,18 @@ public class ElevatorPivot extends SubsystemBase {
     }
     ;
 
+    GremlinLogger.debugLog("tempAngle", tempTargetAngle);
+    GremlinLogger.debugLog("TempHeight", tempTargetHeight);
+
     setHeightTarget(tempTargetHeight);
     setAngleTargetDegrees(tempTargetAngle);
+  }
+
+  public boolean isSafeToMove(){
+    if(targetHeight < safeMovementHeight)
+      return true;
+    else
+      return getHeight() > safeMovementHeight;
   }
 
   /**

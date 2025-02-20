@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -146,14 +147,26 @@ public class AutoScoreFactory {
   }
 
   public Command fullAutoScoreCommand() {
-    return pathfindToScoring(VisionConstants.limelights[0], VisionConstants.limelights[1]) // righ and left
+    return Commands.either(
+      pathfindToScoring(VisionConstants.limelights[0], VisionConstants.limelights[1]) // righ and left
         .alongWith(setElevatorHeight())
         .andThen(claw.clawOutake())
         .andThen(Commands.waitSeconds(0.4))
         .andThen(drivetrain.driveBack())
         .finallyDo(() -> {
           M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+        }), // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE 
+        setElevatorHeight()
+        .alongWith(
+          Commands.waitUntil(elevatorPivot.safeToMove)
+          .andThen(pathfindToScoring(VisionConstants.limelights[0], VisionConstants.limelights[1]))) // righ and left
+        .andThen(claw.clawOutake())
+        .andThen(Commands.waitSeconds(0.4))
+        .andThen(drivetrain.driveBack())
+        .finallyDo(() -> {
+          M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+        }), // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE , 
+      () -> !drivetrain.withinDistanceOfReef(FieldConstants.elevatorDistanceTolerance));
   }
 
   public Command fullAutoScoreCommand(Supplier<Pose2d> desiredPose, Supplier<Integer> desiredHeight) {

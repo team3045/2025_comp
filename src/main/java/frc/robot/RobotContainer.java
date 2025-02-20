@@ -167,7 +167,11 @@ public class RobotContainer {
         joystick.L2().onTrue(
             Commands.either(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.PROCESSOR)), 
-                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)),
+                claw.algeaOuttake()
+                .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+                .andThen(claw.hold())
+                .andThen(drivetrain.driveBack())
+                .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                 processorState.negate()
             ));
 
@@ -176,10 +180,6 @@ public class RobotContainer {
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .alongWith(elevatorPivot.goToProcessor()));
         
-        processorState.onFalse(claw.algeaOuttake()
-            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
-            .andThen(claw.hold())
-            .andThen(drivetrain.driveBack()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
