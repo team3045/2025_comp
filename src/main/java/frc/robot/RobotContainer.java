@@ -35,8 +35,7 @@ import frc.robot.vision.apriltag.GremlinApriltagVision;
 import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
-
-
+import static frc.robot.constants.FieldConstants.tooCloseDistance;
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
@@ -108,7 +107,7 @@ public class RobotContainer {
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
-        scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
+        scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand().unless(() -> drivetrain.withinDistanceOfReef(tooCloseDistance)));
 
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
