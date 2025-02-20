@@ -280,7 +280,7 @@ public class ElevatorPivotConstants {
 
     public static final double minSignalStrength = 0;
     public static final double proximityHysterisis = 0.01; // 1 cm
-    public static final double proximityThreshold = 0.125; // 12.5cm
+    public static final double proximityThreshold = 0.05; // 5cm
 
     public static final double updateFrequency = 50; // every 20 ms, this is overridden to 100 Hz when we're in
                                                      // ShortRange100hz mode
