@@ -117,8 +117,8 @@ public class ElevatorPivotConstants {
     public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; // 1.2566370614359172m / 1 rot
                                                                                        // //0.05729478
 
-    public static final double maxAccelerationLinear = 3; // m per sec^2
-    public static final double maxVelocityLinear = 2; // m per sec
+    public static final double maxAccelerationLinear = 0.5; // m per sec^2
+    public static final double maxVelocityLinear = 0.5; // m per sec
     public static final double maxAccelerationRotations = maxAccelerationLinear / rotationToLengthRatio; // rot per
                                                                                                          // sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; // rot per sec
@@ -132,17 +132,17 @@ public class ElevatorPivotConstants {
     public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
 
-    public static final double kP = 16;
+    public static final double kP = 5;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0.3;
-    public static final double kS = 0.1;
+    public static final double kS = 0.12;
     public static final double kA = 0;
-    public static final double kV = 0.60932;
+    public static final double kV = 0.76;
 
-    public static final double pivotKP = !Utils.isSimulation() ? 55 : 40;
+    public static final double pivotKP = !Utils.isSimulation() ? 30 : 40;
     public static final double pivotKI = !Utils.isSimulation() ? 0 : 0;
-    public static final double pivotKD = !Utils.isSimulation() ? 0.3 : 0;
+    public static final double pivotKD = !Utils.isSimulation() ? 0 : 0;
     public static final double pivotKG = !Utils.isSimulation() ? 0.4 : 0.65;
     public static final double pivotKS = !Utils.isSimulation() ? 0.08 : 0;
     public static final double pivotKA = !Utils.isSimulation() ? 0 : 0.02;

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
 
@@ -86,8 +87,8 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
+        // // Note that X is defined as forward according to WPILib convention,
+        // // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -107,7 +108,8 @@ public class RobotContainer {
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
-        scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand().unless(() -> drivetrain.withinDistanceOfReef(tooCloseDistance)));
+        scoringState.whileTrue(autoScoreFactory.setElevatorHeight());
+            //autoScoreFactory.fullAutoScoreCommand().unless(() -> drivetrain.withinDistanceOfReef(tooCloseDistance)));
 
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
@@ -182,11 +184,16 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // joystick.share().whileTrue(drivetrain.maxSpeedTest());
+        // joystick.share().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
+
+        // joystick.R1().onTrue(elevatorPivot.increaseElevVoltage());
+        // joystick.L1().onFalse(elevatorPivot.decreaseElevVoltage());
+        // joystick.triangle().onTrue(elevatorPivot.zeroElevVoltage());
+        // joystick.square().onTrue(elevatorPivot.zeroHeight());
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        return elevatorPivot.quasistaticVoltage();
     }
 
     public void registerPathPlannerCommands(){

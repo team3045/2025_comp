@@ -538,6 +538,7 @@ public class ElevatorPivot extends SubsystemBase {
     return this.runOnce(() -> {
       voltage += 0.1;
       pivotMotor.setVoltage(voltage);
+      SmartDashboard.putNumber("voltage", voltage);
     });
   }
 
@@ -551,6 +552,7 @@ public class ElevatorPivot extends SubsystemBase {
     return this.runOnce(() -> {
       voltage -= 0.1;
       pivotMotor.setVoltage(voltage);
+      SmartDashboard.putNumber("voltage", voltage);
     });
   }
 
@@ -563,6 +565,43 @@ public class ElevatorPivot extends SubsystemBase {
     return this.runOnce(() -> {
       voltage = 0;
       pivotMotor.setVoltage(voltage);
+      SmartDashboard.putNumber("voltage", voltage);
+    });
+  }
+
+  public Command quasistaticVoltage(){
+    return
+     this.runOnce(() -> voltage = 0)
+     .andThen(
+      this.run(() -> {
+        voltage += 0.01;
+        leftMotor.setVoltage(voltage);
+        rightMotor.setVoltage(voltage);
+      })
+     );
+  }
+
+  public Command increaseElevVoltage(){
+    return this.runOnce(() -> {
+      voltage += 0.01;
+      leftMotor.setVoltage(voltage);
+      rightMotor.setVoltage(voltage);
+    });
+  }
+
+  public Command decreaseElevVoltage(){
+    return this.runOnce(() -> {
+      voltage -= 0.01;
+      leftMotor.setVoltage(voltage);
+      rightMotor.setVoltage(voltage);
+    });
+  }
+
+  public Command zeroElevVoltage(){
+    return this.runOnce(() -> {
+      voltage = 0;
+      leftMotor.setVoltage(voltage);
+      rightMotor.setVoltage(voltage);
     });
   }
 
@@ -580,6 +619,8 @@ public class ElevatorPivot extends SubsystemBase {
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
     SmartDashboard.putBoolean("At Height", atTargetHeight());
     SmartDashboard.putBoolean("At Angle", atTargetAngle());
+    SmartDashboard.putNumber("voltage", voltage);
+    SmartDashboard.putNumber("velocity", rightMotor.getVelocity().getValueAsDouble());
   }
 
   /* SIMULATION */
