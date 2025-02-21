@@ -117,8 +117,8 @@ public class ElevatorPivotConstants {
     public static final double rotationToLengthRatio = (2 * Math.PI * drumRadius) / 1; // 1.2566370614359172m / 1 rot
                                                                                        // //0.05729478
 
-    public static final double maxAccelerationLinear = 0.5; // m per sec^2
-    public static final double maxVelocityLinear = 0.5; // m per sec
+    public static final double maxAccelerationLinear = 4; // m per sec^2
+    public static final double maxVelocityLinear = 4; // m per sec
     public static final double maxAccelerationRotations = maxAccelerationLinear / rotationToLengthRatio; // rot per
                                                                                                          // sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; // rot per sec
@@ -132,7 +132,7 @@ public class ElevatorPivotConstants {
     public static final InvertedValue rightInverted = InvertedValue.CounterClockwise_Positive;
     public static final InvertedValue pivotInvert = InvertedValue.CounterClockwise_Positive;
 
-    public static final double kP = 5;
+    public static final double kP = 10;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0.3;
@@ -280,7 +280,7 @@ public class ElevatorPivotConstants {
 
     public static final double minSignalStrength = 0;
     public static final double proximityHysterisis = 0.01; // 1 cm
-    public static final double proximityThreshold = 0.05; // 5cm
+    public static final double proximityThreshold = 0.08; // 8cm
 
     public static final double updateFrequency = 50; // every 20 ms, this is overridden to 100 Hz when we're in
                                                      // ShortRange100hz mode

@@ -113,7 +113,7 @@ public class FieldConstants {
                         compFieldWidth);
 
         public static final List<Pose2d> algeaPoses = List.of(
-                        new Pose2d(3.189, 4.031, Rotation2d.kZero),
+                        new Pose2d(3.22, 4.031, Rotation2d.kZero),
                         new Pose2d(3.845, 2.938, Rotation2d.fromDegrees(60)),
                         new Pose2d(5.119, 2.928, Rotation2d.fromDegrees(120)),
                         new Pose2d(5.75, 4.007, Rotation2d.k180deg),

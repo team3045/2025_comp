@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -108,8 +109,13 @@ public class RobotContainer {
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
-        scoringState.whileTrue(autoScoreFactory.setElevatorHeight());
-            //autoScoreFactory.fullAutoScoreCommand().unless(() -> drivetrain.withinDistanceOfReef(tooCloseDistance)));
+        scoringState.whileTrue(
+            autoScoreFactory.fullAutoScoreCommand()
+                .unless(() -> drivetrain.withinDistanceOfReef(tooCloseDistance))
+                // .handleInterrupt(() -> {
+                //     CommandScheduler.getInstance().schedule(claw.slowBackup().until(claw.hasCoral).andThen(claw.stop()));
+                // })
+            );
 
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING

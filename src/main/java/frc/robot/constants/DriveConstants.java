@@ -24,7 +24,7 @@ public class DriveConstants {
     public static final double drivebaseRadius = Math.hypot(TunerConstants.FrontLeft.LocationX,
             TunerConstants.FrontLeft.LocationY);
 
-    public static double MaxSpeed = 3; // TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
+    public static double MaxSpeed = 4; // TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
                                        // desired top speed
     public static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);// RotationsPerSecond.of(1.5).in(RadiansPerSecond);
                                                                                            // // 3/4 of a rotation per

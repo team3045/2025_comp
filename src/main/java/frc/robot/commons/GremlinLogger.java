@@ -71,13 +71,13 @@ public class GremlinLogger extends DogLog {
 
     public static void debugLog(String key, double value) {
         if (DEBUG) {
-            log(key, value);
+            logSD(key, value);
         }
     }
 
     public static void debugLog(String key, boolean value) {
         if (DEBUG) {
-            log(key, value);
+            logSD(key, value);
         }
     }
 

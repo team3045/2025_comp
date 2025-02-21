@@ -367,27 +367,35 @@ public class ElevatorPivot extends SubsystemBase {
 
     double tempTargetHeight = heightMeters;
     double tempTargetAngle = angleDegrees;
+    // GremlinLogger.debugLog("first", false);
+    // GremlinLogger.debugLog("second", false);
+    // GremlinLogger.debugLog("third", false);
+    // GremlinLogger.debugLog("4th", false);
 
-    if (targetAngleDegrees > getPivotAngleDegrees() && heightMeters <= getHeight()
+    if (targetAngleDegrees > getPivotAngleDegrees()
         && getPivotAngleDegrees() < maxUpperCollisionAngle) {
       tempTargetAngle = travelAngle;
       tempTargetHeight = heightMeters;
+      // GremlinLogger.debugLog("first", true);
     }
+
 
     // If we're greater than collision angle than just be safe no matter what
     if (getPivotAngleDegrees() > maxUpperCollisionAngle) {
       tempTargetAngle = travelAngle;
       tempTargetHeight = getHeight();
+      // GremlinLogger.debugLog("second", true);
     }
 
     if (atTargetHeight()) {
       tempTargetAngle = targetAngleDegrees;
+      // GremlinLogger.debugLog("third", true);
     }
 
     if (hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle) {
       tempTargetAngle = algeaTravelAngle;
-    }
-    ;
+      // GremlinLogger.debugLog("4th", true);
+    };
 
     GremlinLogger.debugLog("tempAngle", tempTargetAngle);
     GremlinLogger.debugLog("TempHeight", tempTargetHeight);
@@ -619,8 +627,7 @@ public class ElevatorPivot extends SubsystemBase {
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
     SmartDashboard.putBoolean("At Height", atTargetHeight());
     SmartDashboard.putBoolean("At Angle", atTargetAngle());
-    SmartDashboard.putNumber("voltage", voltage);
-    SmartDashboard.putNumber("velocity", rightMotor.getVelocity().getValueAsDouble());
+    GremlinLogger.debugLog("Elevator Velocity", getVerticalVelocity());
   }
 
   /* SIMULATION */
