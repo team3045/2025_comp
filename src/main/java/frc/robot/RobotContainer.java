@@ -31,6 +31,7 @@ import frc.robot.constants.ElevatorPivotConstants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
 import frc.robot.vision.apriltag.GremlinApriltagVision;
@@ -56,6 +57,7 @@ public class RobotContainer {
         (drivetrain::addVisionMeasurements));
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
+    public final Climber climber = new Climber();
 
     /*Auto Score Stuff */
     public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
@@ -196,6 +198,10 @@ public class RobotContainer {
         // joystick.L1().onFalse(elevatorPivot.decreaseElevVoltage());
         // joystick.triangle().onTrue(elevatorPivot.zeroElevVoltage());
         // joystick.square().onTrue(elevatorPivot.zeroHeight());
+        joystick.triangle().onTrue(climber.climb());
+        joystick.cross().onTrue(climber.lower());
+        joystick.triangle().onFalse(climber.stop());
+        joystick.cross().onFalse(climber.stop());
     }
 
     public Command getAutonomousCommand() {
