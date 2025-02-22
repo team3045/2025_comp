@@ -87,8 +87,7 @@ public class DynamicPathfindWithFeedback extends Command {
   public void execute() {
     if (overrideWithFeedback.getAsBoolean()) {
       feedbackPosePublisher.set(feedbackPoseSupplier.get());
-      if (feedbackPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 4 
-        && Math.abs(feedbackPoseSupplier.get().getRotation().minus(drivetrain.getState().Pose.getRotation()).getDegrees()) < 20) {
+      if (!feedbackPoseSupplier.get().equals(Pose2d.kZero)) {
         drivetrain.addVisionMeasurement(
             feedbackPoseSupplier.get(),
             Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
