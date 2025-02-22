@@ -30,7 +30,7 @@ public class Climber extends SubsystemBase {
   }
 
   private void setControl(float voltage) {
-    VoltageOut config = new VoltageOut(volts);
+    VoltageOut config = new VoltageOut(Math.abs(voltage));
     MotorOutputConfigs motorConfig = new MotorOutputConfigs();
     if (voltage < 0) {
       motorConfig.Inverted = InvertedValue.Clockwise_Positive;
