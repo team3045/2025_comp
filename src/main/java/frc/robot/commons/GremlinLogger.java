@@ -32,7 +32,7 @@ public class GremlinLogger extends DogLog {
     private static Notifier debugNotifier;
 
     static {
-        debugEntry.setBoolean(false);
+        debugEntry.setBoolean(DEBUG);
         // Create a Notifier to update the DEBUG flag on a separate thread
         debugNotifier = new Notifier(() -> {
             DEBUG = debugEntry.getBoolean(false);

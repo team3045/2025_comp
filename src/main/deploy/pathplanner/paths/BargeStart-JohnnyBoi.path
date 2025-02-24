@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.145,
-        "y": 6.0518
+        "x": 7.132684426229508,
+        "y": 6.955993852459016
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.345367728563403,
-        "y": 5.892921645643639
+        "x": 6.701127049180327,
+        "y": 6.896055327868852
       },
       "isLocked": false,
       "linkedName": "ClimbStart"
@@ -20,23 +20,28 @@
         "y": 5.27
       },
       "prevControl": {
-        "x": 5.307805325930169,
-        "y": 5.932563067836665
+        "x": 5.574282786885245,
+        "y": 5.865112704918032
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "JohnnyBoi"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.04264392324093752,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

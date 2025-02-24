@@ -77,10 +77,6 @@ public class DynamicPathfindWithFeedback extends Command {
 
     xController.setGoal(targetPoseSupplier.get().getX());
     yController.setGoal(targetPoseSupplier.get().getY());
-
-    // TODO: add a check to make sure we're within field bounds,
-    // as well as the target pose is within field bounds other wise pathPlanner will
-    // fail I think
   }
 
   @Override

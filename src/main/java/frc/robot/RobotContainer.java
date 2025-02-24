@@ -74,9 +74,9 @@ public class RobotContainer {
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions()
             .withNtPublish(false)
-            .withCaptureNt(GremlinLogger.isDebug())
-            .withCaptureConsole(GremlinLogger.isDebug())
-            .withLogExtras(GremlinLogger.isDebug()));
+            .withCaptureNt(true)
+            .withCaptureConsole(true)
+            .withLogExtras(true));
 
         registerPathPlannerCommands();
         configureAutoTriggers();
@@ -198,14 +198,19 @@ public class RobotContainer {
         // joystick.L1().onFalse(elevatorPivot.decreaseElevVoltage());
         // joystick.triangle().onTrue(elevatorPivot.zeroElevVoltage());
         // joystick.square().onTrue(elevatorPivot.zeroHeight());
-        joystick.triangle().onTrue(climber.climb());
-        joystick.cross().onTrue(climber.lower());
-        joystick.triangle().onFalse(climber.stop());
+       
+        // joystick.cross().OnPressTwice(climber.runBackword(), climber.stop());
+        // joystick.triangle().OnPressTwice(climber.runForward(), climber.stop());
+
+        joystick.cross().onTrue(climber.runBackword());
         joystick.cross().onFalse(climber.stop());
+        joystick.triangle().onTrue(climber.runForward());
+        joystick.triangle().onFalse(climber.stop());
+       
     }
 
     public Command getAutonomousCommand() {
-        return elevatorPivot.quasistaticVoltage();
+        return autoChooser.getSelected();
     }
 
     public void registerPathPlannerCommands(){
@@ -276,6 +281,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("AlgaeOut", 
             claw.algeaOuttake()
         );
+
+        NamedCommands.registerCommand("driveBack", 
+            drivetrain.driveBack());
     }   
 
     public void configureAutoTriggers(){
@@ -298,6 +306,26 @@ public class RobotContainer {
                 .andThen(claw.driveBack())
                 .andThen(Commands.waitUntil(claw.hasCoral)))
         );
+
+        new EventTrigger("StartLimelightLeft").onTrue(autoScoreFactory.addLimelightPose(1));
+
+        new EventTrigger("StopLimelightLeft").onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancel(autoScoreFactory.addLimelightPose(1))));
+
+        new EventTrigger("StartLimelightRight").onTrue(autoScoreFactory.addLimelightPose(0));
+
+        new EventTrigger("StopLimelightRight").onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancel(autoScoreFactory.addLimelightPose(0))));
+
+        new EventTrigger("StopLimelights").onTrue(Commands.runOnce(() -> 
+            CommandScheduler.getInstance().cancel(
+                autoScoreFactory.addLimelightPose(1),
+                autoScoreFactory.addLimelightPose(0))));
+
+
+        isAuton.onFalse(
+            Commands.runOnce(() -> 
+            CommandScheduler.getInstance().cancel(
+                autoScoreFactory.addLimelightPose(1),
+                autoScoreFactory.addLimelightPose(0))));
         
     }
 

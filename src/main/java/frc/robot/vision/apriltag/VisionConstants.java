@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.commons.PolynomialRegression;
 
 /** Add your docs here. */
@@ -55,7 +54,7 @@ public class VisionConstants {
         public static final double thetaModifier = 1000;
         public static final double multiTagModifier = 0.6;
         public static final double stabilityModifier = 15;
-        public static final double maxChangeDistance = 3; // m
+        public static final double maxChangeDistance = 40; // m
 
         public static SimCameraProperties getOV2311() {
                 SimCameraProperties properties = new SimCameraProperties();
@@ -84,28 +83,28 @@ public class VisionConstants {
         public static final Pose3d[] cameraPoses = {
                         new Pose3d( // Front Left
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886 + 0.75),
-                                                        Units.inchesToMeters(9.362 + 0.75),
+                                                        Units.inchesToMeters(11.637),
+                                                        Units.inchesToMeters(10.111),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(30))),
                         new Pose3d( // Front Right
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886 + 0.75),
-                                                        -Units.inchesToMeters(9.362 + 0.75),
+                                                        Units.inchesToMeters(11.637),
+                                                        -Units.inchesToMeters(10.111),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-30))),
                         new Pose3d( // Back Left
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886 + 0.75),
-                                                        Units.inchesToMeters(9.362 + 0.75),
+                                                        -Units.inchesToMeters(11.637),
+                                                        Units.inchesToMeters(10.111),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(150))),
                         new Pose3d( // Back Right
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886 + 0.75),
-                                                        -Units.inchesToMeters(9.362 + 0.75),
+                                                        -Units.inchesToMeters(11.637),
+                                                        -Units.inchesToMeters(10.111),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-150))),
@@ -127,10 +126,10 @@ public class VisionConstants {
         };
 
         public static final GremlinPhotonCamera[] cameras = { // Retain this Order
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };
 
         public static final GremlinLimelightCamera[] limelights = { // retain this order

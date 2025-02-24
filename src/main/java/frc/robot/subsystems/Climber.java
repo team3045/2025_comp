@@ -11,6 +11,8 @@ import java.io.ObjectInputFilter.Config;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -23,33 +25,79 @@ public class Climber extends SubsystemBase {
   private static TalonFXConfigurator configurator = motor.getConfigurator();
   /** Creates a new Climber. */
   public Climber() {
-    CurrentLimitsConfigs configs = new CurrentLimitsConfigs();
-    configs.SupplyCurrentLimit = maxAmps;
-    configs.SupplyCurrentLowerLimit = minAmps;
-    configurator.apply(configs);
+    configDevices();
+    // CurrentLimitsConfigs configs = new CurrentLimitsConfigs();
+    // configs.SupplyCurrentLimit = maxAmps;
+    // configs.SupplyCurrentLowerLimit = minAmps;
+    // configurator.apply(configs);
   }
 
-  private void setControl(float voltage) {
-    VoltageOut config = new VoltageOut(Math.abs(voltage));
-    MotorOutputConfigs motorConfig = new MotorOutputConfigs();
-    if (voltage < 0) {
-      motorConfig.Inverted = InvertedValue.Clockwise_Positive;
-    } else {
-      motorConfig.Inverted = InvertedValue.CounterClockwise_Positive;
+  public void configDevices() {
+    motor.getConfigurator().apply(motorConfig);
+  }
+
+  private double targetSpeed;
+/*
+public void spin(double numRotations) {
+        PositionVoltage request = new PositionVoltage(motor.getPosition().getValueAsDouble() - numRotations)
+                .withSlot(1)
+                .withUpdateFreqHz(1000);
+
+        motor.setControl(request);
+
     }
-    configurator.apply(motorConfig);
-    motor.setControl(config);
+*/
+    
+  public void setClimbTargetSpeed(double speedRPS) {
+      targetSpeed = speedRPS;
+      VelocityVoltage request = new VelocityVoltage(speedRPS)
+              .withEnableFOC(true)
+              .withSlot(0)
+              .withUpdateFreqHz(1000);
+
+      motor.setControl(request);
   }
 
-  public Command climb() {
-    return this.runOnce(() -> setControl(volts));
+
+
+
+
+  public Command runForward(){
+    return this.runOnce(()-> setClimbTargetSpeed(climberSpeed));
   }
 
-  public Command stop() {
-    return this.runOnce(() -> setControl(0));
+  public Command stop(){
+    return this.runOnce(()-> setClimbTargetSpeed(0));
   }
 
-  public Command lower() {
-    return this.runOnce(() -> setControl(-volts));
+  public Command runBackword(){
+    return this.runOnce(()-> setClimbTargetSpeed(-climberSpeed));
   }
+
+
+
+
+  // private void setControl(float voltage) {
+  //   VoltageOut config = new VoltageOut(Math.abs(voltage));
+  //   MotorOutputConfigs motorConfig = new MotorOutputConfigs();
+  //   if (voltage < 0) {
+  //     motorConfig.Inverted = InvertedValue.Clockwise_Positive;
+  //   } else {
+  //     motorConfig.Inverted = InvertedValue.CounterClockwise_Positive;
+  //   }
+  //   configurator.apply(motorConfig);
+  //   motor.setControl(config);
+  // }
+
+  // public Command climb() {
+  //   return this.runOnce(() -> setControl(volts));
+  // }
+
+  // public Command stop() {
+  //   return this.runOnce(() -> setControl(0));
+  // }
+
+  // public Command lower() {
+  //   return this.runOnce(() -> setControl(-volts));
+  // }
 }

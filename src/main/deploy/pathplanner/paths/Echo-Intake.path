@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.6108588114224665,
-        "y": 1.8754635936777473
+        "x": 5.9818647540983605,
+        "y": 2.1129610655737703
       },
       "isLocked": false,
       "linkedName": "Echo"
     },
     {
       "anchor": {
-        "x": 1.5703893442622954,
-        "y": 0.722387295081968
+        "x": 1.4265368852459013,
+        "y": 0.7943135245901636
       },
       "prevControl": {
-        "x": 1.9868985765850338,
-        "y": 1.5302529760347934
+        "x": 1.8430461175686397,
+        "y": 1.6021792055429889
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,12 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StopLimelights",
+      "waypointRelativePos": 0.95,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

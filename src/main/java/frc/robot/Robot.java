@@ -25,10 +25,10 @@ public class Robot extends TimedRobot {
   public Robot() {
     Pathfinding.setPathfinder(pathfinder);
     m_robotContainer = new RobotContainer();
-    // m_robotContainer.drivetrain.resetPose(new Pose2d(7.147,2.455, Rotation2d.k180deg));
-    m_robotContainer.drivetrain.resetPose(new Pose2d(1.73,4.08, Rotation2d.kZero));
+   // m_robotContainer.drivetrain.resetPose(new Pose2d(5.23,2.55, Rotation2d.fromDegrees(123)));
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(1.73,4.08, Rotation2d.kZero));
     // m_robotContainer.drivetrain.resetPose(new Pose2d(10.1,3.7,Rotation2d.kZero));
-    //m_robotContainer.drivetrain.resetPose(new Pose2d(7.145, 2.723, Rotation2d.k180deg));
+    m_robotContainer.drivetrain.resetPose(new Pose2d(7.121, 1.310, Rotation2d.k180deg));
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
@@ -76,6 +76,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    CommandScheduler.getInstance().cancel(
+                m_robotContainer.autoScoreFactory.addLimelightPose(1),
+                m_robotContainer.autoScoreFactory.addLimelightPose(0));
   }
 
   @Override

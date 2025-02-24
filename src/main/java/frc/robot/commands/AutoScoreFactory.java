@@ -256,61 +256,39 @@ public class AutoScoreFactory {
       }
     };
 
-    // return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
-    // .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
-    // .alongWith(claw.algeaIntake())
-    // .until(ElevatorPivot.hasAlgea)
-    // .andThen(drivetrain.driveBackAlgea());
-
     return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
         .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
         .alongWith(claw.algeaIntake())
         .until(ElevatorPivot.hasAlgea)
+        .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea))
+        .andThen(Commands.waitSeconds(0.3))
         .andThen(drivetrain.driveBackAlgea());
   }
 
   public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, Supplier<Integer> poleNumSupplier,
       GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera) {
-    // Basically we alternate between right or left cameras, depending on the pole
-    // number.
-    // Odd pole numbers use rightCamera, Even pole numbers use leftCamera
-    Supplier<Pose2d> robotPoseSupplier = () -> {
-      int poleNumber = (int) poleNumSupplier.get();
+    return Commands.none();//setElevatorHeight(heightSup);
+  }
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
+  /*1 for Left 0 for Right
+   * 
+   */
+  public Command addLimelightPose(int leftOrRight){
+    Supplier<Pose2d> robotPoseSupplier = () -> {
+        return VisionConstants.limelights[leftOrRight].getBotPoseEstimateMT2().isPresent()
+            ? VisionConstants.limelights[leftOrRight].getBotPoseEstimateMT2().get().pose
             : drivetrain.getState().Pose;
-      } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
-            : drivetrain.getState().Pose;
-      }
     };
 
     BooleanSupplier shouldOverride = () -> {
-      int poleNumber = (int) poleNumberSub.get();
-
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
-      } else {
-        return rightFeedbackCamera.seesObject()
-            && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
-      }
+        return VisionConstants.limelights[leftOrRight].seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
     };
 
     DoubleSupplier timestampSupplier = () -> {
-      int poleNumber = (int) poleNumberSub.get();
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds();
-      } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds();
-      }
+        return VisionConstants.limelights[leftOrRight].getBotPoseEstimateMT2().isPresent()
+            ? VisionConstants.limelights[leftOrRight].getBotPoseEstimateMT2().get().timestampSeconds
+            : Utils.getSystemTimeSeconds();
     };
 
     return Commands.run(
@@ -318,7 +296,7 @@ public class AutoScoreFactory {
           boolean used = false;
 
           if (shouldOverride.getAsBoolean()) {
-            if (robotPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 3) {
+            if (!robotPoseSupplier.get().equals(Pose2d.kZero)) {
               drivetrain.addVisionMeasurement(
                   robotPoseSupplier.get(),
                   Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
@@ -328,6 +306,6 @@ public class AutoScoreFactory {
           }
 
           SmartDashboard.putBoolean("Used", used);
-        }).alongWith(setElevatorHeight(heightSup));
+        });
   }
 }

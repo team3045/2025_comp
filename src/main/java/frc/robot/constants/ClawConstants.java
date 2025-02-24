@@ -25,7 +25,7 @@ public class ClawConstants {
     public static final double outtakeSpeed = 20;
     public static final double slowSpeed = 6;
     public static final double hopperSpeed = 30;
-    public static final double algeaIntakeSpeed = -20;
+    public static final double algeaIntakeSpeed = -30;
     public static final double algeaOuttakeSpeed = 20;
     public static final double holdSpeed = 0;
 
@@ -92,7 +92,7 @@ public class ClawConstants {
             .withStatorCurrentLimitEnable(clawStatorCurrentLimitEnable)
             .withSupplyCurrentLimitEnable(clawSupplyCurrentLimitEnable);
 
-    public static final double kP = 0.1;
+    public static final double kP = 0.4;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kG = 0;

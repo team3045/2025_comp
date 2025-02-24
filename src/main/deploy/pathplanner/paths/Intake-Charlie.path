@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5703893442622954,
-        "y": 0.722387295081968
+        "x": 1.4265368852459013,
+        "y": 0.7943135245901636
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.241700819672131,
-        "y": 1.3936987704918042
+        "x": 2.097848360655737,
+        "y": 1.4656249999999997
       },
       "isLocked": false,
       "linkedName": "BotIntake"
@@ -31,12 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StartLimelightRight",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

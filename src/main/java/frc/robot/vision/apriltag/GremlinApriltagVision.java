@@ -120,8 +120,7 @@ public class GremlinApriltagVision extends SubsystemBase {
       visionConsumer.accept(visionUpdates);
     }
 
-    if (GremlinLogger.isDebug())
-      logLimelights();
+    logLimelights();
   }
 
   @SuppressWarnings("unused")
@@ -330,12 +329,12 @@ public class GremlinApriltagVision extends SubsystemBase {
   private void logLimelights() {
     if (limelights[0].getBotPoseEstimateMT2().isPresent() && limelights[0].getBotPoseEstimateMT2().get().pose != null) {
       LLrightCalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().get().pose);
-      LLrightMT1PosePublisher.set(limelights[0].getBotPoseEstimate().get().pose);
+      //LLrightMT1PosePublisher.set(limelights[0].getBotPoseEstimate().get().pose);
     }
 
     if (limelights[1].getBotPoseEstimateMT2().isPresent() && limelights[1].getBotPoseEstimateMT2().get().pose != null) {
       LLlleftCalculatedPosePublisher.set(limelights[1].getBotPoseEstimateMT2().get().pose);
-      LLlleftMT1PosePublisher.set(limelights[1].getBotPoseEstimate().get().pose);
+      //LLlleftMT1PosePublisher.set(limelights[1].getBotPoseEstimate().get().pose);
     }
   }
 
