@@ -69,7 +69,7 @@ public class RobotContainer {
     public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     public final Trigger teleopState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TELEOP);
     public final Trigger processorState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.PROCESSOR);
-    public final Trigger disableGlobalEstimation = (scoringState.or(algeaState).or(isAuton)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
+    public final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
         DogLog.setOptions(new DogLogOptions()
@@ -307,18 +307,28 @@ public class RobotContainer {
                 .andThen(Commands.waitUntil(claw.hasCoral)))
         );
 
-        new EventTrigger("StartLimelightLeft").onTrue(autoScoreFactory.addLimelightPose(1));
+        new EventTrigger("StartLimelightLeft").onTrue(
+            autoScoreFactory.addLimelightPose(1)
+            .alongWith(Commands.runOnce(() -> vision.setRejectAllUpdates(true))));
 
         new EventTrigger("StopLimelightLeft").onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancel(autoScoreFactory.addLimelightPose(1))));
 
-        new EventTrigger("StartLimelightRight").onTrue(autoScoreFactory.addLimelightPose(0));
+        new EventTrigger("StartLimelightRight").onTrue(
+            autoScoreFactory.addLimelightPose(0)
+            .alongWith(Commands.runOnce(() -> vision.setRejectAllUpdates(true))));
 
-        new EventTrigger("StopLimelightRight").onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancel(autoScoreFactory.addLimelightPose(0))));
+        new EventTrigger("StopLimelightRight").onTrue(
+            Commands.runOnce(() -> CommandScheduler.getInstance().cancel(autoScoreFactory.addLimelightPose(0))));
 
         new EventTrigger("StopLimelights").onTrue(Commands.runOnce(() -> 
-            CommandScheduler.getInstance().cancel(
-                autoScoreFactory.addLimelightPose(1),
-                autoScoreFactory.addLimelightPose(0))));
+            {
+                CommandScheduler.getInstance().cancel(
+                    autoScoreFactory.addLimelightPose(1),
+                    autoScoreFactory.addLimelightPose(0));
+                
+                vision.setRejectAllUpdates(false);
+            }
+        ));
 
 
         isAuton.onFalse(

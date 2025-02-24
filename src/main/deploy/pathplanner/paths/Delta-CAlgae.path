@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.98,
-        "y": 2.79
+        "x": 3.94,
+        "y": 2.72
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8360655737704916,
-        "y": 2.5325307377049184
+        "x": 3.7960655737704916,
+        "y": 2.4625307377049186
       },
       "isLocked": false,
       "linkedName": "Delta"
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 1.75,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,

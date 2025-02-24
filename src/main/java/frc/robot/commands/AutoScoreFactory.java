@@ -267,7 +267,7 @@ public class AutoScoreFactory {
 
   public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, Supplier<Integer> poleNumSupplier,
       GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera) {
-    return Commands.none();//setElevatorHeight(heightSup);
+    return setElevatorHeight(heightSup);
   }
 
   /*1 for Left 0 for Right

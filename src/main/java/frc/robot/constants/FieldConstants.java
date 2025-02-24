@@ -42,7 +42,7 @@ public class FieldConstants {
 
         public static final Translation2d blueReefCenter = new Translation2d(4.5, 4);
         public static final Translation2d redReefCenter = FlippingUtil.flipFieldPosition(blueReefCenter);
-        public static final double reefDistanceTolerance = 4.25;
+        public static final double reefDistanceTolerance = 3.25;
         public static final double elevatorDistanceTolerance = 2.5;
         public static final double tooCloseDistance = 1;
         public static final List<AprilTag> shopTags = List.of(

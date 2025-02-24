@@ -118,7 +118,7 @@ public class GremlinApriltagVision extends SubsystemBase {
     if (!shouldRejectAllUpdates) {
       processVisionUpdates();
       visionConsumer.accept(visionUpdates);
-    }
+    } 
 
     logLimelights();
   }
@@ -264,17 +264,17 @@ public class GremlinApriltagVision extends SubsystemBase {
   }
 
   private static final StructPublisher<Pose3d> FLcamPosePublisher = NetworkTableInstance.getDefault()
-      .getStructTopic(CAMERA_LOG_PATH + "frontLeft" + "/Camera Pose", Pose3d.struct).publish();
+      .getStructTopic(CAMERA_LOG_PATH + "topLeft" + "/Camera Pose", Pose3d.struct).publish();
   private static final StructPublisher<Pose2d> FLcalculatedPosePublisher = NetworkTableInstance.getDefault()
-      .getStructTopic(CAMERA_LOG_PATH + "frontLeft" + "/Calculated Pose", Pose2d.struct).publish();
+      .getStructTopic(CAMERA_LOG_PATH + "topLeft" + "/Calculated Pose", Pose2d.struct).publish();
   private static final StructArrayPublisher<Pose3d> FLtagPosesPublisher = NetworkTableInstance.getDefault()
-      .getStructArrayTopic(CAMERA_LOG_PATH + "frontLeft" + "/Tag Poses", Pose3d.struct).publish();
+      .getStructArrayTopic(CAMERA_LOG_PATH + "topLeft" + "/Tag Poses", Pose3d.struct).publish();
   private static final StructPublisher<Pose3d> FRcamPosePublisher = NetworkTableInstance.getDefault()
-      .getStructTopic(CAMERA_LOG_PATH + "frontRight" + "/Camera Pose", Pose3d.struct).publish();
+      .getStructTopic(CAMERA_LOG_PATH + "topRight" + "/Camera Pose", Pose3d.struct).publish();
   private static final StructPublisher<Pose2d> FRcalculatedPosePublisher = NetworkTableInstance.getDefault()
-      .getStructTopic(CAMERA_LOG_PATH + "frontRight" + "/Calculated Pose", Pose2d.struct).publish();
+      .getStructTopic(CAMERA_LOG_PATH + "topRight" + "/Calculated Pose", Pose2d.struct).publish();
   private static final StructArrayPublisher<Pose3d> FRtagPosesPublisher = NetworkTableInstance.getDefault()
-      .getStructArrayTopic(CAMERA_LOG_PATH + "frontRight" + "/Tag Poses", Pose3d.struct).publish();
+      .getStructArrayTopic(CAMERA_LOG_PATH + "topRight" + "/Tag Poses", Pose3d.struct).publish();
   private static final StructPublisher<Pose3d> BLcamPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "backLeft" + "/Camera Pose", Pose3d.struct).publish();
   private static final StructPublisher<Pose2d> BLcalculatedPosePublisher = NetworkTableInstance.getDefault()

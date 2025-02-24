@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.98,
-        "y": 2.79
+        "x": 3.94,
+        "y": 2.72
       },
       "prevControl": {
-        "x": 2.7691598360655743,
-        "y": 1.6933913934426232
+        "x": 2.729159836065574,
+        "y": 1.6233913934426234
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,14 +34,14 @@
   "eventMarkers": [
     {
       "name": "StartLimelightLeft",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.28359216745442334,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 1.75,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
