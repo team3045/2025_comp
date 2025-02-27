@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "race",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -15,9 +15,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "StartScoreF"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.6
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SetL4"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -52,7 +65,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.3
+                        "waitTime": 2.0
                       }
                     }
                   ]
@@ -62,7 +75,7 @@
           }
         },
         {
-          "type": "race",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -72,9 +85,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "StartScoreC"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.6
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "SetL4"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -109,73 +135,10 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.3
+                        "waitTime": 3.0
                       }
                     }
                   ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Intake-Kayla"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartScoreC"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeAlgae"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Kayla-KAlgae"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "KAlgae - ProcRdy"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ProcArm"
                 }
               }
             ]

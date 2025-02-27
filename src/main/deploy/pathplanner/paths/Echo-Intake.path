@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.023,
-        "y": 2.76
+        "x": 5.08,
+        "y": 2.66
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.9818647540983605,
-        "y": 2.1129610655737703
+        "x": 6.038864754098361,
+        "y": 2.0129610655737706
       },
       "isLocked": false,
       "linkedName": "Echo"
     },
     {
       "anchor": {
-        "x": 1.4265368852459013,
-        "y": 0.7943135245901636
+        "x": 1.427,
+        "y": 0.794
       },
       "prevControl": {
-        "x": 1.8430461175686397,
-        "y": 1.6021792055429889
+        "x": 1.8435092323227384,
+        "y": 1.6018656809528253
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "StopLimelights",
-      "waypointRelativePos": 0.04321404456448792,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": null
     }

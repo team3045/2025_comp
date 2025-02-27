@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -460,6 +461,25 @@ public class ElevatorPivot extends SubsystemBase {
    */
   public Command stowArm() {
     return goToPosition(() -> stowHeight, () -> stowAngle);
+  }
+
+  public Command troughArm(){
+    return goToPosition(() -> troughHeight, () -> troughAngle);
+  }
+
+  public Command zeroElevator(){
+    return this.run(() -> {
+      rightMotor.setVoltage(-2);
+      leftMotor.setVoltage(-2);}
+    ).until(() -> {
+      return Math.abs(rightMotor.getTorqueCurrent().getValueAsDouble()) > 30
+      && Math.abs(rightMotor.getVelocity().getValueAsDouble()) < 0.2;
+    }).andThen(Commands.runOnce(() -> {
+      rightMotor.setPosition(0);
+      leftMotor.set(0);
+      rightMotor.setVoltage(0);
+      leftMotor.setVoltage(0);
+    }));
   }
 
   /**

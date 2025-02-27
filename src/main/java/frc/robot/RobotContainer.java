@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
 
@@ -19,11 +18,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commons.GremlinAutoBuilder;
-import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.DriveConstants;
@@ -69,6 +66,8 @@ public class RobotContainer {
     public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     public final Trigger teleopState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TELEOP);
     public final Trigger processorState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.PROCESSOR);
+    public final Trigger ejectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.EJECT);
+    public final Trigger troughState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TROUGH);
     public final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
@@ -103,10 +102,10 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.options().and(joystick.square()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.options().and(joystick.cross()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.share().and(joystick.square()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.share().and(joystick.cross()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // joystick.options().and(joystick.square()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // joystick.options().and(joystick.cross()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // joystick.share().and(joystick.square()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // joystick.share().and(joystick.cross()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
@@ -144,7 +143,7 @@ public class RobotContainer {
         algeaState.onFalse(
             elevatorPivot.stowArm().alongWith(claw.fullHold()));
 
-        joystick.povDown().onTrue(elevatorPivot.zeroHeight());
+       
         joystick.square().onTrue(elevatorPivot.stowArm());
 
         joystick.R2().onTrue(
@@ -183,11 +182,38 @@ public class RobotContainer {
                 .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                 processorState.negate()
             ));
+            
+        joystick.options().onTrue(
+            Commands.either(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.EJECT)), 
+                claw.algeaEject()
+                    .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+                    .andThen(claw.hold())
+                    .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
+                    ejectState.negate()
+            ));
+
+        joystick.circle().onTrue(
+            Commands.either(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TROUGH)), 
+                claw.troughOuttake()
+                .andThen(Commands.waitSeconds(0.5))
+                .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
+                troughState.negate()
+            ));
 
         processorState.onTrue(drivetrain.driveFacingProcessor(
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .alongWith(elevatorPivot.goToProcessor()));
+
+        ejectState.onTrue(elevatorPivot.goToProcessor());
+
+        troughState.onTrue(drivetrain.driveFacingTrough(
+            () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
+            () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
+            .alongWith(elevatorPivot.troughArm())
+        );
         
 
         drivetrain.registerTelemetry(logger::telemeterize);
@@ -206,6 +232,8 @@ public class RobotContainer {
         joystick.cross().onFalse(climber.stop());
         joystick.triangle().onTrue(climber.runForward());
         joystick.triangle().onFalse(climber.stop());
+
+        joystick.povDown().onTrue(elevatorPivot.zeroElevator());
        
     }
 
@@ -227,11 +255,13 @@ public class RobotContainer {
             Commands.waitUntil(claw.hasCoral.negate()).andThen(Commands.waitSeconds(0.3)));
         
         NamedCommands.registerCommand("waitUntilIntake", 
-            Commands.waitUntil(claw.hasCoral).withTimeout(2).withName("waitUntilIntake"));
+            Commands.waitUntil(claw.hasCoral)
+            .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+            .andThen(Commands.waitUntil(claw.hasCoral)).withName("waitUntilIntake"));
 
         NamedCommands.registerCommand("ScoreCoral",
             claw.clawOutake()
-            .andThen(Commands.waitSeconds(0.4)).withName("Score Coral"));
+            .andThen(Commands.waitSeconds(0.2)).withName("Score Coral"));
         
         NamedCommands.registerCommand("StartScoreF",
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
@@ -264,7 +294,7 @@ public class RobotContainer {
                 .andThen(claw.fullHold())));
 
         NamedCommands.registerCommand("StowArm", 
-            elevatorPivot.stowArm().alongWith(claw.hold())
+            elevatorPivot.stowArm().alongWith(claw.fullHold())
         );
 
         NamedCommands.registerCommand("IntakeAlgae", 
@@ -274,16 +304,61 @@ public class RobotContainer {
             .alongWith(claw.algeaIntake())
             .until(ElevatorPivot.hasAlgea));
 
-        NamedCommands.registerCommand("ProcArm",
-            elevatorPivot.goToProcessor()
-        );
-
         NamedCommands.registerCommand("AlgaeOut", 
             claw.algeaOuttake()
         );
 
         NamedCommands.registerCommand("driveBack", 
             drivetrain.driveBack());
+
+        NamedCommands.registerCommand("ScoreL4", 
+            autoScoreFactory.setAutoL4()
+            .andThen(claw.clawOutake())
+            .andThen(Commands.waitSeconds(0.4))
+            .andThen(claw.hold()));
+
+        NamedCommands.registerCommand("ReadyL4", 
+            autoScoreFactory.readyL4());
+        
+        NamedCommands.registerCommand("SetL4", autoScoreFactory.setAutoL4());
+
+        NamedCommands.registerCommand("HighAlgea", 
+            elevatorPivot.goToPosition(
+                () -> ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight(), 
+                () -> ElevatorPivotConstants.AnglePositions.HIGH_ALGEA.getAngle())
+            .alongWith(claw.algeaIntake())
+            .until(ElevatorPivot.hasAlgea)
+            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea))
+            .andThen(claw.fullHold())
+        );
+
+        NamedCommands.registerCommand("LowAlgea", 
+            elevatorPivot.goToPosition(
+                () -> ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight(), 
+                () -> ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle())
+            .alongWith(claw.algeaIntake())
+            .until(ElevatorPivot.hasAlgea)
+            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea))
+            .andThen(claw.fullHold())
+        );
+        
+        NamedCommands.registerCommand("ReadyProc", 
+            elevatorPivot.goToProcessor());
+
+        NamedCommands.registerCommand("ProcOut", 
+            claw.algeaOuttake()
+            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+            .andThen(claw.fullHold())
+            .andThen(drivetrain.driveBack()));
+
+        NamedCommands.registerCommand("StopLimelights",Commands.runOnce(() -> 
+        {
+            CommandScheduler.getInstance().cancel(
+                autoScoreFactory.addLimelightPose(1),
+                autoScoreFactory.addLimelightPose(0));
+            
+            vision.setRejectAllUpdates(false);
+        }));
     }   
 
     public void configureAutoTriggers(){
@@ -329,6 +404,8 @@ public class RobotContainer {
                 vision.setRejectAllUpdates(false);
             }
         ));
+
+        new EventTrigger("ElevatorUp").onTrue(autoScoreFactory.setAutoL4());
 
 
         isAuton.onFalse(

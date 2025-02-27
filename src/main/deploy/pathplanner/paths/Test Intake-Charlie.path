@@ -3,35 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.381842543990523,
-        "y": 6.004468318797924
+        "x": 1.427,
+        "y": 0.794
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.74199230617947,
-        "y": 5.690102996826172
+        "x": 2.0983114754098358,
+        "y": 1.4653114754098362
       },
-      "isLocked": true,
-      "linkedName": "ScoreAlgae"
+      "isLocked": false,
+      "linkedName": "BotIntake"
     },
     {
       "anchor": {
-        "x": 5.3262298923068565,
-        "y": 5.177407921685113
+        "x": 3.63,
+        "y": 2.85
       },
       "prevControl": {
-        "x": 6.438450868394638,
-        "y": 5.95463213885272
+        "x": 3.1986926229508192,
+        "y": 2.1788012295081955
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral2"
+      "linkedName": "Charlie"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StartLimelightRight",
+      "waypointRelativePos": 0.17555705604321487,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "ElevatorUp",
+      "waypointRelativePos": 0.65,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.75,
@@ -42,13 +55,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -122.75857734024825
+    "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "ScoreFromTop",
+  "folder": "Processor Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 55.0
   },
   "useDefaultConstraints": true
 }

@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -80,6 +79,26 @@ public class AutoScoreFactory {
             elevatorPivot.getPivotAngleDegrees()));
   }
 
+  public Command setElevatorHeightAuto(Supplier<Integer> heightLevel) {
+    return elevatorPivot.goToPosition(
+        () -> AutoScoreConstants.kScoreHeightMap.getOrDefault((int) heightLevel.get(), elevatorPivot.getHeight()),
+        () -> AutoScoreConstants.kScoreAngleMapAuto.getOrDefault((int) heightLevel.get(),
+            elevatorPivot.getPivotAngleDegrees()));
+  }
+
+  public Command setAutoL4(){
+    return elevatorPivot.goToPosition(
+      () -> ElevatorPivotConstants.HeightPositions.L4_AUTO.getHeight(), 
+      () -> ElevatorPivotConstants.AnglePositions.L4_AUTO.getAngle());
+  }
+
+  public Command readyL4(){
+    return elevatorPivot.goToPosition(
+      () -> ElevatorPivotConstants.HeightPositions.L3.getHeight(),
+      () -> ElevatorPivotConstants.AnglePositions.L4_AUTO.getAngle()
+    );
+  }
+
   public DynamicPathfindWithFeedback pathfindToScoring(GremlinLimelightCamera rightFeedbackCamera,
       GremlinLimelightCamera leftFeedbackCamera) {
     return pathFindWithApriltagFeeback(
@@ -91,8 +110,8 @@ public class AutoScoreFactory {
   public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(Supplier<Pose2d> desiredPose,
       GremlinLimelightCamera rightFeedbackCamera, GremlinLimelightCamera leftFeedbackCamera) {
 
-    rightFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
-    leftFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
+    // rightFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
+    // leftFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
 
     // Basically we alternate between right or left cameras, depending on the pole
     // number.
@@ -115,7 +134,8 @@ public class AutoScoreFactory {
       int poleNumber = (int) poleNumberSub.get();
 
       if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+        return leftFeedbackCamera.seesObject() 
+        && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
       } else {
         return rightFeedbackCamera.seesObject()
             && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
@@ -267,7 +287,7 @@ public class AutoScoreFactory {
 
   public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, Supplier<Integer> poleNumSupplier,
       GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera) {
-    return setElevatorHeight(heightSup);
+    return setElevatorHeightAuto(heightSup);
   }
 
   /*1 for Left 0 for Right

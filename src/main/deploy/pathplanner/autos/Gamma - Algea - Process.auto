@@ -5,19 +5,32 @@
     "data": {
       "commands": [
         {
-          "type": "race",
+          "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "BargeStart-JohnnyBoi"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Middle - Gamma"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "StartScoreF"
+                  "name": "SetL4"
                 }
               }
             ]
@@ -34,9 +47,22 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "StartIntake"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Gamma - GAlgea"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -44,15 +70,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "wait",
                       "data": {
-                        "pathName": "JohnnyBoi-Intake"
+                        "waitTime": 0.2
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "named",
                       "data": {
-                        "waitTime": 0.3
+                        "name": "LowAlgea"
                       }
                     }
                   ]
@@ -62,38 +88,19 @@
           }
         },
         {
-          "type": "race",
+          "type": "named",
+          "data": {
+            "name": "StopLimelights"
+          }
+        },
+        {
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake-Llama"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartScoreC"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartIntake"
+                  "pathName": "GAlgea - Processor"
                 }
               },
               {
@@ -101,15 +108,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "wait",
                       "data": {
-                        "pathName": "Llama-Intake"
+                        "waitTime": 1.0
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "named",
                       "data": {
-                        "waitTime": 0.3
+                        "name": "ReadyProc"
                       }
                     }
                   ]
@@ -119,40 +126,15 @@
           }
         },
         {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Intake-Kayla"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartScoreC"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "ScoreCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StowArm"
+            "name": "ProcOut"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Barge Side",
+  "folder": "Middle",
   "choreoAuto": false
 }

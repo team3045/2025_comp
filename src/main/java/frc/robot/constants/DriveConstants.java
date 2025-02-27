@@ -70,7 +70,7 @@ public class DriveConstants {
             // PID constants for translation
             new PIDConstants(2, 0, 0),
             // PID constants for rotation
-            new PIDConstants(6, 0, 0));
+            new PIDConstants(8, 0, 0));
 
     public static final double preciseTranslationkP = 8;
     public static final double preciseTranslationkI = 0;

@@ -27,6 +27,7 @@ public class AutoScoreConstants {
     public static HashMap<Integer, Pose2d> kScorePoseMap = new HashMap<Integer, Pose2d>();
     public static HashMap<Integer, Double> kScoreHeightMap = new HashMap<Integer, Double>();
     public static HashMap<Integer, Double> kScoreAngleMap = new HashMap<Integer, Double>();
+    public static HashMap<Integer, Double> kScoreAngleMapAuto = new HashMap<Integer, Double>();
     public static HashMap<Integer, Integer> kBlueApriltagMap = new HashMap<>();
     public static HashMap<Integer, Integer> kRedApriltagMap = new HashMap<>();
 
@@ -57,6 +58,8 @@ public class AutoScoreConstants {
         kScoreAngleMap.put(1, ElevatorPivotConstants.AnglePositions.L2.getAngle());
         kScoreAngleMap.put(2, ElevatorPivotConstants.AnglePositions.L3.getAngle());
         kScoreAngleMap.put(3, ElevatorPivotConstants.AnglePositions.L4.getAngle());
+
+        kScoreAngleMapAuto.put(3, ElevatorPivotConstants.AnglePositions.L4_AUTO.getAngle());
 
         kBlueApriltagMap.put(1, 20);
         kBlueApriltagMap.put(2, 20);

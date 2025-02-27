@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commons.GremlinPathFinder;
-import frc.robot.vision.apriltag.GremlinApriltagVision;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -29,7 +29,9 @@ public class Robot extends TimedRobot {
    // m_robotContainer.drivetrain.resetPose(new Pose2d(5.23,2.55, Rotation2d.fromDegrees(123)));
     //m_robotContainer.drivetrain.resetPose(new Pose2d(1.73,4.08, Rotation2d.kZero));
     // m_robotContainer.drivetrain.resetPose(new Pose2d(10.1,3.7,Rotation2d.kZero));
-    m_robotContainer.drivetrain.resetPose(new Pose2d(7.121, 1.310, Rotation2d.k180deg)); //auto
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(7.121, 1.310, Rotation2d.k180deg));
+    m_robotContainer.drivetrain.resetPose(new Pose2d(7.133, 6.956, Rotation2d.k180deg)); //auto
+    //auto
     //m_robotContainer.drivetrain.resetPose(new Pose2d(1.427,0.794,Rotation2d.fromDegrees(55)));
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
@@ -37,6 +39,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     PathfindingCommand.warmupCommand().schedule();
+    FollowPathCommand.warmupCommand().schedule();
+
   }
 
   @Override

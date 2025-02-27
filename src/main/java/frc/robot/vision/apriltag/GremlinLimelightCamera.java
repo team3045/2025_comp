@@ -89,8 +89,10 @@ public class GremlinLimelightCamera implements AutoCloseable {
      * @return The botpose estimate using Megatag
      */
     public Optional<PoseEstimate> getBotPoseEstimateMT2() {
-        if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name) != null)
-            return Optional.of(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name));
+        PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+
+        if (estimate != null)
+            return Optional.of(estimate);
         else
             return Optional.empty();
     }

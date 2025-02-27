@@ -3,35 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.7952025745533122,
-        "y": 5.144840277212637
+        "x": 5.08,
+        "y": 2.66
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.661833869086371,
-        "y": 5.829587888364438
+        "x": 6.038864754098361,
+        "y": 2.0129610655737706
       },
-      "isLocked": true,
-      "linkedName": "I.S."
+      "isLocked": false,
+      "linkedName": "Echo"
     },
     {
       "anchor": {
-        "x": 1.9855525913944938,
-        "y": 5.813269718311451
+        "x": 1.427,
+        "y": 0.794
       },
       "prevControl": {
-        "x": 3.2246689605712877,
-        "y": 6.0507259566695595
+        "x": 1.8435092323227384,
+        "y": 1.6018656809528253
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Algae1"
+      "linkedName": "BotIntake"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "StopLimelights",
+      "waypointRelativePos": 0.04321404456448792,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.75,
@@ -42,13 +55,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 177.10959078885728
+    "rotation": 55.0
   },
   "reversed": false,
-  "folder": "ScoreFromTop",
+  "folder": "Processor Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.29910973862125
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.02,
-        "y": 5.27
+        "x": 5.03483606557377,
+        "y": 5.301690573770491
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.480853498712224,
-        "y": 5.734185812906003
+        "x": 4.495689564285994,
+        "y": 5.765876386676495
       },
       "isLocked": false,
       "linkedName": "JohnnyBoi"
     },
     {
       "anchor": {
-        "x": 1.5703893442622954,
-        "y": 7.3298
+        "x": 1.342622950819672,
+        "y": 7.135809426229507
       },
       "prevControl": {
-        "x": 2.045554563367552,
-        "y": 6.420986701198702
+        "x": 1.8177881699249285,
+        "y": 6.226996127428209
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "StopLimelights",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.75,

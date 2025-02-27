@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.94,
-        "y": 2.72
+        "x": 3.86,
+        "y": 2.63
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.7960655737704916,
-        "y": 2.4625307377049186
+        "x": 3.7160655737704915,
+        "y": 2.3725307377049183
       },
       "isLocked": false,
       "linkedName": "Delta"

@@ -63,6 +63,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    Pigeon2 kPigeon2 = new Pigeon2(TunerConstants.kPigeonId, TunerConstants.kCANBus);
+
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -170,7 +172,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         configureAutoBuilder();
         configurePathPlannerLogging();
         configureSetpointGenerator();
-        Pigeon2 pigeon = new Pigeon2(kNumConfigAttempts);
     }
 
     /**
@@ -451,6 +452,28 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             }
 
             return FieldConstants.algeaPoses.get(closestNum).getRotation();
+        };
+
+        return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);
+    }
+
+    public Command driveFacingTrough(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds) {
+        Supplier<Rotation2d> angleSupplier = () -> {
+            List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses
+                    : FieldConstants.algeaPoses;
+
+            Pose2d closest = poseList.get(0);
+            int closestNum = 0;
+
+            for (int i = 1; i < poseList.size(); i++) {
+                if (poseList.get(i).getTranslation().getDistance(getState().Pose.getTranslation()) < closest
+                        .getTranslation().getDistance(getState().Pose.getTranslation())) {
+                    closest = poseList.get(i);
+                    closestNum = i;
+                }
+            }
+
+            return FieldConstants.algeaPoses.get(closestNum).getRotation().plus(Rotation2d.fromDegrees(15));
         };
 
         return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);

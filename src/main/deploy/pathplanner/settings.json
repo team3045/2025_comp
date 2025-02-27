@@ -3,17 +3,16 @@
   "robotLength": 0.9144,
   "holonomicMode": true,
   "pathFolders": [
-    "Clear Algae",
     "Barge Side",
     "Curvy Square",
+    "Middle",
     "Processor Side",
-    "ScoreFromTop",
     "Square"
   ],
   "autoFolders": [
     "Barge Side",
-    "Processor Side",
-    "ScoreFromTop"
+    "Middle",
+    "Processor Side"
   ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 1.75,
@@ -23,7 +22,7 @@
   "robotMass": 47.0,
   "robotMOI": 1.5386,
   "robotTrackwidth": 0.546,
-  "driveWheelRadius": 0.051,
+  "driveWheelRadius": 0.04953,
   "driveGearing": 6.12,
   "maxDriveSpeed": 4.2,
   "driveMotorType": "krakenX60",

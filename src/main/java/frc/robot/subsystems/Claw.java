@@ -99,6 +99,10 @@ public class Claw extends SubsystemBase {
         return this.runOnce(() -> setClawTargetSpeed(algeaOuttakeSpeed));
     }
 
+    public Command algeaEject() {
+        return this.runOnce(() -> setClawTargetSpeed(algaeEjectSpeed));
+    }
+
     public Command fullIntake() {
         return this.runOnce(() -> {
             setHopperTargetSpeed(hopperSpeed);
@@ -131,6 +135,10 @@ public class Claw extends SubsystemBase {
 
     public Command clawOutake() {
         return this.runOnce(() -> setClawTargetSpeed(outtakeSpeed));
+    }
+
+    public Command troughOuttake() {
+        return this.runOnce(() -> setClawTargetSpeed(troughSpeed));
     }
 
     public Command hold() {

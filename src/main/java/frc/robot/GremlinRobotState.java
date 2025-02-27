@@ -17,7 +17,9 @@ public class GremlinRobotState {
         AUTOSCORE,
         INTAKE,
         ALGEA,
-        PROCESSOR
+        PROCESSOR,
+        TROUGH,
+        EJECT
     }
 
     private GremlinRobotState() {
@@ -42,5 +44,6 @@ public class GremlinRobotState {
         SmartDashboard.putBoolean("Intake State", getDriveState() == DriveState.INTAKE);
         SmartDashboard.putBoolean("Teleop State", getDriveState() == DriveState.TELEOP);
         SmartDashboard.putBoolean("Scoring State", getDriveState() == DriveState.AUTOSCORE);
+        SmartDashboard.putBoolean("Eject State", getDriveState() == DriveState.EJECT);
     }
 }

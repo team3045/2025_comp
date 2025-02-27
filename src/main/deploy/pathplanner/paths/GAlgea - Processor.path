@@ -3,38 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.342622950819672,
-        "y": 7.135809426229507
+        "x": 5.75,
+        "y": 4.007
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0544983470480327,
-        "y": 6.34208935311933
+        "x": 7.985250000000001,
+        "y": 4.17125
       },
       "isLocked": false,
-      "linkedName": "TopIntake"
+      "linkedName": "GAlgea"
     },
     {
       "anchor": {
-        "x": 3.6202868852459016,
-        "y": 5.1698258196721305
+        "x": 6.0,
+        "y": 0.674
       },
       "prevControl": {
-        "x": 3.400785856167844,
-        "y": 5.448513690018132
+        "x": 6.181500000000001,
+        "y": 1.353499999999999
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Llama"
+      "linkedName": "Processor"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6298755186721968,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StartLimelightLeft",
-      "waypointRelativePos": 0,
+      "name": "StopLimelights",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -49,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Barge Side",
+  "folder": "Middle",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -55.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }
