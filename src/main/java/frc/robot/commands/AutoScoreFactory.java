@@ -134,11 +134,9 @@ public class AutoScoreFactory {
       int poleNumber = (int) poleNumberSub.get();
 
       if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.seesObject() 
-        && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+        return leftFeedbackCamera.seesObject();
       } else {
-        return rightFeedbackCamera.seesObject()
-            && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+        return rightFeedbackCamera.seesObject();
       }
     };
 
@@ -308,6 +306,42 @@ public class AutoScoreFactory {
 
         return VisionConstants.limelights[leftOrRight].getBotPoseEstimateMT2().isPresent()
             ? VisionConstants.limelights[leftOrRight].getBotPoseEstimateMT2().get().timestampSeconds
+            : Utils.getSystemTimeSeconds();
+    };
+
+    return Commands.run(
+        () -> {
+          boolean used = false;
+
+          if (shouldOverride.getAsBoolean()) {
+            if (!robotPoseSupplier.get().equals(Pose2d.kZero)) {
+              drivetrain.addVisionMeasurement(
+                  robotPoseSupplier.get(),
+                  Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
+                  VecBuilder.fill(0.0001, 0.0001, 0.001));
+              used = true;
+            }
+          }
+
+          SmartDashboard.putBoolean("Used", used);
+        });
+  }
+
+  public Command failSafeResetToLLPose(){
+    Supplier<Pose2d> robotPoseSupplier = () -> {
+      return VisionConstants.limelights[1].getBotPoseEstimateMT2().isPresent()
+          ? VisionConstants.limelights[1].getBotPoseEstimateMT2().get().pose
+          : drivetrain.getState().Pose;
+    };
+
+    BooleanSupplier shouldOverride = () -> {
+        return VisionConstants.limelights[1].seesObject();
+    };
+
+    DoubleSupplier timestampSupplier = () -> {
+
+        return VisionConstants.limelights[1].getBotPoseEstimateMT2().isPresent()
+            ? VisionConstants.limelights[1].getBotPoseEstimateMT2().get().timestampSeconds
             : Utils.getSystemTimeSeconds();
     };
 

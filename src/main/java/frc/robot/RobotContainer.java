@@ -244,6 +244,8 @@ public class RobotContainer {
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
         // reset the field-centric heading on down bumper press
         joystick.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
         joystick.options().OnPressTwice(claw.troughOuttake(), claw.hold());
