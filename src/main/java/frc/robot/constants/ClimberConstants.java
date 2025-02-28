@@ -13,7 +13,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ClimberConstants {
-    public static final String canbus = "rio";
+    public static final String canbus = "Canivore 3045";
     public static final int climberID = 21;
     public static final float volts = 4;
     public static final float minAmps = 40;

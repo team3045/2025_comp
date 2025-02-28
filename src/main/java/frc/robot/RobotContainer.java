@@ -35,7 +35,12 @@ import frc.robot.vision.apriltag.GremlinApriltagVision;
 import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
+import static frc.robot.constants.ElevatorPivotConstants.firstStageLength;
+import static frc.robot.constants.ElevatorPivotConstants.secondStageLength;
 import static frc.robot.constants.FieldConstants.tooCloseDistance;
+
+import java.util.function.DoubleSupplier;
+
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
@@ -182,8 +187,8 @@ public class RobotContainer {
                 .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                 processorState.negate()
             ));
-            
-        joystick.options().onTrue(
+            //Algae eject on share
+        joystick.share().onTrue(
             Commands.either(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.EJECT)), 
                 claw.algeaEject()
@@ -214,7 +219,10 @@ public class RobotContainer {
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .alongWith(elevatorPivot.troughArm())
         );
-        
+        //Panic button, raises elevator on first press, zeroes on second
+        joystick.povLeft().OnPressTwice(
+            elevatorPivot.goToHeight(() -> firstStageLength + secondStageLength), 
+            elevatorPivot.zeroElevator());
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -234,7 +242,11 @@ public class RobotContainer {
         joystick.triangle().onFalse(climber.stop());
 
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
+        // reset the field-centric heading on down bumper press
+        joystick.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
        
+        //coral outtake
+        joystick.options().OnPressTwice(claw.troughOuttake(), claw.hold());
     }
 
     public Command getAutonomousCommand() {
