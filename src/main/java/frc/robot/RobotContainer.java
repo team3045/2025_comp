@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commons.GremlinAutoBuilder;
+import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
 import frc.robot.constants.DriveConstants;
@@ -76,7 +77,7 @@ public class RobotContainer {
     public final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
-        DogLog.setOptions(new DogLogOptions()
+        GremlinLogger.setOptions(new DogLogOptions()
             .withNtPublish(false)
             .withCaptureNt(true)
             .withCaptureConsole(true)
