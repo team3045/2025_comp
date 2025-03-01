@@ -306,32 +306,38 @@ public class GremlinApriltagVision extends SubsystemBase {
         FLcamPosePublisher.set(camPose);
         FLcalculatedPosePublisher.set(calculatedPose);
         FLtagPosesPublisher.set(tagPoses);
+        GremlinLogger.log("Cameras/topleft", camPose);
         break;
       case 1:
         FRcamPosePublisher.set(camPose);
         FRcalculatedPosePublisher.set(calculatedPose);
         FRtagPosesPublisher.set(tagPoses);
+        GremlinLogger.log("Cameras/topRight", camPose);
         break;
       case 2:
         BLcamPosePublisher.set(camPose);
         BLcalculatedPosePublisher.set(calculatedPose);
         BLtagPosesPublisher.set(tagPoses);
+        GremlinLogger.log("Cameras/backLeft", camPose);
         break;
       case 3:
         BRcamPosePublisher.set(camPose);
         BRcalculatedPosePublisher.set(calculatedPose);
         BRtagPosesPublisher.set(tagPoses);
+        GremlinLogger.log("Cameras/backRight", camPose);
         break;
     }
   }
 
   private void logLimelights() {
     if (limelights[0].getBotPoseEstimateMT2().isPresent() && limelights[0].getBotPoseEstimateMT2().get().pose != null) {
+      GremlinLogger.log("Limelights/Right", limelights[0].getBotPoseEstimateMT2().get().pose);
       LLrightCalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().get().pose);
       //LLrightMT1PosePublisher.set(limelights[0].getBotPoseEstimate().get().pose);
     }
 
     if (limelights[1].getBotPoseEstimateMT2().isPresent() && limelights[1].getBotPoseEstimateMT2().get().pose != null) {
+      GremlinLogger.log("Limelights/Left", limelights[0].getBotPoseEstimateMT2().get().pose);
       LLlleftCalculatedPosePublisher.set(limelights[1].getBotPoseEstimateMT2().get().pose);
       //LLlleftMT1PosePublisher.set(limelights[1].getBotPoseEstimate().get().pose);
     }
