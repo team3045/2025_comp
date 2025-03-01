@@ -99,7 +99,7 @@ public class Telemetry {
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
-
+        
         /* Also write to log file */
         m_poseArray[0] = state.Pose.getX();
         m_poseArray[1] = state.Pose.getY();

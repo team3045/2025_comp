@@ -81,7 +81,7 @@ public class RobotContainer {
             .withNtPublish(false)
             .withCaptureNt(true)
             .withCaptureConsole(true)
-            .withLogExtras(true));
+            .withLogExtras(false));
 
         registerPathPlannerCommands();
         configureAutoTriggers();
@@ -208,6 +208,16 @@ public class RobotContainer {
                 troughState.negate()
             ));
 
+            
+            joystick.triangle().onTrue(claw.nudge());
+
+            
+            // joystick.triangle().onTrue(
+            //     Commands.either(claw.nudge(),
+            //      elevatorPivot.troughArm().andThen(claw.nudge()),
+            //       teleopState.negate().or(intakeState.negate()))
+            //       );
+
         processorState.onTrue(drivetrain.driveFacingProcessor(
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
@@ -239,8 +249,8 @@ public class RobotContainer {
 
         joystick.cross().onTrue(climber.runBackword());
         joystick.cross().onFalse(climber.stop());
-        joystick.triangle().onTrue(climber.runForward());
-        joystick.triangle().onFalse(climber.stop());
+        // joystick.triangle().onTrue(climber.runForward());
+        // joystick.triangle().onFalse(climber.stop());
 
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
         // reset the field-centric heading on down bumper press
