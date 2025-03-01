@@ -189,6 +189,21 @@ public class GremlinLogger extends DogLog {
     }
 
     /**
+     * Logs a Pose2d and also puts it on Smartdashboard
+     * 
+     * @param key
+     * @param value
+     */
+    public static void log(String key, Pose2d value) {
+        log(key, new double[] {
+            value.getX(),
+            value.getY(),
+            value.getRotation().getDegrees()
+        });
+                
+    }
+
+    /**
      * Logs a double and also puts it on Smartdashboard
      * 
      * @param key
