@@ -146,11 +146,9 @@ public class Claw extends SubsystemBase {
     }
 
     public Command nudge() {
-        return this.runOnce(() -> 
-        slowBackup()
-        .andThen(Commands.waitUntil(hasCoral))
-        .andThen(slowBackup()
-        .andThen(Commands.waitSeconds(ClawConstants.nudgeWaitTime)).andThen(stop())).andThen(hold()));
+        return slowBackup()
+            .andThen(Commands.waitUntil(hasCoral))
+            .andThen(hold());
     }
 
     public Command slowIntake() {

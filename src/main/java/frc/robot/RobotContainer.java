@@ -162,16 +162,19 @@ public class RobotContainer {
         intakeState.whileTrue(
             drivetrain.driveFacingIntake(
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
-                () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed).alongWith(
-            elevatorPivot.goToIntake()
-            .andThen(claw.fullIntake()
-                .andThen(Commands.waitUntil(claw.hasCoral))
-                .andThen(claw.slowIntake())
-                .andThen(Commands.waitUntil(claw.hasCoral.negate()))
-                .andThen(claw.slowBackup())
-                .andThen(Commands.waitUntil(claw.hasCoral))
-                .andThen(claw.driveBack())
-                .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)))
+                () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
+            .alongWith( 
+                elevatorPivot.zeroElevator().andThen( 
+                    elevatorPivot.goToIntake()
+                    .andThen(claw.fullIntake()
+                        .andThen(Commands.waitUntil(claw.hasCoral))
+                        .andThen(claw.slowIntake())
+                        .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+                        .andThen(claw.slowBackup())
+                        .andThen(Commands.waitUntil(claw.hasCoral))
+                        .andThen(claw.driveBack())
+                        .finallyDo(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)))
+                    )
         ));
 
 
@@ -209,7 +212,7 @@ public class RobotContainer {
             ));
 
             
-            joystick.triangle().onTrue(claw.nudge());
+        joystick.triangle().onTrue(claw.nudge());
 
             
             // joystick.triangle().onTrue(

@@ -6,6 +6,7 @@ package frc.robot.vision.apriltag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -46,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.constants.FieldConstants;
+import frc.robot.vision.apriltag.LimelightHelpers.PoseEstimate;
 import frc.robot.commons.GremlinLogger;
 
 public class GremlinApriltagVision extends SubsystemBase {
@@ -326,13 +328,16 @@ public class GremlinApriltagVision extends SubsystemBase {
   }
 
   private void logLimelights() {
-    if (limelights[0].getBotPoseEstimateMT2().isPresent() && limelights[0].getBotPoseEstimateMT2().get().pose != null) {
-      LLrightCalculatedPosePublisher.set(limelights[0].getBotPoseEstimateMT2().get().pose);
+    Optional<PoseEstimate> rightPose = limelights[0].getBotPoseEstimateMT2();
+    Optional<PoseEstimate> leftPose = limelights[1].getBotPoseEstimateMT2();
+
+    if (rightPose.isPresent() && rightPose.get().pose != null) {
+      LLrightCalculatedPosePublisher.set(rightPose.get().pose);
       //LLrightMT1PosePublisher.set(limelights[0].getBotPoseEstimate().get().pose);
     }
 
-    if (limelights[1].getBotPoseEstimateMT2().isPresent() && limelights[1].getBotPoseEstimateMT2().get().pose != null) {
-      LLlleftCalculatedPosePublisher.set(limelights[1].getBotPoseEstimateMT2().get().pose);
+    if (leftPose.isPresent() && leftPose.get().pose != null) {
+      LLlleftCalculatedPosePublisher.set(leftPose.get().pose);
       //LLlleftMT1PosePublisher.set(limelights[1].getBotPoseEstimate().get().pose);
     }
   }
