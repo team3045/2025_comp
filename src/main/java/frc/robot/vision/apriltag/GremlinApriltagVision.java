@@ -308,25 +308,21 @@ public class GremlinApriltagVision extends SubsystemBase {
         FLcamPosePublisher.set(camPose);
         FLcalculatedPosePublisher.set(calculatedPose);
         FLtagPosesPublisher.set(tagPoses);
-        GremlinLogger.log("Cameras/topleft", camPose);
         break;
       case 1:
         FRcamPosePublisher.set(camPose);
         FRcalculatedPosePublisher.set(calculatedPose);
         FRtagPosesPublisher.set(tagPoses);
-        GremlinLogger.log("Cameras/topRight", camPose);
         break;
       case 2:
         BLcamPosePublisher.set(camPose);
         BLcalculatedPosePublisher.set(calculatedPose);
         BLtagPosesPublisher.set(tagPoses);
-        GremlinLogger.log("Cameras/backLeft", camPose);
         break;
       case 3:
         BRcamPosePublisher.set(camPose);
         BRcalculatedPosePublisher.set(calculatedPose);
         BRtagPosesPublisher.set(tagPoses);
-        GremlinLogger.log("Cameras/backRight", camPose);
         break;
     }
   }
