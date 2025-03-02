@@ -401,13 +401,16 @@ public class RobotContainer {
             VisionConstants.limelights[0]));
 
         new EventTrigger("StartIntake").onTrue(
-            elevatorPivot.goToIntake()
-                .andThen(claw.fullIntake()
-                .andThen(Commands.waitUntil(claw.hasCoral))
-                .andThen(claw.slowIntake())
-                .andThen(Commands.waitUntil(claw.hasCoral.negate()))
-                .andThen(claw.driveBack())
-                .andThen(Commands.waitUntil(claw.hasCoral)))
+            elevatorPivot.zeroElevator()
+            .andThen(
+                elevatorPivot.goToIntake()
+                    .andThen(claw.fullIntake()
+                    .andThen(Commands.waitUntil(claw.hasCoral))
+                    .andThen(claw.slowIntake())
+                    .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+                    .andThen(claw.driveBack())
+                    .andThen(Commands.waitUntil(claw.hasCoral)))
+            )
         );
 
         new EventTrigger("StartLimelightLeft").onTrue(
