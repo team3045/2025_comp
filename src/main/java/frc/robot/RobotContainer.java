@@ -7,7 +7,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
 
-import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -39,8 +38,6 @@ import static frc.robot.constants.DriveConstants.MaxSpeed;
 import static frc.robot.constants.ElevatorPivotConstants.firstStageLength;
 import static frc.robot.constants.ElevatorPivotConstants.secondStageLength;
 import static frc.robot.constants.FieldConstants.tooCloseDistance;
-
-import java.util.function.DoubleSupplier;
 
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 

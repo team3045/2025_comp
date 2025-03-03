@@ -4,14 +4,11 @@
 
 package frc.robot.commons;
 
-import java.util.List;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -41,162 +38,69 @@ public class GremlinLogger extends DogLog {
     }
 
     public static void logTalonFX(String motorName, TalonFX motor) {
-        GremlinLogger.logSD(motorName + "/DeviceID", motor.getDeviceID());
-        GremlinLogger.logSD(motorName + "/StatorCurrent", motor.getStatorCurrent().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/SupplyCurrent", motor.getSupplyCurrent().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/SupplyVoltage", motor.getSupplyVoltage().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/OutputVoltage", motor.getMotorVoltage().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/Positon", motor.getPosition().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/RotorPosition", motor.getRotorPosition().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/TorqueCurrent", motor.getTorqueCurrent().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/Velocity", motor.getVelocity().getValueAsDouble());
-        GremlinLogger.logSD(motorName + "/Temperature", motor.getDeviceTemp().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/DeviceID", motor.getDeviceID());
+        GremlinLogger.debugLog(motorName + "/StatorCurrent", motor.getStatorCurrent().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/SupplyCurrent", motor.getSupplyCurrent().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/SupplyVoltage", motor.getSupplyVoltage().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/OutputVoltage", motor.getMotorVoltage().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/Positon", motor.getPosition().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/RotorPosition", motor.getRotorPosition().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/TorqueCurrent", motor.getTorqueCurrent().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/Velocity", motor.getVelocity().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + "/Temperature", motor.getDeviceTemp().getValueAsDouble());
     }
 
     public static void logTalonFXPID(String motorName, TalonFX motor) {
-        GremlinLogger.logSD(motorName + PID_KEY + "/Error", motor.getClosedLoopError().getValueAsDouble());
-        GremlinLogger.logSD(motorName + PID_KEY + "/TotalOutput", motor.getClosedLoopOutput().getValueAsDouble());
-        GremlinLogger.logSD(motorName + PID_KEY + "/Feedforward", motor.getClosedLoopFeedForward().getValueAsDouble());
-        GremlinLogger.logSD(motorName + PID_KEY + "/POutput",
+        GremlinLogger.debugLog(motorName + PID_KEY + "/Error", motor.getClosedLoopError().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + PID_KEY + "/TotalOutput", motor.getClosedLoopOutput().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + PID_KEY + "/Feedforward", motor.getClosedLoopFeedForward().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + PID_KEY + "/POutput",
                 motor.getClosedLoopProportionalOutput().getValueAsDouble());
-        GremlinLogger.logSD(motorName + PID_KEY + "/Ioutput", motor.getClosedLoopIntegratedOutput().getValueAsDouble());
-        GremlinLogger.logSD(motorName + PID_KEY + "/DOutput", motor.getClosedLoopDerivativeOutput().getValueAsDouble());
-        GremlinLogger.logSD(motorName + PID_KEY + "/Reference", motor.getClosedLoopReference().getValueAsDouble());
-    }
-
-    public static void logStdDevs(String path, Vector<N3> stddevs) {
-        GremlinLogger.logSD(path + "/Stddevs/XY", stddevs.getData()[0]);
-        GremlinLogger.logSD(path + "/Stddevs/Theta", stddevs.getData()[2]);
+        GremlinLogger.debugLog(motorName + PID_KEY + "/Ioutput", motor.getClosedLoopIntegratedOutput().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + PID_KEY + "/DOutput", motor.getClosedLoopDerivativeOutput().getValueAsDouble());
+        GremlinLogger.debugLog(motorName + PID_KEY + "/Reference", motor.getClosedLoopReference().getValueAsDouble());
     }
 
     public static void debugLog(String key, double value) {
         if (DEBUG) {
-            logSD(key, value);
+            SmartDashboard.putNumber(key, value);
         }
+
+        log(key,value);
     }
 
     public static void debugLog(String key, boolean value) {
         if (DEBUG) {
-            logSD(key, value);
+            SmartDashboard.putBoolean(key, value);
         }
+
+        log(key,value);
     }
 
     public static void debugLog(String path, Vector<N3> stddevs) {
         if (DEBUG) {
-            GremlinLogger.logSD(path + "/Stddevs/XY", stddevs.getData()[0]);
-            GremlinLogger.logSD(path + "/Stddevs/Theta", stddevs.getData()[2]);
+            SmartDashboard.putNumber(path + "/Stddevs/XY", stddevs.getData()[0]);
+            SmartDashboard.putNumber(path + "/Stddevs/Theta", stddevs.getData()[2]);
         }
+
+        log(path + "/Stddevs/XY", stddevs.getData()[0]);
+        log(path + "/Stddevs/Theta", stddevs.getData()[0]);
     }
 
-    /**
-     * Logs a double and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, double value) {
-        log(key, value);
-        SmartDashboard.putNumber(key, value);
-    }
-
-    /**
-     * Logs a String and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, String value) {
-        log(key, value);
-        SmartDashboard.putString(key, value);
-    }
-
-    /**
-     * Logs a boolen and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, boolean value) {
-        log(key, value);
-        SmartDashboard.putBoolean(key, value);
-    }
-
-    /**
-     * Logs a double array and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, double[] value) {
-        log(key, value);
-        SmartDashboard.putNumberArray(key, value);
-    }
-
-    /**
-     * Logs a Pose3d and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, Pose3d value) {
-        log(key, value);
-        SmartDashboard.putNumberArray(key,
-                new double[] {
-                        value.getX(), value.getY(), value.getZ(),
-                        value.getRotation().getX(), value.getRotation().getY(), value.getRotation().getZ()
-                });
-    }
-
-    /**
-     * Logs a Pose3d and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, List<Pose3d> values) {
-        int i = 0;
-        for (Pose3d pose3d : values) {
-            i++;
-            logSD(key + "/Tag " + i, pose3d);
+    public static void debugLog(String path, Pose2d pose){
+        if (DEBUG) {
+            SmartDashboard.putNumberArray(path, new double[]{
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getRadians()
+            });
         }
-    }
 
-    /**
-     * Logs a Transform3d and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, Transform3d value) {
-        Pose3d pose = GeomUtil.transform3dToPose3d(value);
-        logSD(key, pose);
-    }
-
-    /**
-     * Logs a Pose2d and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, Pose2d value) {
-        log(key, value);
-        SmartDashboard.putNumberArray(key,
-                new double[] {
-                        value.getX(),
-                        value.getY(),
-                        value.getRotation().getRadians()
-                });
-    }
-
-    /**
-     * Logs a double and also puts it on Smartdashboard
-     * 
-     * @param key
-     * @param value
-     */
-    public static void logSD(String key, int value) {
-        log(key, value);
-        SmartDashboard.putNumber(key, value);
+        log(path, new double[]{
+            pose.getX(),
+            pose.getY(),
+            pose.getRotation().getRadians()
+        });
     }
 
     public static boolean isDebug() {

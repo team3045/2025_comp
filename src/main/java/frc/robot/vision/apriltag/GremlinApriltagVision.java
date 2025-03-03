@@ -264,17 +264,17 @@ public class GremlinApriltagVision extends SubsystemBase {
     }
   }
 
-  private static final StructPublisher<Pose3d> FLcamPosePublisher = NetworkTableInstance.getDefault()
+  private static final StructPublisher<Pose3d> TLcamPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "topLeft" + "/Camera Pose", Pose3d.struct).publish();
-  private static final StructPublisher<Pose2d> FLcalculatedPosePublisher = NetworkTableInstance.getDefault()
+  private static final StructPublisher<Pose2d> TLcalculatedPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "topLeft" + "/Calculated Pose", Pose2d.struct).publish();
-  private static final StructArrayPublisher<Pose3d> FLtagPosesPublisher = NetworkTableInstance.getDefault()
+  private static final StructArrayPublisher<Pose3d> TLtagPosesPublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic(CAMERA_LOG_PATH + "topLeft" + "/Tag Poses", Pose3d.struct).publish();
-  private static final StructPublisher<Pose3d> FRcamPosePublisher = NetworkTableInstance.getDefault()
+  private static final StructPublisher<Pose3d> TRcamPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "topRight" + "/Camera Pose", Pose3d.struct).publish();
-  private static final StructPublisher<Pose2d> FRcalculatedPosePublisher = NetworkTableInstance.getDefault()
+  private static final StructPublisher<Pose2d> TRcalculatedPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "topRight" + "/Calculated Pose", Pose2d.struct).publish();
-  private static final StructArrayPublisher<Pose3d> FRtagPosesPublisher = NetworkTableInstance.getDefault()
+  private static final StructArrayPublisher<Pose3d> TRtagPosesPublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic(CAMERA_LOG_PATH + "topRight" + "/Tag Poses", Pose3d.struct).publish();
   private static final StructPublisher<Pose3d> BLcamPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "backLeft" + "/Camera Pose", Pose3d.struct).publish();
@@ -292,10 +292,6 @@ public class GremlinApriltagVision extends SubsystemBase {
       .getStructTopic(CAMERA_LOG_PATH + "limelightLeft" + "/Calculated Pose", Pose2d.struct).publish();
   private static final StructPublisher<Pose2d> LLrightCalculatedPosePublisher = NetworkTableInstance.getDefault()
       .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/Calculated Pose", Pose2d.struct).publish();
-  private static final StructPublisher<Pose2d> LLlleftMT1PosePublisher = NetworkTableInstance.getDefault()
-      .getStructTopic(CAMERA_LOG_PATH + "limelightLeft" + "/MT1 Pose", Pose2d.struct).publish();
-  private static final StructPublisher<Pose2d> LLrightMT1PosePublisher = NetworkTableInstance.getDefault()
-      .getStructTopic(CAMERA_LOG_PATH + "limelightRight" + "/MT1 Pose", Pose2d.struct).publish();
 
   /**
    * Log the CamPose, Calculated Pose, and TagPose
@@ -305,24 +301,28 @@ public class GremlinApriltagVision extends SubsystemBase {
   private void logPoses(int camID, Pose3d camPose, Pose2d calculatedPose, Pose3d[] tagPoses) {
     switch (camID) {
       case 0:
-        FLcamPosePublisher.set(camPose);
-        FLcalculatedPosePublisher.set(calculatedPose);
-        FLtagPosesPublisher.set(tagPoses);
+        TLcamPosePublisher.set(camPose);
+        TLcalculatedPosePublisher.set(calculatedPose);
+        TLtagPosesPublisher.set(tagPoses);
+        GremlinLogger.debugLog(CAMERA_LOG_PATH + "topLeft" + "/Calculated Pose", calculatedPose);
         break;
       case 1:
-        FRcamPosePublisher.set(camPose);
-        FRcalculatedPosePublisher.set(calculatedPose);
-        FRtagPosesPublisher.set(tagPoses);
+        TRcamPosePublisher.set(camPose);
+        TRcalculatedPosePublisher.set(calculatedPose);
+        TRtagPosesPublisher.set(tagPoses);
+        GremlinLogger.debugLog(CAMERA_LOG_PATH + "topRight" + "/Calculated Pose", calculatedPose);
         break;
       case 2:
         BLcamPosePublisher.set(camPose);
         BLcalculatedPosePublisher.set(calculatedPose);
         BLtagPosesPublisher.set(tagPoses);
+        GremlinLogger.debugLog(CAMERA_LOG_PATH + "backLeft" + "/Calculated Pose", calculatedPose);
         break;
       case 3:
         BRcamPosePublisher.set(camPose);
         BRcalculatedPosePublisher.set(calculatedPose);
         BRtagPosesPublisher.set(tagPoses);
+        GremlinLogger.debugLog(CAMERA_LOG_PATH + "backRight" + "/Calculated Pose", calculatedPose);
         break;
     }
   }
@@ -333,12 +333,12 @@ public class GremlinApriltagVision extends SubsystemBase {
 
     if (rightPose.isPresent() && rightPose.get().pose != null) {
       LLrightCalculatedPosePublisher.set(rightPose.get().pose);
-      //LLrightMT1PosePublisher.set(limelights[0].getBotPoseEstimate().get().pose);
+      GremlinLogger.debugLog(CAMERA_LOG_PATH + "limelightRight" + "/Calculated Pose",rightPose.get().pose);
     }
 
     if (leftPose.isPresent() && leftPose.get().pose != null) {
       LLlleftCalculatedPosePublisher.set(leftPose.get().pose);
-      //LLlleftMT1PosePublisher.set(limelights[1].getBotPoseEstimate().get().pose);
+      GremlinLogger.debugLog(CAMERA_LOG_PATH + "limelightleft" + "/Calculated Pose",leftPose.get().pose);
     }
   }
 
