@@ -127,8 +127,8 @@ public class GremlinApriltagVision extends SubsystemBase {
   @Override
   public void periodic() {
     if (!shouldRejectAllUpdates) {
-      processVisionUpdates();
-      visionConsumer.accept(visionUpdates);
+      // processVisionUpdates();
+      // visionConsumer.accept(visionUpdates);
     }
 
     logLimelights();
@@ -418,9 +418,9 @@ public class GremlinApriltagVision extends SubsystemBase {
     for (GremlinLimelightCamera ll : limelights)
       ll.processSimUpdates();
 
-    processVisionUpdates();
+    //processVisionUpdates();
 
-    visionConsumer.accept(visionUpdates);
-    GremlinLogger.debugLog("VISION/visionUpdatesSize", visionUpdates.size());
+    // visionConsumer.accept(visionUpdates);
+    //GremlinLogger.debugLog("VISION/visionUpdatesSize", visionUpdates.size());
   }
 }

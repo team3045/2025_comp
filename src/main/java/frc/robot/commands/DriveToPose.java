@@ -66,9 +66,9 @@ public class DriveToPose extends Command {
     this.poseProvider = poseProvider;
     this.goalPoseSupplier = goalPoseSup;
 
-    xController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI,
+    xController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseTranslationkI,
         DriveConstants.preciseTranslationkD, xyConstraints);
-    yController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI,
+    yController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseTranslationkI,
         DriveConstants.preciseTranslationkD, xyConstraints);
     xController.setTolerance(DriveConstants.preciseTranslationTolerance);
     yController.setTolerance(DriveConstants.preciseTranslationTolerance);
@@ -86,7 +86,6 @@ public class DriveToPose extends Command {
     goalPose = goalPoseSupplier.get();
     if (AutoBuilder.shouldFlip()) {
       goalPose = FlippingUtil.flipFieldPose(goalPose);
-      SmartDashboard.putString("TargetPose", goalPose.toString());
     }
     thetaController.setGoal(goalPose.getRotation().getRadians());
     xController.setGoal(goalPose.getX());

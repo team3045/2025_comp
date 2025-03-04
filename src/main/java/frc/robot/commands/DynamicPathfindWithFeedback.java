@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.GremlinAutoBuilder;
+import frc.robot.commons.GremlinLogger;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -125,6 +126,8 @@ public class DynamicPathfindWithFeedback extends Command {
     Pose2d targetPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(targetPoseSupplier.get())
         : targetPoseSupplier.get();
     double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
+
+    GremlinLogger.debugLog("DriveState/Target", targetPose);
 
     Robot.pathfinder.setGoalPosition(targetPose.getTranslation());
     Robot.pathfinder.setStartPosition(drivetrain.getState().Pose.getTranslation());

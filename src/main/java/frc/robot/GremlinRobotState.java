@@ -14,7 +14,8 @@ public class GremlinRobotState {
 
     public enum DriveState {
         TELEOP,
-        AUTOSCORE,
+        AUTOSCORE_LEFT,
+        AUTOSCORE_RIGHT,
         INTAKE,
         ALGEA,
         PROCESSOR,
@@ -43,7 +44,7 @@ public class GremlinRobotState {
         SmartDashboard.putBoolean("Algea State", getDriveState() == DriveState.ALGEA);
         SmartDashboard.putBoolean("Intake State", getDriveState() == DriveState.INTAKE);
         SmartDashboard.putBoolean("Teleop State", getDriveState() == DriveState.TELEOP);
-        SmartDashboard.putBoolean("Scoring State", getDriveState() == DriveState.AUTOSCORE);
+        SmartDashboard.putBoolean("Scoring State", getDriveState() == DriveState.AUTOSCORE_LEFT || getDriveState() == DriveState.AUTOSCORE_RIGHT);
         SmartDashboard.putBoolean("Eject State", getDriveState() == DriveState.EJECT);
     }
 }

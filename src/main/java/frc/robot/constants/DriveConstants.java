@@ -75,7 +75,7 @@ public class DriveConstants {
     public static final double preciseTranslationkP = 8;
     public static final double preciseTranslationkI = 0;
     public static final double preciseTranslationkD = 0;
-    public static final double preciseRotationkP = 10;
+    public static final double preciseRotationkP = 6;
     public static final double preciseRotationkI = 0;
     public static final double preciseRotationkD = 0;
 

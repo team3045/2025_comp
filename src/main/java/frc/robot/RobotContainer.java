@@ -64,14 +64,15 @@ public class RobotContainer {
 
     /*Triggers */
     public final Trigger isAuton = new Trigger(() -> DriverStation.isAutonomous());
-    public final Trigger scoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE);
+    public final Trigger leftScoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE_LEFT);
+    public final Trigger rightScoringState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.AUTOSCORE_RIGHT);
     public final Trigger algeaState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEA);
     public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     public final Trigger teleopState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TELEOP);
     public final Trigger processorState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.PROCESSOR);
     public final Trigger ejectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.EJECT);
     public final Trigger troughState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TROUGH);
-    public final Trigger disableGlobalEstimation = (scoringState.or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
+    public final Trigger disableGlobalEstimation = (leftScoringState.or(rightScoringState).or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
         GremlinLogger.setOptions(new DogLogOptions()
@@ -110,16 +111,21 @@ public class RobotContainer {
         // joystick.share().and(joystick.square()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.share().and(joystick.cross()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
-        joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+        joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE_RIGHT)));
+        joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)).unless(leftScoringState));
+
+        joystick.L1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE_LEFT)));
+        joystick.L1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)).unless(rightScoringState));
         
-        scoringState.whileTrue(
-            autoScoreFactory.fullAutoScoreCommand()
+        leftScoringState.whileTrue(
+            autoScoreFactory.autoScoreLeftPole()
                 .unless(() -> drivetrain.withinDistanceOfReef(tooCloseDistance))
-                // .handleInterrupt(() -> {
-                //     CommandScheduler.getInstance().schedule(claw.slowBackup().until(claw.hasCoral).andThen(claw.stop()));
-                // })
             );
+
+        rightScoringState.whileTrue(
+            autoScoreFactory.autoScoreRightPole()
+                .unless(() -> drivetrain.withinDistanceOfReef(tooCloseDistance))
+        );
 
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
@@ -127,7 +133,7 @@ public class RobotContainer {
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        joystick.L1().onTrue(
+        joystick.L2().onTrue(
             new ConditionalCommand(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
@@ -178,7 +184,7 @@ public class RobotContainer {
 
         intakeState.onFalse(claw.fullHold());
 
-        joystick.L2().onTrue(
+        joystick.triangle().onTrue(
             Commands.either(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.PROCESSOR)), 
                 claw.algeaOuttake()
@@ -208,15 +214,6 @@ public class RobotContainer {
                 troughState.negate()
             ));
 
-            
-        joystick.triangle().onTrue(claw.nudge());
-
-            
-            // joystick.triangle().onTrue(
-            //     Commands.either(claw.nudge(),
-            //      elevatorPivot.troughArm().andThen(claw.nudge()),
-            //       teleopState.negate().or(intakeState.negate()))
-            //       );
 
         processorState.onTrue(drivetrain.driveFacingProcessor(
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
@@ -237,20 +234,10 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // joystick.share().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
-
-        // joystick.R1().onTrue(elevatorPivot.increaseElevVoltage());
-        // joystick.L1().onFalse(elevatorPivot.decreaseElevVoltage());
-        // joystick.triangle().onTrue(elevatorPivot.zeroElevVoltage());
-        // joystick.square().onTrue(elevatorPivot.zeroHeight());
-       
-        // joystick.cross().OnPressTwice(climber.runBackword(), climber.stop());
-        // joystick.triangle().OnPressTwice(climber.runForward(), climber.stop());
 
         joystick.cross().onTrue(climber.runBackword());
         joystick.cross().onFalse(climber.stop());
-        // joystick.triangle().onTrue(climber.runForward());
-        // joystick.triangle().onFalse(climber.stop());
+
 
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
         // reset the field-centric heading on down bumper press

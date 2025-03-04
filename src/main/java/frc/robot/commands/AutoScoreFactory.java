@@ -362,4 +362,76 @@ public class AutoScoreFactory {
           SmartDashboard.putBoolean("Used", used);
         });
   }
+
+  public Command pathFindToLeftPole(){
+    Supplier<Pose2d> targetPoseSupplier = () -> {
+      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+
+      Pose2d closest = poseList.get(0);
+      int closestNum = 0;
+
+      for (int i = 1; i < poseList.size(); i++) {
+        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
+            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
+          closest = poseList.get(i);
+          closestNum = i;
+        }
+      }
+
+      int leftPoleNum = 2*(closestNum + 1) - 1;
+
+      return AutoScoreConstants.kScorePoseMap.getOrDefault(leftPoleNum, drivetrain.getState().Pose);
+    };
+
+    return pathFindWithApriltagFeeback(
+      targetPoseSupplier, VisionConstants.limelights[0], VisionConstants.limelights[1]);
+  }
+
+  public Command pathFindToRightPole(){
+    Supplier<Pose2d> targetPoseSupplier = () -> {
+      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+
+      Pose2d closest = poseList.get(0);
+      int closestNum = 0;
+
+      for (int i = 1; i < poseList.size(); i++) {
+        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
+            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
+          closest = poseList.get(i);
+          closestNum = i;
+        }
+      }
+
+      int rightPoleNum = 2*(closestNum + 1);
+
+      return AutoScoreConstants.kScorePoseMap.getOrDefault(rightPoleNum, drivetrain.getState().Pose);
+    };
+
+    return pathFindWithApriltagFeeback(
+      targetPoseSupplier, VisionConstants.limelights[0], VisionConstants.limelights[1]);
+  }
+
+  public Command autoScoreLeftPole(){
+    return pathFindToLeftPole()
+        .alongWith(setElevatorHeight())
+        .andThen(claw.clawOutake())
+        .andThen(Commands.waitSeconds(0.4))
+        .andThen(drivetrain.driveBack())
+        .finallyDo(() -> {
+          if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_RIGHT)
+            M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+  }
+
+  public Command autoScoreRightPole(){
+    return pathFindToRightPole()
+        .alongWith(setElevatorHeight())
+        .andThen(claw.clawOutake())
+        .andThen(Commands.waitSeconds(0.4))
+        .andThen(drivetrain.driveBack())
+        .finallyDo(() -> {
+          if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_LEFT)
+            M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+  }
 }
