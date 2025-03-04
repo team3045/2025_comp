@@ -332,6 +332,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return getState().RawHeading.getRadians();
     }
 
+    public ChassisSpeeds getFieldRelativeChassisSpeeds(){
+        return ChassisSpeeds.fromRobotRelativeSpeeds(
+            getState().Speeds, getState().Pose.getRotation());
+    }
+
     public static final StructArrayPublisher<Pose2d> TELEOP_TRAJECTORY_PUBLISHER = NetworkTableInstance.getDefault()
             .getStructArrayTopic(DRIVE_LOG_PATH + "Trajectory/Path", Pose2d.struct).publish();
     public static final StructPublisher<Pose2d> TARGET_POSE_PUBLISHER = NetworkTableInstance.getDefault()

@@ -183,4 +183,16 @@ public class GeomUtil {
     return targetPose.getTranslation().getDistance(actualPose.getTranslation()) < translationToleranceMeters
         && Math.abs(targetPose.getRotation().minus(actualPose.getRotation()).getDegrees()) < rotationToleranceDegrees;
   }
+
+  public static final Transform2d transform2dFromTranslation(Translation2d translation) {
+    return new Transform2d(translation, Rotation2d.kZero);
+  }
+
+  public static final Pose2d pose2dFromRotation(Rotation2d rotation) {
+    return new Pose2d(Translation2d.kZero, rotation);
+}
+
+public static final Pose2d pose2dFromTranslation(Translation2d translation) {
+    return new Pose2d(translation, Rotation2d.kZero);
+}
 }
