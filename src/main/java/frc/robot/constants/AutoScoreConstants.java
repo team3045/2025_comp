@@ -1,6 +1,11 @@
 package frc.robot.constants;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+
+import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,6 +35,11 @@ public class AutoScoreConstants {
     public static HashMap<Integer, Double> kScoreAngleMapAuto = new HashMap<Integer, Double>();
     public static HashMap<Integer, Integer> kBlueApriltagMap = new HashMap<>();
     public static HashMap<Integer, Integer> kRedApriltagMap = new HashMap<>();
+
+    public static List<Pose2d> rightScorePoses = new ArrayList<Pose2d>();
+    public static List<Pose2d> leftScorePoses = new ArrayList<Pose2d>();
+    public static List<Pose2d> flippedRightScorePoses = new ArrayList<>();
+    public static List<Pose2d> flippedLeftScorePoses = new ArrayList<>();
 
     public static int[] kReefAprilTagIds = {
             6, 7, 8, 9, 10, 11, // RED
@@ -87,5 +97,21 @@ public class AutoScoreConstants {
         kRedApriltagMap.put(11, 10);
         kRedApriltagMap.put(12, 10);
 
+
+        List<Integer> sortedKeys = new ArrayList<>(kScorePoseMap.keySet());
+            Collections.sort(sortedKeys);
+        
+        for (Integer key : sortedKeys) {
+            if (key % 2 == 0) {
+                rightScorePoses.add(kScorePoseMap.get(key));
+            } else {
+                leftScorePoses.add(kScorePoseMap.get(key)); 
+            }
+        }
+
+        flippedRightScorePoses = rightScorePoses.stream()
+                        .map((pose) -> FlippingUtil.flipFieldPose(pose)).toList();
+        flippedLeftScorePoses = leftScorePoses.stream()
+                        .map((pose) -> FlippingUtil.flipFieldPose(pose)).toList();
     }
 }

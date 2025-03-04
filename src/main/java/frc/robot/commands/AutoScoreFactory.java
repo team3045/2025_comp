@@ -365,7 +365,7 @@ public class AutoScoreFactory {
 
   public Command pathFindToLeftPole(){
     Supplier<Pose2d> targetPoseSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? AutoScoreConstants.flippedLeftScorePoses : AutoScoreConstants.leftScorePoses;
 
       Pose2d closest = poseList.get(0);
       int closestNum = 0;
@@ -378,9 +378,7 @@ public class AutoScoreFactory {
         }
       }
 
-      int leftPoleNum = 2*(closestNum + 1) - 1;
-
-      return AutoScoreConstants.kScorePoseMap.getOrDefault(leftPoleNum, drivetrain.getState().Pose);
+      return AutoScoreConstants.leftScorePoses.get(closestNum);
     };
 
     return pathFindWithApriltagFeeback(
@@ -389,7 +387,7 @@ public class AutoScoreFactory {
 
   public Command pathFindToRightPole(){
     Supplier<Pose2d> targetPoseSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? AutoScoreConstants.flippedRightScorePoses : AutoScoreConstants.rightScorePoses;
 
       Pose2d closest = poseList.get(0);
       int closestNum = 0;
@@ -402,9 +400,7 @@ public class AutoScoreFactory {
         }
       }
 
-      int rightPoleNum = 2*(closestNum + 1);
-
-      return AutoScoreConstants.kScorePoseMap.getOrDefault(rightPoleNum, drivetrain.getState().Pose);
+      return AutoScoreConstants.rightScorePoses.get(closestNum);
     };
 
     return pathFindWithApriltagFeeback(
