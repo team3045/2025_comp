@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.DriveConstants.drive;
+
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.GremlinRobotState;
 import frc.robot.GremlinRobotState.DriveState;
+import frc.robot.commons.GeomUtil;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.ElevatorPivotConstants;
@@ -371,8 +374,10 @@ public class AutoScoreFactory {
       int closestNum = 0;
 
       for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
-            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
+        double currentDiff = Math.abs(poseList.get(i).getRotation().minus(drivetrain.getState().Pose.getRotation()).getRadians());
+        double closestDiff = Math.abs(closest.getRotation().minus(drivetrain.getState().Pose.getRotation()).getRadians());
+
+        if (currentDiff < closestDiff) {
           closest = poseList.get(i);
           closestNum = i;
         }
@@ -393,8 +398,10 @@ public class AutoScoreFactory {
       int closestNum = 0;
 
       for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
-            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
+        double currentDiff = Math.abs(poseList.get(i).getRotation().minus(drivetrain.getState().Pose.getRotation()).getRadians());
+        double closestDiff = Math.abs(closest.getRotation().minus(drivetrain.getState().Pose.getRotation()).getRadians());
+
+        if (currentDiff < closestDiff) {
           closest = poseList.get(i);
           closestNum = i;
         }
