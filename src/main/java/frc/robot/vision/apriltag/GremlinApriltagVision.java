@@ -18,9 +18,13 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import static frc.robot.constants.FieldConstants.adjustedShopLayout;
+import static frc.robot.constants.FieldConstants.blueReefCenter;
 import static frc.robot.constants.FieldConstants.compLayout;
+import static frc.robot.constants.FieldConstants.redReefCenter;
+import static frc.robot.constants.FieldConstants.reefDistanceTolerance;
 import static frc.robot.vision.apriltag.VisionConstants.CAMERA_LOG_PATH;
 import static frc.robot.vision.apriltag.VisionConstants.EXCLUDED_TAG_IDS;
 import static frc.robot.vision.apriltag.VisionConstants.FIELD_BORDER_MARGIN;
@@ -28,6 +32,7 @@ import static frc.robot.vision.apriltag.VisionConstants.MAX_AMBIGUITY;
 import static frc.robot.vision.apriltag.VisionConstants.THETA_STDDEV_MODEL;
 import static frc.robot.vision.apriltag.VisionConstants.XY_STDDEV_MODEL;
 import static frc.robot.vision.apriltag.VisionConstants.maxChangeDistance;
+import static frc.robot.vision.apriltag.VisionConstants.maxOmegaRadiansPerSec;
 import static frc.robot.vision.apriltag.VisionConstants.multiTagModifier;
 import static frc.robot.vision.apriltag.VisionConstants.stabilityModifier;
 import static frc.robot.vision.apriltag.VisionConstants.thetaModifier;
@@ -42,6 +47,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commons.GeomUtil;
@@ -68,6 +75,7 @@ public class GremlinApriltagVision extends SubsystemBase {
   private Consumer<List<TimestampedVisionUpdate>> visionConsumer = (visionUpdates) -> {
   };
   // Will be the function in driveTrain that supplies current pose estimate
+  private Supplier<SwerveDriveState> driveStateSupplier = () -> new SwerveDriveState();
   private Supplier<Pose2d> poseSupplier = () -> new Pose2d();
 
   private boolean shouldRejectAllUpdates;
@@ -75,11 +83,12 @@ public class GremlinApriltagVision extends SubsystemBase {
   /** Creates a new GremlinApriltagVision. */
   public GremlinApriltagVision(
       GremlinPhotonCamera[] cameras,
-      Supplier<Pose2d> poseSupplier,
+      Supplier<SwerveDriveState> driveStateSupplier,
       Consumer<List<TimestampedVisionUpdate>> visionConsumer) {
 
     this.cameras = cameras;
-    this.poseSupplier = poseSupplier;
+    this.driveStateSupplier = driveStateSupplier;
+    this.poseSupplier = () -> driveStateSupplier.get().Pose;
     this.visionConsumer = visionConsumer;
     this.limelights = new GremlinLimelightCamera[0];
 
@@ -93,12 +102,13 @@ public class GremlinApriltagVision extends SubsystemBase {
   /** Creates a new GremlinApriltagVision. */
   public GremlinApriltagVision(
       GremlinPhotonCamera[] cameras,
-      Supplier<Pose2d> poseSupplier,
+      Supplier<SwerveDriveState> driveStateSupplier,
       GremlinLimelightCamera[] limelights,
       Consumer<List<TimestampedVisionUpdate>> visionConsumer) {
 
     this.cameras = cameras;
-    this.poseSupplier = poseSupplier;
+    this.driveStateSupplier = driveStateSupplier;
+    this.poseSupplier = () -> driveStateSupplier.get().Pose;
     this.visionConsumer = visionConsumer;
     this.limelights = limelights;
 
@@ -119,7 +129,7 @@ public class GremlinApriltagVision extends SubsystemBase {
     if (!shouldRejectAllUpdates) {
       processVisionUpdates();
       visionConsumer.accept(visionUpdates);
-    } 
+    }
 
     logLimelights();
   }
@@ -260,6 +270,34 @@ public class GremlinApriltagVision extends SubsystemBase {
         logPoses(i, cameraPose, calculatedRobotPose, tagPose3ds.toArray(Pose3d[]::new));
         GremlinLogger.debugLog(logPath + "/TagsUsed", tagPose3ds.size());
         GremlinLogger.debugLog(logPath + "/StdDevs", stdDevs);
+      }
+    }
+
+    processLimelightUpdates();
+  }
+
+  public void processLimelightUpdates(){
+    SwerveDriveState driveState = driveStateSupplier.get(); 
+    
+    if(driveState.Speeds.omegaRadiansPerSecond > maxOmegaRadiansPerSec)
+        return;
+  
+    for (GremlinLimelightCamera ll : limelights){
+      Optional<PoseEstimate> poseEstimate = ll.getBotPoseEstimateMT2();;
+
+      if(poseEstimate.isEmpty() || poseEstimate.get().pose == null || poseEstimate.get().pose.equals(Pose2d.kZero)){
+        continue;
+      }
+
+      Pose2d estimatedPose = poseEstimate.get().pose;
+
+      if(estimatedPose.getTranslation().getDistance(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? blueReefCenter
+            : redReefCenter) < reefDistanceTolerance)
+      {
+        visionUpdates.add(new TimestampedVisionUpdate(
+          estimatedPose,
+          poseEstimate.get().timestampSeconds,
+          VecBuilder.fill(0.1,0.1,0.1)));
       }
     }
   }

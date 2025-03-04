@@ -55,7 +55,9 @@ public class VisionConstants {
         public static final double thetaModifier = 30;
         public static final double multiTagModifier = 0.6;
         public static final double stabilityModifier = 7.5;
-        public static final double maxChangeDistance = 1; // m
+        public static final double maxChangeDistance = 4; // m
+        public static final double maxOmegaRadiansPerSec = Math.PI;
+
 
         public static SimCameraProperties getOV2311() {
                 SimCameraProperties properties = new SimCameraProperties();

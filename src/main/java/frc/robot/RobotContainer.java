@@ -52,7 +52,7 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
-        () -> drivetrain.getState().Pose, 
+        drivetrain::getState, 
         VisionConstants.limelights,
         (drivetrain::addVisionMeasurements));
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
