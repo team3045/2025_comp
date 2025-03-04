@@ -27,6 +27,7 @@ public class Climber extends SubsystemBase {
     motor.getConfigurator().apply(motorConfig);
   }
 
+  @SuppressWarnings("unused")
   private double targetSpeed;
 /*
 public void spin(double numRotations) {

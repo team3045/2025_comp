@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import static frc.robot.constants.DriveConstants.drive;
-
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -23,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.GremlinRobotState;
 import frc.robot.GremlinRobotState.DriveState;
-import frc.robot.commons.GeomUtil;
 import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.ElevatorPivotConstants;
