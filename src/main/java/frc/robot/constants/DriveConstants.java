@@ -42,7 +42,7 @@ public class DriveConstants {
     public static final double MAX_ANGULAR_ACCEL = Math.PI; // Radians per Second Squared
     public static final double MAX_ANGULAR_ACCEL_AUTO = MAX_ANGULAR_ACCEL * 0.75;
     public static final double MAX_VELO_AUTOSCORE = 2;
-    public static final double MAX_ACCEL_AUTOSCORE = 2;
+    public static final double MAX_ACCEL_AUTOSCORE = 1.25;
     public static final double MAX_ANGULAR_VELOCITY_AUTOSCORE = Math.PI;
     public static final double MAX_ANGULAR_ACCEL_AUTOSCORE = Math.PI / 2;
 
@@ -83,7 +83,7 @@ public class DriveConstants {
     public static final double headingI = 0;
     public static final double headingD = 0;
 
-    public static final double preciseTranslationTolerance = 0.02;
+    public static final double preciseTranslationTolerance = 0.01;
     public static final double preciseRotationTolerance = 0.8;
     public static final double kMaxPathFindTranslationError = 0.2;
 

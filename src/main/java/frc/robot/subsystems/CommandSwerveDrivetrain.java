@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.DriveToPoseV2;
+import frc.robot.commands.DriveToPoseV3;
 import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.GremlinAutoBuilder;
 import frc.robot.commons.TimestampedVisionUpdate;
@@ -486,8 +487,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command preciseTargetPose(Supplier<Pose2d> targetPose) {
-        return new DriveToPose(
-            this, targetPose, () -> getState().Pose);
+        return new DriveToPoseV2(this, targetPose, () -> getState());
+        // return new DriveToPoseV3(
+        //     this, () -> getState(), targetPose);
     }
 
     public Command targetPoseWithJoystick(Supplier<Pose2d> targetPose){

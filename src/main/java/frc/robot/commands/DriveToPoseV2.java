@@ -154,10 +154,10 @@ public class DriveToPoseV2 extends Command {
         driveVelocityScalar = 0.0; 
     }
     
-//     // Ensure a minimum drive speed if too close but not at target
-//     if (Math.abs(driveVelocityScalar) < 0.1 && driveErrorAbs > driveController.getPositionTolerance()) {
-//         driveVelocityScalar = Math.copySign(0.1, driveVelocityScalar);
-//     }    
+    // Adjust PID output when feedforward is low (e.g., close to the target)
+    if (ffScaler <= 0.01) { 
+        driveVelocityScalar *= 10.0; // Increase PID effect when FF is low
+    }  
 
     lastSetpointTranslation =
         new Pose2d(
@@ -181,15 +181,6 @@ public class DriveToPoseV2 extends Command {
                 currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle())
             .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
             .getTranslation();
-
-    // Scale feedback velocities by input ff
-//     final double linearS = linearFF.get().getNorm() * 3.0;
-//     final double thetaS = Math.abs(omegaFF.getAsDouble()) * 3.0;
-//     driveVelocity =
-//         driveVelocity.interpolate(linearFF.get().times(DriveConstants.MaxSpeed), linearS);
-//     thetaVelocity =
-//         MathUtil.interpolate(
-//             thetaVelocity, omegaFF.getAsDouble() * DriveConstants.MaxAngularRate, thetaS);
 
     // Command speeds
     drive.setControl(
