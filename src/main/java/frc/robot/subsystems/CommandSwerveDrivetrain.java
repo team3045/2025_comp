@@ -487,7 +487,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command preciseTargetPose(Supplier<Pose2d> targetPose) {
-        return new DriveToPoseV2(this, targetPose, () -> getState());
+        return new DriveToPose(this, () -> getState().Pose, targetPose);
+        //return new DriveToPoseV2(this, targetPose, () -> getState());
         // return new DriveToPoseV3(
         //     this, () -> getState(), targetPose);
     }

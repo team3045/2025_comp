@@ -76,7 +76,7 @@ public class DriveToPose extends Command {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(Units.degreesToRadians(DriveConstants.preciseRotationTolerance));
 
-    addRequirements(drivetrainSubsystem);
+    addRequirements(this.drivetrainSubsystem);
   }
 
   @Override

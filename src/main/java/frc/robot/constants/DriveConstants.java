@@ -83,8 +83,8 @@ public class DriveConstants {
     public static final double headingI = 0;
     public static final double headingD = 0;
 
-    public static final double preciseTranslationTolerance = 0.01;
-    public static final double preciseRotationTolerance = 0.8;
+    public static final double preciseTranslationTolerance = 0.02;
+    public static final double preciseRotationTolerance = 2.0;
     public static final double kMaxPathFindTranslationError = 0.2;
 
     public static final PIDController preciseTranslationController = new PIDController(preciseTranslationkP,
