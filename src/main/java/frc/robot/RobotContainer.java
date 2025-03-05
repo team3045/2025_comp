@@ -133,11 +133,13 @@ public class RobotContainer {
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        joystick.L2().onTrue(
-            new ConditionalCommand(
-                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
-                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
-                algeaState.negate()));
+        // joystick.L2().onTrue(
+        //     new ConditionalCommand(
+        //         Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
+        //         Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
+        //         algeaState.negate()));
+
+        joystick.L2().onTrue(autoScoreFactory.setNewL4());
 
         algeaState.whileTrue(
             autoScoreFactory.getAlgeaRemoveCommand(
@@ -246,7 +248,7 @@ public class RobotContainer {
         joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
-        joystick.options().OnPressTwice(claw.troughOuttake(), claw.hold());
+        joystick.options().OnPressTwice(claw.clawOutake(), claw.hold());
     }
 
     public Command getAutonomousCommand() {

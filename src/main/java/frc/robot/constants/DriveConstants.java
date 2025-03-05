@@ -34,7 +34,7 @@ public class DriveConstants {
     public static final double deadband = 0.025; // 2.5% deadband
 
     public static final double MAX_VELOCITY = 2; // Meters per Second
-    public static final double MAX_VELOCITY_AUTO = MAX_VELOCITY * 0.75;
+    public static final double MAX_VELOCITY_AUTO = 3;
     public static final double MAX_ACCEL = 2; // Meters per Second Squared
     public static final double MAX_ACCEL_AUTO = MAX_ACCEL * 0.75;
     public static final double MAX_ANGULAR_VELOCITY = 3 * Math.PI / 2; // Radians per Second
@@ -42,7 +42,7 @@ public class DriveConstants {
     public static final double MAX_ANGULAR_ACCEL = Math.PI; // Radians per Second Squared
     public static final double MAX_ANGULAR_ACCEL_AUTO = MAX_ANGULAR_ACCEL * 0.75;
     public static final double MAX_VELO_AUTOSCORE = 2;
-    public static final double MAX_ACCEL_AUTOSCORE = 1;
+    public static final double MAX_ACCEL_AUTOSCORE = 2;
     public static final double MAX_ANGULAR_VELOCITY_AUTOSCORE = Math.PI;
     public static final double MAX_ANGULAR_ACCEL_AUTOSCORE = Math.PI / 2;
 

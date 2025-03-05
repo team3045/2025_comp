@@ -32,7 +32,7 @@ public class GeomUtil {
    * @param y The y componenet of the translation
    * @return The resulting transform
    */
-  public static Transform2d translationToTransform(double x, double y) {
+  public static Transform2d toTransform2d(double x, double y) {
     return new Transform2d(new Translation2d(x, y), new Rotation2d());
   }
 

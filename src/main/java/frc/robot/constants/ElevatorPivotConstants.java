@@ -158,6 +158,7 @@ public class ElevatorPivotConstants {
         L3(1.187),
         L2(0.82),
         L4_AUTO(1.9),
+        L4_V2(1.92),
         LOW_ALGEA(1.062),
         HIGH_ALGEA(1.49);
 
@@ -177,6 +178,7 @@ public class ElevatorPivotConstants {
         L3(83),
         L2(87),
         L4_AUTO(75),
+        L4_V2(80),
         LOW_ALGEA(-70),
         HIGH_ALGEA(-70);
 

@@ -26,7 +26,7 @@ public class AutoScoreConstants {
     public static final double rotationkI = 0;
     public static final double rotationkD = 0;
 
-    public static final double basicPIDDistance = 2.0;
+    public static final double basicPIDDistance = 2;
 
     // Pole Number, Scoring Pose2d
     public static HashMap<Integer, Pose2d> kScorePoseMap = new HashMap<Integer, Pose2d>();
@@ -35,6 +35,7 @@ public class AutoScoreConstants {
     public static HashMap<Integer, Double> kScoreAngleMapAuto = new HashMap<Integer, Double>();
     public static HashMap<Integer, Integer> kBlueApriltagMap = new HashMap<>();
     public static HashMap<Integer, Integer> kRedApriltagMap = new HashMap<>();
+    public static HashMap<Integer, Pose2d> kScorePoseMapV2 = new HashMap<>();
 
     public static List<Pose2d> rightScorePoses = new ArrayList<Pose2d>();
     public static List<Pose2d> leftScorePoses = new ArrayList<Pose2d>();
@@ -63,11 +64,11 @@ public class AutoScoreConstants {
 
         kScoreHeightMap.put(1, ElevatorPivotConstants.HeightPositions.L2.getHeight());
         kScoreHeightMap.put(2, ElevatorPivotConstants.HeightPositions.L3.getHeight());
-        kScoreHeightMap.put(3, ElevatorPivotConstants.HeightPositions.L4.getHeight());
+        kScoreHeightMap.put(3, ElevatorPivotConstants.HeightPositions.L4_V2.getHeight());
 
         kScoreAngleMap.put(1, ElevatorPivotConstants.AnglePositions.L2.getAngle());
         kScoreAngleMap.put(2, ElevatorPivotConstants.AnglePositions.L3.getAngle());
-        kScoreAngleMap.put(3, ElevatorPivotConstants.AnglePositions.L4.getAngle());
+        kScoreAngleMap.put(3, ElevatorPivotConstants.AnglePositions.L4_V2.getAngle());
 
         kScoreAngleMapAuto.put(3, ElevatorPivotConstants.AnglePositions.L4_AUTO.getAngle());
 
@@ -97,15 +98,27 @@ public class AutoScoreConstants {
         kRedApriltagMap.put(11, 10);
         kRedApriltagMap.put(12, 10);
 
+        kScorePoseMapV2.put(1, new Pose2d(3.08,4.19, Rotation2d.kZero));
+        kScorePoseMapV2.put(2, new Pose2d(3.08,3.86, Rotation2d.kZero));
+        kScorePoseMapV2.put(3, new Pose2d(3.67,2.89, Rotation2d.fromDegrees(60)));
+        kScorePoseMapV2.put(4, new Pose2d(3.94,2.72, Rotation2d.fromDegrees(60)));
+        kScorePoseMapV2.put(5, new Pose2d(5.06,2.72, Rotation2d.fromDegrees(120)));
+        kScorePoseMapV2.put(6, new Pose2d(5.35,2.89, Rotation2d.fromDegrees(120)));
+        kScorePoseMapV2.put(7, new Pose2d(5.92,3.87, Rotation2d.k180deg));
+        kScorePoseMapV2.put(8, new Pose2d(5.92,4.19, Rotation2d.k180deg));
+        kScorePoseMapV2.put(9, new Pose2d(5.33,5.18, Rotation2d.fromDegrees(-120)));
+        kScorePoseMapV2.put(10, new Pose2d(5.05,5.35, Rotation2d.fromDegrees(-120)));
+        kScorePoseMapV2.put(11, new Pose2d(3.94,5.35, Rotation2d.fromDegrees(-60)));
+        kScorePoseMapV2.put(12, new Pose2d(3.65,5.16, Rotation2d.fromDegrees(-60)));
 
         List<Integer> sortedKeys = new ArrayList<>(kScorePoseMap.keySet());
             Collections.sort(sortedKeys);
         
         for (Integer key : sortedKeys) {
             if (key % 2 == 0) {
-                rightScorePoses.add(kScorePoseMap.get(key));
+                rightScorePoses.add(kScorePoseMapV2.get(key));
             } else {
-                leftScorePoses.add(kScorePoseMap.get(key)); 
+                leftScorePoses.add(kScorePoseMapV2.get(key)); 
             }
         }
 

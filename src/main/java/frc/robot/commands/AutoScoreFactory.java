@@ -71,6 +71,7 @@ public class AutoScoreFactory {
         () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightSub.get(),
             elevatorPivot.getPivotAngleDegrees()));
   }
+  
 
   public Command setElevatorHeight(Supplier<Integer> heightLevel) {
     return elevatorPivot.goToPosition(
@@ -90,6 +91,12 @@ public class AutoScoreFactory {
     return elevatorPivot.goToPosition(
       () -> ElevatorPivotConstants.HeightPositions.L4_AUTO.getHeight(), 
       () -> ElevatorPivotConstants.AnglePositions.L4_AUTO.getAngle());
+  }
+
+  public Command setNewL4(){
+    return elevatorPivot.goToPosition(
+      () -> ElevatorPivotConstants.HeightPositions.L4_V2.getHeight(), 
+      () -> ElevatorPivotConstants.AnglePositions.L4_V2.getAngle());
   }
 
   public Command readyL4(){
