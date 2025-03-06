@@ -5,9 +5,6 @@ import static frc.robot.constants.DriveConstants.MAX_ANGULAR_VELOCITY_AUTOSCORE;
 
 import java.util.function.Supplier;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.FlippingUtil;
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -15,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -76,16 +74,35 @@ public class DriveToPose extends Command {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(Units.degreesToRadians(DriveConstants.preciseRotationTolerance));
 
+    resetPIDControllers();
+    
+    if(goalPoseSupplier.get() == null){
+      try {
+        throw new Exception("How the hell is this null");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    } else {
+      goalPose = goalPoseSupplier.get();
+    }
+
     addRequirements(this.drivetrainSubsystem);
   }
 
   @Override
   public void initialize() {
     resetPIDControllers();
-    goalPose = goalPoseSupplier.get();
-    if (AutoBuilder.shouldFlip()) {
-      goalPose = FlippingUtil.flipFieldPose(goalPose);
+    
+    if(goalPoseSupplier.get() == null){
+      try {
+        throw new Exception("How the hell is this null");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    } else {
+      goalPose = goalPoseSupplier.get();
     }
+
     thetaController.setGoal(goalPose.getRotation().getRadians());
     xController.setGoal(goalPose.getX());
     yController.setGoal(goalPose.getY());
@@ -106,25 +123,36 @@ public class DriveToPose extends Command {
 
   @Override
   public void execute() {
-    var robotPose = poseProvider.get();
+    if(goalPose == null){
+      initialize();
+    }
+
+    Pose2d robotPose = poseProvider.get();
     // Drive to the goal
-    var xSpeed = xController.calculate(robotPose.getX());
+    double xSpeed = xController.calculate(robotPose.getX());
     if (xController.atGoal()) {
       xSpeed = 0;
     }
 
-    var ySpeed = yController.calculate(robotPose.getY());
+    double ySpeed = yController.calculate(robotPose.getY());
     if (yController.atGoal()) {
       ySpeed = 0;
     }
 
-    var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
+    double omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
     if (thetaController.atGoal()) {
       omegaSpeed = 0;
     }
 
     drivetrainSubsystem.setControl(DriveConstants.APPLY_FIELD_SPEEDS
         .withSpeeds(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed)));
+      
+    SmartDashboard.putNumber("DriveState/X", xSpeed);
+    SmartDashboard.putNumber("DriveState/Y", ySpeed);
+    SmartDashboard.putNumber("DriveState/Theta", omegaSpeed);
+    SmartDashboard.putNumber("DriveState/GoalX", xController.getGoal().position);
+    SmartDashboard.putNumber("DriveState/GoalY", yController.getGoal().position);
+    SmartDashboard.putNumber("DriveState/GoalTheta", thetaController.getGoal().position);
   }
 
   @Override

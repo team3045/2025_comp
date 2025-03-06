@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static frc.robot.constants.DriveConstants.drive;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -48,6 +50,7 @@ public class DynamicPathfindWithFeedback extends Command {
   private DoubleSupplier timestampSupplier;
 
   private BooleanSupplier overrideWithFeedback;
+  private boolean startedPId;
 
   public DynamicPathfindWithFeedback(
       Supplier<Pose2d> targetPoseSupplier,
@@ -71,6 +74,7 @@ public class DynamicPathfindWithFeedback extends Command {
 
   @Override
   public void initialize() {
+    startedPId = false;
     updatePathfindCommand();
     if (currentPathfindCommand != null) {
       currentPathfindCommand.initialize();
@@ -78,6 +82,7 @@ public class DynamicPathfindWithFeedback extends Command {
 
     xController.setGoal(targetPoseSupplier.get().getX());
     yController.setGoal(targetPoseSupplier.get().getY());
+
   }
 
   @Override
@@ -97,6 +102,10 @@ public class DynamicPathfindWithFeedback extends Command {
     if (currentPathfindCommand != null) {
       currentPathfindCommand.execute();
     }
+
+    if(drivetrain.getState().Pose.getTranslation().getDistance(targetPoseSupplier.get().getTranslation()) < 0.1 && !startedPId){
+      updatePathfindCommand();
+    }
   }
 
   @Override
@@ -106,7 +115,7 @@ public class DynamicPathfindWithFeedback extends Command {
     }
 
     currentPathfindCommand = null;
-    SmartDashboard.putBoolean("At Pose", false);
+    drivetrain.setControl(DriveConstants.brake);
   }
 
   @Override
@@ -135,6 +144,8 @@ public class DynamicPathfindWithFeedback extends Command {
     if (drivetrain.getState().Pose.getTranslation()
         .getDistance(targetPose.getTranslation()) < AutoScoreConstants.basicPIDDistance) {
       currentPathfindCommand = drivetrain.preciseTargetPose(targetPoseSupplier);
+      currentPathfindCommand.initialize();
+      startedPId = true;
     } else {
       // Create a new pathfinding command with the updated values
       currentPathfindCommand = GremlinAutoBuilder.pathfindToPose(targetPose,

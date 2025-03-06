@@ -71,6 +71,12 @@ public class AutoScoreFactory {
         () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightSub.get(),
             elevatorPivot.getPivotAngleDegrees()));
   }
+
+  public Command setElevatorHeightIntermediate() {
+    return elevatorPivot.goToPosition(
+        () -> AutoScoreConstants.kScoreHeightMap.getOrDefault((int) heightSub.get(), elevatorPivot.getHeight()),
+        () -> ElevatorPivotConstants.travelAngle+5);
+  }
   
 
   public Command setElevatorHeight(Supplier<Integer> heightLevel) {
@@ -420,7 +426,7 @@ public class AutoScoreFactory {
 
   public Command autoScoreLeftPole(){
     return pathFindToLeftPole()
-        .alongWith(setElevatorHeight())
+        .alongWith(setElevatorHeightIntermediate().andThen(setElevatorHeight()))
         .andThen(claw.clawOutake())
         .andThen(Commands.waitSeconds(0.4))
         .andThen(drivetrain.driveBack())
@@ -432,7 +438,7 @@ public class AutoScoreFactory {
 
   public Command autoScoreRightPole(){
     return pathFindToRightPole()
-        .alongWith(setElevatorHeight())
+        .alongWith(setElevatorHeightIntermediate().andThen(setElevatorHeight()))
         .andThen(claw.clawOutake())
         .andThen(Commands.waitSeconds(0.4))
         .andThen(drivetrain.driveBack())

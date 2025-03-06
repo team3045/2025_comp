@@ -103,7 +103,7 @@ public class ClawConstants {
     public static final double kA = 0;
     public static final double kV = 12 / 93.8;
 
-    public static final double slot1kP = 10;
+    public static final double slot1kP = 5;
     public static final double slot1kI = 0;
     public static final double slot1kD = 0;
     public static final double slot1kG = 0;

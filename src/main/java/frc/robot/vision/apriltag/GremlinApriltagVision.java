@@ -297,7 +297,7 @@ public class GremlinApriltagVision extends SubsystemBase {
         visionUpdates.add(new TimestampedVisionUpdate(
           estimatedPose,
           poseEstimate.get().timestampSeconds,
-          VecBuilder.fill(0.1,0.1,0.1)));
+          VecBuilder.fill(0.1,0.1,1000)));
       }
     }
   }

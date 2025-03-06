@@ -19,13 +19,6 @@ public class AutoScoreConstants {
     public static final double kPivotResetAngle = 0;
     public static final double kBackUpDist = 0.1;
 
-    public static final double translationkP = 8;
-    public static final double translationkI = 0;
-    public static final double translationkD = 0;
-    public static final double rotationkP = 8;
-    public static final double rotationkI = 0;
-    public static final double rotationkD = 0;
-
     public static final double basicPIDDistance = 0.5;
 
     // Pole Number, Scoring Pose2d
@@ -50,8 +43,8 @@ public class AutoScoreConstants {
     static {
         kScorePoseMap.put(9, new Pose2d(5.31, 5.05, Rotation2d.fromDegrees(-120)));
         kScorePoseMap.put(10, new Pose2d(4.99, 5.25, Rotation2d.fromDegrees(-120)));
-        kScorePoseMap.put(11, new Pose2d(4.01, 5.25, Rotation2d.fromDegrees(-60)));
-        kScorePoseMap.put(12, new Pose2d(3.68, 5.06, Rotation2d.fromDegrees(-60)));
+        kScorePoseMap.put(11, new Pose2d(3.99, 5.27, Rotation2d.fromDegrees(-60)));
+        kScorePoseMap.put(12, new Pose2d(3.66, 5.08, Rotation2d.fromDegrees(-60)));
         kScorePoseMap.put(1, new Pose2d(3.18, 4.21, Rotation2d.kZero));
         kScorePoseMap.put(2, new Pose2d(3.17, 3.850, Rotation2d.kZero));
         kScorePoseMap.put(3, new Pose2d(3.66, 3, Rotation2d.fromDegrees(60)));
@@ -64,11 +57,11 @@ public class AutoScoreConstants {
 
         kScoreHeightMap.put(1, ElevatorPivotConstants.HeightPositions.L2.getHeight());
         kScoreHeightMap.put(2, ElevatorPivotConstants.HeightPositions.L3.getHeight());
-        kScoreHeightMap.put(3, ElevatorPivotConstants.HeightPositions.L4_V2.getHeight());
+        kScoreHeightMap.put(3, ElevatorPivotConstants.HeightPositions.L4.getHeight());
 
         kScoreAngleMap.put(1, ElevatorPivotConstants.AnglePositions.L2.getAngle());
         kScoreAngleMap.put(2, ElevatorPivotConstants.AnglePositions.L3.getAngle());
-        kScoreAngleMap.put(3, ElevatorPivotConstants.AnglePositions.L4_V2.getAngle());
+        kScoreAngleMap.put(3, ElevatorPivotConstants.AnglePositions.L4.getAngle());
 
         kScoreAngleMapAuto.put(3, ElevatorPivotConstants.AnglePositions.L4_AUTO.getAngle());
 
@@ -116,9 +109,9 @@ public class AutoScoreConstants {
         
         for (Integer key : sortedKeys) {
             if (key % 2 == 0) {
-                rightScorePoses.add(kScorePoseMapV2.get(key));
+                rightScorePoses.add(kScorePoseMap.get(key));
             } else {
-                leftScorePoses.add(kScorePoseMapV2.get(key)); 
+                leftScorePoses.add(kScorePoseMap.get(key)); 
             }
         }
 
