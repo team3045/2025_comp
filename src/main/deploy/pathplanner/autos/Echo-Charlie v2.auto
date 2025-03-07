@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreCoral"
+            "name": "AAEcho"
           }
         },
         {
@@ -65,7 +65,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.0
+                        "waitTime": 4.0
                       }
                     }
                   ]
@@ -89,22 +89,9 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "deadline",
+                      "type": "wait",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 0.45
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "StartIntake"
-                            }
-                          }
-                        ]
+                        "waitTime": 0.45
                       }
                     },
                     {
@@ -122,7 +109,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ScoreCoral"
+            "name": "AACharlie"
           }
         },
         {

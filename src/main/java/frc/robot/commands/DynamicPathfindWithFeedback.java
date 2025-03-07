@@ -16,6 +16,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -48,6 +49,7 @@ public class DynamicPathfindWithFeedback extends Command {
 
   private Supplier<Pose2d> feedbackPoseSupplier;
   private DoubleSupplier timestampSupplier;
+  private Pose2d targetPose;
 
   private BooleanSupplier overrideWithFeedback;
   private boolean startedPId;
@@ -103,7 +105,7 @@ public class DynamicPathfindWithFeedback extends Command {
       currentPathfindCommand.execute();
     }
 
-    if(drivetrain.getState().Pose.getTranslation().getDistance(targetPoseSupplier.get().getTranslation()) < 0.1 && !startedPId){
+    if(drivetrain.getState().Pose.getTranslation().getDistance(targetPose.getTranslation()) < 0.1 && !startedPId){
       updatePathfindCommand();
     }
   }
@@ -120,19 +122,18 @@ public class DynamicPathfindWithFeedback extends Command {
 
   @Override
   public boolean isFinished() {
-    Pose2d targetPose = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)
-        ? targetPoseSupplier.get()
-        : FlippingUtil.flipFieldPose(targetPoseSupplier.get());
-
     SmartDashboard.putBoolean("At Pose",
         GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance));
 
-    return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance);
+    return GeomUtil.isNearPose(targetPose, drivetrain.getState().Pose, DriveConstants.preciseTranslationTolerance) 
+      && drivetrain.getState().Speeds.vxMetersPerSecond < 0.05
+      && drivetrain.getState().Speeds.vyMetersPerSecond < 0.05
+      && drivetrain.getState().Speeds.omegaRadiansPerSecond < Units.degreesToRadians(1);
   }
 
   private void updatePathfindCommand() {
     // Get the dynamic pose and velocity
-    Pose2d targetPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(targetPoseSupplier.get())
+    targetPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(targetPoseSupplier.get())
         : targetPoseSupplier.get();
     double desiredEndVelocity = desiredEndVelocitySupplier.getAsDouble();
 

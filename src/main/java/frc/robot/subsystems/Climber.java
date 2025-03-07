@@ -66,8 +66,17 @@ public void spin(double numRotations) {
     return this.runOnce(()-> setClimbTargetSpeed(-climberSpeed));
   }
 
+  public Command climberOut(){
+    return this.runOnce(() -> motor.setVoltage(8));
+  }
 
+  public Command climberIn(){
+    return this.runOnce(() -> motor.setVoltage(-8));
+  }
 
+  public Command zeroClimber(){
+    return this.runOnce(() -> motor.setVoltage(0));
+  }
 
   // private void setControl(float voltage) {
   //   VoltageOut config = new VoltageOut(Math.abs(voltage));

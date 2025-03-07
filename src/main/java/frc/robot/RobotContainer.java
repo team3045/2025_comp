@@ -9,13 +9,17 @@ import com.pathplanner.lib.events.EventTrigger;
 
 import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.networktables.IntegerPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
@@ -49,6 +53,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final GremlinPS4Controller joystick = new GremlinPS4Controller(0);
+    private final CommandGenericHID buttonBoard = new CommandGenericHID(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
@@ -70,7 +75,8 @@ public class RobotContainer {
     public final Trigger intakeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.INTAKE);
     public final Trigger teleopState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TELEOP);
     public final Trigger processorState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.PROCESSOR);
-    public final Trigger ejectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.EJECT);
+    public final Trigger algeaEjectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEAEJECT);
+    public final Trigger coralEjectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.CORALEJECT);
     public final Trigger troughState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TROUGH);
     public final Trigger disableGlobalEstimation = (leftScoringState.or(rightScoringState).or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
@@ -133,13 +139,11 @@ public class RobotContainer {
         disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
         disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
-        // joystick.L2().onTrue(
-        //     new ConditionalCommand(
-        //         Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
-        //         Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
-        //         algeaState.negate()));
-
-        joystick.L2().onTrue(autoScoreFactory.setNewL4());
+        joystick.L2().onTrue(
+            new ConditionalCommand(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
+                algeaState.negate()));
 
         algeaState.whileTrue(
             autoScoreFactory.getAlgeaRemoveCommand(
@@ -199,12 +203,12 @@ public class RobotContainer {
             //Algae eject on share
         joystick.share().onTrue(
             Commands.either(
-                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.EJECT)), 
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEAEJECT)), 
                 claw.algeaEject()
                     .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
                     .andThen(claw.hold())
                     .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
-                    ejectState.negate()
+                    algeaEjectState.negate()
             ));
 
         joystick.circle().onTrue(
@@ -222,7 +226,7 @@ public class RobotContainer {
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .alongWith(elevatorPivot.goToProcessor()));
 
-        ejectState.onTrue(elevatorPivot.goToProcessor());
+        algeaEjectState.onTrue(elevatorPivot.goToProcessor());
 
         troughState.onTrue(drivetrain.driveFacingTrough(
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
@@ -237,8 +241,11 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
 
-        joystick.cross().onTrue(climber.runBackword());
-        joystick.cross().onFalse(climber.stop());
+        joystick.cross().OnPressTwice(
+            climber.climberOut(), 
+            climber.climberIn());
+
+        joystick.cross().onFalse(climber.zeroClimber());
 
 
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
@@ -248,7 +255,17 @@ public class RobotContainer {
         joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
-        joystick.options().OnPressTwice(claw.clawOutake(), claw.hold());
+        joystick.options().onTrue(Commands.either(
+            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CORALEJECT)), 
+            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CORALEJECT)), 
+            coralEjectState));
+
+        coralEjectState.onTrue(claw.clawOutake());
+        coralEjectState.onFalse(claw.hold());
+
+        
+
+        configButtonBoard();
     }
 
     public Command getAutonomousCommand() {
@@ -276,6 +293,12 @@ public class RobotContainer {
         NamedCommands.registerCommand("ScoreCoral",
             claw.clawOutake()
             .andThen(Commands.waitSeconds(0.2)).withName("Score Coral"));
+
+        NamedCommands.registerCommand("AACharlie", 
+            autoScoreFactory.pidToPoleAuto(3).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+
+        NamedCommands.registerCommand("AAEcho", 
+            autoScoreFactory.pidToPoleAuto(5).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
         
         NamedCommands.registerCommand("StartScoreF",
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
@@ -334,7 +357,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("ReadyL4", 
             autoScoreFactory.readyL4());
         
-        NamedCommands.registerCommand("SetL4", autoScoreFactory.setAutoL4());
+        NamedCommands.registerCommand("SetL4", autoScoreFactory.setL4().unless(claw.hasCoral.negate()));
 
         NamedCommands.registerCommand("HighAlgea", 
             elevatorPivot.goToPosition(
@@ -431,6 +454,28 @@ public class RobotContainer {
                 autoScoreFactory.addLimelightPose(1),
                 autoScoreFactory.addLimelightPose(0))));
         
+    }
+
+    public static final IntegerPublisher heightPublisher = NetworkTableInstance.getDefault().getTable("Scoring Location")
+      .getIntegerTopic("Height").publish();
+
+    public void configButtonBoard(){
+        buttonBoard.button(1).onTrue(
+                updateHeight(3));
+        buttonBoard.button(2).onTrue(
+                updateHeight(2));
+        buttonBoard.button(3).onTrue(
+                updateHeight(1));
+        buttonBoard.button(7).onTrue(
+                updateHeight(3));
+        buttonBoard.button(8).onTrue(
+                updateHeight(2));
+        buttonBoard.button(9).onTrue(
+                updateHeight(1));
+    }
+
+    public Command updateHeight(int height){
+        return Commands.runOnce(() -> heightPublisher.set(height));
     }
 
 }

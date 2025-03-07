@@ -105,6 +105,12 @@ public class AutoScoreFactory {
       () -> ElevatorPivotConstants.AnglePositions.L4_V2.getAngle());
   }
 
+  public Command setL4(){
+    return elevatorPivot.goToPosition(
+      () -> ElevatorPivotConstants.HeightPositions.L4.getHeight(), 
+      () -> ElevatorPivotConstants.AnglePositions.L4.getAngle());
+  }
+
   public Command readyL4(){
     return elevatorPivot.goToPosition(
       () -> ElevatorPivotConstants.HeightPositions.L3.getHeight(),
@@ -230,7 +236,11 @@ public class AutoScoreFactory {
       return FieldConstants.algeaPoses.get(closestNum);
     };
 
-    return new DynamicPathfindWithFeedback(
+
+
+
+    return Commands.either(
+      new DynamicPathfindWithFeedback(
         targetPoseSupplier,
         () -> 0,
         DriveConstants.autoScoreConstraints,
@@ -240,7 +250,23 @@ public class AutoScoreFactory {
         feedbackCamera::seesObject,
         () -> feedbackCamera.getBotPoseEstimateMT2().isPresent()
             ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds());
+            : Utils.getCurrentTimeSeconds()),
+    
+      drivetrain.driveBackAlgea()
+      .andThen(new DynamicPathfindWithFeedback(
+        targetPoseSupplier,
+        () -> 0,
+        DriveConstants.autoScoreConstraints,
+        drivetrain,
+        () -> feedbackCamera.getBotPoseEstimateMT2().isPresent() ? feedbackCamera.getBotPoseEstimateMT2().get().pose
+            : drivetrain.getState().Pose,
+        feedbackCamera::seesObject,
+        () -> feedbackCamera.getBotPoseEstimateMT2().isPresent()
+            ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+            : Utils.getCurrentTimeSeconds())),
+        
+        () -> targetPoseSupplier.get().getTranslation().getDistance(poseSupplier.get().getTranslation()) > 0.75
+      );
   }
 
   public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera, DoubleSupplier xSpeeds,
@@ -425,26 +451,35 @@ public class AutoScoreFactory {
   }
 
   public Command autoScoreLeftPole(){
-    return pathFindToLeftPole()
-        .alongWith(setElevatorHeightIntermediate().andThen(setElevatorHeight()))
+    return setElevatorHeightIntermediate()
+        .andThen(setElevatorHeight())
+        .alongWith(pathFindToLeftPole())
         .andThen(claw.clawOutake())
         .andThen(Commands.waitSeconds(0.4))
         .andThen(drivetrain.driveBack())
         .finallyDo(() -> {
-          if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_RIGHT)
+          if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_RIGHT && M_ROBOT_STATE.getDriveState() != DriveState.CORALEJECT)
             M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
         }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
   }
 
   public Command autoScoreRightPole(){
-    return pathFindToRightPole()
-        .alongWith(setElevatorHeightIntermediate().andThen(setElevatorHeight()))
-        .andThen(claw.clawOutake())
-        .andThen(Commands.waitSeconds(0.4))
-        .andThen(drivetrain.driveBack())
-        .finallyDo(() -> {
-          if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_LEFT)
-            M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+    return setElevatorHeightIntermediate()
+      .andThen(setElevatorHeight())
+      .alongWith(pathFindToRightPole())
+      .andThen(claw.clawOutake())
+      .andThen(Commands.waitSeconds(0.4))
+      .andThen(drivetrain.driveBack())
+      .finallyDo(() -> {
+        if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_LEFT && M_ROBOT_STATE.getDriveState() != DriveState.CORALEJECT)
+          M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+      }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+  }
+
+  public Command pidToPoleAuto(int poleNumber){
+    return new DriveToPose(
+      drivetrain, 
+      () -> drivetrain.getState().Pose, 
+      () -> AutoScoreConstants.kScorePoseMap.get(poleNumber));
   }
 }
