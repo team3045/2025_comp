@@ -39,6 +39,7 @@ import frc.robot.vision.apriltag.GremlinApriltagVision;
 import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
+import static frc.robot.constants.DriveConstants.ReducedSpeed;
 import static frc.robot.constants.ElevatorPivotConstants.firstStageLength;
 import static frc.robot.constants.ElevatorPivotConstants.secondStageLength;
 import static frc.robot.constants.FieldConstants.tooCloseDistance;
@@ -78,6 +79,7 @@ public class RobotContainer {
     public final Trigger algeaEjectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.ALGEAEJECT);
     public final Trigger coralEjectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.CORALEJECT);
     public final Trigger troughState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TROUGH);
+    public final Trigger bargeState = new Trigger(()-> M_ROBOT_STATE.getDriveState() == DriveState.BARGE);
     public final Trigger disableGlobalEstimation = (leftScoringState.or(rightScoringState).or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
@@ -200,6 +202,19 @@ public class RobotContainer {
                 .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                 processorState.negate()
             ));
+
+            joystick.options().onTrue(
+                Commands.either(
+                    Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.BARGE)), 
+                    claw.algeaOuttake()
+                    .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+                    .andThen(claw.hold())
+                    .andThen(drivetrain.driveBack())
+                    .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
+                    bargeState.negate()
+                ));
+
+        
             //Algae eject on share
         joystick.share().onTrue(
             Commands.either(
@@ -226,6 +241,11 @@ public class RobotContainer {
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .alongWith(elevatorPivot.goToProcessor()));
+
+        bargeState.onTrue(drivetrain.driveFacingProcessor(
+            () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * ReducedSpeed , 
+            () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * ReducedSpeed)
+        .alongWith(elevatorPivot.goToProcessor()));
 
         algeaEjectState.onTrue(elevatorPivot.goToProcessor());
 
@@ -256,7 +276,7 @@ public class RobotContainer {
         joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
-        joystick.options().onTrue(claw.clawOutake());
+        joystick.R3().onTrue(claw.clawOutake());
 
         configButtonBoard();
     }

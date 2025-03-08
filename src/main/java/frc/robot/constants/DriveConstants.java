@@ -26,6 +26,7 @@ public class DriveConstants {
 
     public static double MaxSpeed = 4; // TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
                                        // desired top speed
+    public static double ReducedSpeed = 2; // for barge score 
     public static double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);// RotationsPerSecond.of(1.5).in(RadiansPerSecond);
                                                                                            // // 3/4 of a rotation per
                                                                                            // second max angular
