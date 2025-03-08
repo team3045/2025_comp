@@ -500,6 +500,10 @@ public class ElevatorPivot extends SubsystemBase {
     return goToPosition(() -> processingHeight, () -> processingAngle);
   }
 
+  public Command goToBarge() {
+    return goToPosition(()-> bargeHeight, ()-> bargeAngle);
+  }
+
   /**
    * Increases the Elevator height by 20cm
    * 
