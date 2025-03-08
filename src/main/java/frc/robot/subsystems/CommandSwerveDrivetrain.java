@@ -480,7 +480,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 }
             }
 
-            return FieldConstants.algeaPoses.get(closestNum).getRotation().plus(Rotation2d.fromDegrees(15));
+            return FieldConstants.algeaPoses.get(closestNum).getRotation();
         };
 
         return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);

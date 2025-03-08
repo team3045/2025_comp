@@ -116,9 +116,9 @@ public class DriveToPose extends Command {
 
   public boolean atGoal() {
     return xController.atSetpoint() && yController.atSetpoint() && thetaController.atGoal() 
-      && drivetrainSubsystem.getState().Speeds.vxMetersPerSecond < 0.05
-      && drivetrainSubsystem.getState().Speeds.vyMetersPerSecond < 0.05
-      && drivetrainSubsystem.getState().Speeds.omegaRadiansPerSecond < Units.degreesToRadians(1);
+      && drivetrainSubsystem.getState().Speeds.vxMetersPerSecond < 0.1
+      && drivetrainSubsystem.getState().Speeds.vyMetersPerSecond < 0.1
+      && drivetrainSubsystem.getState().Speeds.omegaRadiansPerSecond < Units.degreesToRadians(5);
   }
 
   private void resetPIDControllers() {

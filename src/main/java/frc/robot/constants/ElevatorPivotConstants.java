@@ -62,7 +62,7 @@ public class ElevatorPivotConstants {
     public static final double intakingHeight = minimumHeight;
     public static final double processingHeight = minimumHeight + 0.1;
     public static final double maxHeight = 2.100; // m
-    public static final double troughHeight = 0.55;
+    public static final double troughHeight = minimumHeight;
 
     /* Collision */
     public static final double maxUpperCollisionAngle = 84;
@@ -71,7 +71,7 @@ public class ElevatorPivotConstants {
     public static final double travelAngle = maxUpperCollisionAngle - 10;
     public static final double stageToCarriageMax = 0.15;
     public static final double maxCollisionHeight = minimumHeight + 0.10;
-    public static final double troughAngle = 119;
+    public static final double troughAngle = 6;
 
     public static final double rotorToSensorRatio = 1.0;
     public static final double sensorToMechanismRatio = (56.0 / 12.0);

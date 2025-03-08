@@ -18,6 +18,7 @@ public class AutoScoreConstants {
     public static final double kElevatorResetHeight = 0;
     public static final double kPivotResetAngle = 0;
     public static final double kBackUpDist = 0.1;
+    public static final double troughOffset = 0.25;
 
     public static final double basicPIDDistance = 0.5;
 
@@ -45,7 +46,7 @@ public class AutoScoreConstants {
         kScorePoseMap.put(10, new Pose2d(4.98, 5.29, Rotation2d.fromDegrees(-120)));
         kScorePoseMap.put(11, new Pose2d(3.99, 5.27, Rotation2d.fromDegrees(-60)));
         kScorePoseMap.put(12, new Pose2d(3.66, 5.08, Rotation2d.fromDegrees(-60)));
-        kScorePoseMap.put(1, new Pose2d(3.18, 4.21, Rotation2d.kZero));
+        kScorePoseMap.put(1, new Pose2d(3.18, 4.18, Rotation2d.kZero));
         kScorePoseMap.put(2, new Pose2d(3.17, 3.850, Rotation2d.kZero));
         kScorePoseMap.put(3, new Pose2d(3.69, 2.91, Rotation2d.fromDegrees(60)));
         kScorePoseMap.put(4, new Pose2d(3.97, 2.76, Rotation2d.fromDegrees(60)));

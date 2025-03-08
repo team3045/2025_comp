@@ -216,6 +216,7 @@ public class RobotContainer {
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TROUGH)), 
                 claw.troughOuttake()
                 .andThen(Commands.waitSeconds(0.5))
+                .andThen(drivetrain.driveBack())
                 .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                 troughState.negate()
             ));
@@ -255,15 +256,7 @@ public class RobotContainer {
         joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
-        joystick.options().onTrue(Commands.either(
-            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CORALEJECT)), 
-            Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CORALEJECT)), 
-            coralEjectState));
-
-        coralEjectState.onTrue(claw.clawOutake());
-        coralEjectState.onFalse(claw.hold());
-
-        
+        joystick.options().onTrue(claw.clawOutake());
 
         configButtonBoard();
     }
@@ -299,6 +292,9 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("AAEcho", 
             autoScoreFactory.pidToPoleAuto(5).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+
+        NamedCommands.registerCommand("AADelta", 
+            autoScoreFactory.pidToPoleAuto(4).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
         
         NamedCommands.registerCommand("StartScoreF",
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
@@ -332,6 +328,22 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("StowArm", 
             elevatorPivot.stowArm().alongWith(claw.fullHold())
+        );
+
+        NamedCommands.registerCommand("intakePart2", 
+                claw.slowIntake()
+                .andThen(Commands.waitUntil(claw.hasCoral.negate()))
+                .andThen(claw.slowBackup())
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.fullHold())
+        );
+
+        NamedCommands.registerCommand("intakePart1", 
+            elevatorPivot.goToIntake()
+                .andThen(elevatorPivot.zeroElevator())
+                .andThen(claw.fullIntake()
+                .andThen(Commands.waitUntil(claw.hasCoral))
+                .andThen(claw.hold()))
         );
 
         NamedCommands.registerCommand("IntakeAlgae", 

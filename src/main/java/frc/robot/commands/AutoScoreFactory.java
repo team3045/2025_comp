@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.DriveConstants.autoScoreConstraints;
+
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -14,8 +16,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -446,14 +450,85 @@ public class AutoScoreFactory {
       return AutoScoreConstants.rightScorePoses.get(closestNum);
     };
 
-    return pathFindWithApriltagFeeback(
+        return pathFindWithApriltagFeeback(
       targetPoseSupplier, VisionConstants.limelights[0], VisionConstants.limelights[1]);
   }
+
+// public Command pathFindToRightTroughPole() {
+//     Supplier<Pose2d> targetPoseSupplier = () -> {
+//         List<Pose2d> poseList = AutoBuilder.shouldFlip() ? 
+//             AutoScoreConstants.flippedRightScorePoses : 
+//             AutoScoreConstants.rightScorePoses;
+
+//         Pose2d closest = poseList.get(0);
+//         int closestNum = 0;
+
+//         for (int i = 1; i < poseList.size(); i++) {
+//             double currentDiff = Math.abs(poseList.get(i).getRotation()
+//                 .minus(drivetrain.getState().Pose.getRotation()).getRadians());
+//             double closestDiff = Math.abs(closest.getRotation()
+//                 .minus(drivetrain.getState().Pose.getRotation()).getRadians());
+
+//             if (currentDiff < closestDiff) {
+//                 closest = poseList.get(i);
+//                 closestNum = i;
+//             }
+//         }
+
+//         // Adjust X and Y using proper trigonometric calculations
+//         double adjustedX = AutoScoreConstants.rightScorePoses.get(closestNum).getX()
+//             + Math.sin(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
+//         double adjustedY = AutoScoreConstants.rightScorePoses.get(closestNum).getY() 
+//             + Math.cos(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
+
+//         // Properly create the adjusted Pose2d object
+//         Pose2d adjustedPose = new Pose2d(adjustedX, adjustedY, new Rotation2d(closest.getRotation().getRadians()));
+
+//         return adjustedPose; // Return Pose2d, not Supplier<Pose2d>
+//     };
+
+//     return pathFindWithApriltagFeeback(
+//         targetPoseSupplier, VisionConstants.limelights[0], VisionConstants.limelights[1]);
+// }
+
+// public Command pathFindToLeftTroughPole() {
+//   Supplier<Pose2d> targetPoseSupplier = () -> {
+//       List<Pose2d> poseList = AutoBuilder.shouldFlip() ? 
+//           AutoScoreConstants.flippedRightScorePoses : 
+//           AutoScoreConstants.rightScorePoses;
+
+//       Pose2d closest = poseList.get(0);
+//       int closestNum = 0;
+
+//       for (int i = 1; i < poseList.size(); i++) {
+//           double currentDiff = Math.abs(poseList.get(i).getRotation()
+//               .minus(drivetrain.getState().Pose.getRotation()).getRadians());
+//           double closestDiff = Math.abs(closest.getRotation()
+//               .minus(drivetrain.getState().Pose.getRotation()).getRadians());
+
+//           if (currentDiff < closestDiff) {
+//               closest = poseList.get(i);
+//               closestNum = i;
+//           }
+//       }
+
+//       // Adjust X and Y using proper trigonometric calculations
+//       double adjustedX = AutoScoreConstants.rightScorePoses.get(closestNum).getX()
+//           - Math.sin(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
+//       double adjustedY = AutoScoreConstants.rightScorePoses.get(closestNum).getY() 
+//           - Math.cos(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
+
+//       // Properly create the adjusted Pose2d object
+//       Pose2d adjustedPose = new Pose2d(adjustedX, adjustedY, new Rotation2d(closest.getRotation().getRadians()));
+
+//       return adjustedPose; // Return Pose2d, not Supplier<Pose2d>
+//   };
 
   public Command autoScoreLeftPole(){
     return setElevatorHeightIntermediate()
         .andThen(setElevatorHeight())
         .alongWith(pathFindToLeftPole())
+        .deadlineFor(claw.nudge().unless(claw.hasCoral).repeatedly())
         .andThen(claw.clawOutake())
         .andThen(Commands.waitSeconds(0.4))
         .andThen(drivetrain.driveBack())
@@ -467,6 +542,7 @@ public class AutoScoreFactory {
     return setElevatorHeightIntermediate()
       .andThen(setElevatorHeight())
       .alongWith(pathFindToRightPole())
+      .deadlineFor(claw.nudge().unless(claw.hasCoral).repeatedly())
       .andThen(claw.clawOutake())
       .andThen(Commands.waitSeconds(0.4))
       .andThen(drivetrain.driveBack())

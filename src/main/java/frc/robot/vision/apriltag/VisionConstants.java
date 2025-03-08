@@ -52,7 +52,7 @@ public class VisionConstants {
                         new double[] { 0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068 },
                         1);
 
-        public static final double thetaModifier = 30;
+        public static final double thetaModifier = 200;
         public static final double multiTagModifier = 0.6;
         public static final double stabilityModifier = 7.5;
         public static final double maxChangeDistance = 4; // m
