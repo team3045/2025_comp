@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import static frc.robot.constants.ElevatorPivotConstants.maxHeight;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
@@ -57,11 +59,12 @@ public class ElevatorPivotConstants {
     public static final double carriageToGround = 0.476306;// Units.inchesToMeters(16.752); //This is from the top of
                                                            // carriage to the ground, when at lowest position
     public static final double minimumHeight = carriageToGround; // m
+    public static final double maxHeight = 2.100; // m
     public static final double stowHeight = minimumHeight;
     public static final double intakingReadyHeight = 0.973;
     public static final double intakingHeight = minimumHeight;
     public static final double processingHeight = minimumHeight + 0.1;
-    public static final double maxHeight = 2.100; // m
+    public static final double bargeHeight = maxHeight - 0.1;
     public static final double troughHeight = minimumHeight;
 
     /* Collision */
@@ -72,6 +75,7 @@ public class ElevatorPivotConstants {
     public static final double stageToCarriageMax = 0.15;
     public static final double maxCollisionHeight = minimumHeight + 0.10;
     public static final double troughAngle = 6;
+    public static final double bargeAngle = 60;
 
     public static final double rotorToSensorRatio = 1.0;
     public static final double sensorToMechanismRatio = (56.0 / 12.0);
