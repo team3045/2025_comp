@@ -245,7 +245,7 @@ public class RobotContainer {
         bargeState.onTrue(drivetrain.driveFacingProcessor(
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * ReducedSpeed , 
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * ReducedSpeed)
-        .alongWith(elevatorPivot.goToProcessor()));
+        .alongWith(elevatorPivot.goToBarge()));
 
         algeaEjectState.onTrue(elevatorPivot.goToProcessor());
 
