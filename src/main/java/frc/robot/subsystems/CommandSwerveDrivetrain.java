@@ -432,6 +432,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return driveFacingAngle(angleSupplier, xSpeeds, ySpeeds);
     }
 
+    public Command driveFacingBarge(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
+        Supplier<Rotation2d> angSupplier = () -> Rotation2d.k180deg;
+
+        return driveFacingAngle(angSupplier, xSpeeds, ySpeeds);
+    }
+
     public Command driveFacingProcessor(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds) {
         Supplier<Rotation2d> angSupplier = () -> {
             return AutoBuilder.shouldFlip()
@@ -520,6 +526,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command driveBack() {
         return applyRequest(() -> driveBack).withTimeout(0.2);
+    }
+
+    public Command driveForward() {
+        return applyRequest(() -> driveForward).withTimeout(0.2);
     }
 
     public Command driveBackAlgea() {

@@ -21,7 +21,8 @@ public class GremlinRobotState {
         PROCESSOR,
         TROUGH,
         ALGEAEJECT,
-        CORALEJECT
+        CORALEJECT,
+        BARGE
     }
 
     private GremlinRobotState() {

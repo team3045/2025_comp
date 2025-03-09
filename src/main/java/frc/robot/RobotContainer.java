@@ -208,8 +208,9 @@ public class RobotContainer {
                     Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.BARGE)), 
                     claw.algeaOuttake()
                     .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
+                    .andThen(Commands.waitSeconds(0.2))
                     .andThen(claw.hold())
-                    .andThen(drivetrain.driveBack())
+                    .andThen(drivetrain.driveForward())
                     .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                     bargeState.negate()
                 ));
@@ -242,7 +243,7 @@ public class RobotContainer {
                 () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
             .alongWith(elevatorPivot.goToProcessor()));
 
-        bargeState.onTrue(drivetrain.driveFacingProcessor(
+        bargeState.onTrue(drivetrain.driveFacingBarge(
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * ReducedSpeed , 
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * ReducedSpeed)
         .alongWith(elevatorPivot.goToBarge()));
@@ -276,7 +277,9 @@ public class RobotContainer {
         joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
-        joystick.R3().onTrue(claw.clawOutake());
+        joystick.R3().onTrue(Commands.runOnce(()-> M_ROBOT_STATE.setDriveState(DriveState.CORALEJECT)));
+
+        coralEjectState.onTrue(claw.clawOutake());
 
         configButtonBoard();
     }

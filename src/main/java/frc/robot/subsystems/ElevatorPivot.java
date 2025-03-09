@@ -388,15 +388,17 @@ public class ElevatorPivot extends SubsystemBase {
       // GremlinLogger.debugLog("second", true);
     }
 
+    if (hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle) {
+      tempTargetAngle = algeaTravelAngle;
+      // GremlinLogger.debugLog("4th", true);
+    };
+
     if (atTargetHeight()) {
       tempTargetAngle = targetAngleDegrees;
       // GremlinLogger.debugLog("third", true);
     }
 
-    if (hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle) {
-      tempTargetAngle = algeaTravelAngle;
-      // GremlinLogger.debugLog("4th", true);
-    };
+   
 
     GremlinLogger.debugLog("tempAngle", tempTargetAngle);
     GremlinLogger.debugLog("TempHeight", tempTargetHeight);
@@ -460,7 +462,7 @@ public class ElevatorPivot extends SubsystemBase {
    * @return a command to stow the arm
    */
   public Command stowArm() {
-    return goToPosition(() -> stowHeight, () -> stowAngle);
+    return goToPosition(() -> stowHeight, () -> hasAlgea() ? algeaTravelAngle : stowAngle);
   }
 
   public Command troughArm(){

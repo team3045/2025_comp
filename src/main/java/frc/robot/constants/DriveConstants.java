@@ -60,6 +60,9 @@ public class DriveConstants {
     public static final SwerveRequest.RobotCentric driveBack = new SwerveRequest.RobotCentric()
             .withVelocityX(MaxSpeed * -0.2);
 
+    public static final SwerveRequest.RobotCentric driveForward = new SwerveRequest.RobotCentric()
+            .withVelocityX(MaxSpeed * 0.2);
+
     public static final SwerveRequest.ApplyFieldSpeeds APPLY_FIELD_SPEEDS = new ApplyFieldSpeeds()
             .withDesaturateWheelSpeeds(true)
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
