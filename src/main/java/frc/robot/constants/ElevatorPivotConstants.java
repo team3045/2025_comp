@@ -64,7 +64,7 @@ public class ElevatorPivotConstants {
     public static final double intakingReadyHeight = 0.973;
     public static final double intakingHeight = minimumHeight;
     public static final double processingHeight = minimumHeight + 0.1;
-    public static final double bargeHeight = maxHeight - 0.05;
+    public static final double bargeHeight = maxHeight;
     public static final double troughHeight = minimumHeight;
 
     /* Collision */

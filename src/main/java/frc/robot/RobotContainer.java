@@ -210,7 +210,6 @@ public class RobotContainer {
                     .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
                     .andThen(Commands.waitSeconds(0.2))
                     .andThen(claw.hold())
-                    .andThen(drivetrain.driveForward())
                     .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                     bargeState.negate()
                 ));
