@@ -283,9 +283,10 @@ public class GremlinApriltagVision extends SubsystemBase {
         return;
   
     for (GremlinLimelightCamera ll : limelights){
-      Optional<PoseEstimate> poseEstimate = ll.getBotPoseEstimateMT2();;
+      Optional<PoseEstimate> poseEstimate = ll.getBotPoseEstimate();;
 
-      if(poseEstimate.isEmpty() || poseEstimate.get().pose == null || poseEstimate.get().pose.equals(Pose2d.kZero)){
+      if(poseEstimate.isEmpty() || poseEstimate.get().pose == null 
+        || poseEstimate.get().pose.equals(Pose2d.kZero) || poseEstimate.get().rawFiducials[0].ambiguity > 0.1){
         continue;
       }
 
@@ -297,7 +298,7 @@ public class GremlinApriltagVision extends SubsystemBase {
         visionUpdates.add(new TimestampedVisionUpdate(
           estimatedPose,
           poseEstimate.get().timestampSeconds,
-          VecBuilder.fill(0.1,0.1,1000)));
+          VecBuilder.fill(0.1,0.1,0.1)));
       }
     }
   }
