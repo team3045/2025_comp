@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -269,7 +270,10 @@ public class AutoScoreFactory {
             ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
             : Utils.getCurrentTimeSeconds())),
         
-        () -> targetPoseSupplier.get().getTranslation().getDistance(poseSupplier.get().getTranslation()) > 0.75
+        () -> targetPoseSupplier.get().getTranslation().getDistance(
+            AutoBuilder.shouldFlip() ? 
+            FlippingUtil.flipFieldPose(poseSupplier.get()).getTranslation() 
+            : poseSupplier.get().getTranslation()) > 0.75
       );
   }
 

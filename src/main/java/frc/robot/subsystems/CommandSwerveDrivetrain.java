@@ -433,7 +433,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command driveFacingBarge(DoubleSupplier xSpeeds, DoubleSupplier ySpeeds){
-        Supplier<Rotation2d> angSupplier = () -> Rotation2d.k180deg;
+        Supplier<Rotation2d> angSupplier = () -> AutoBuilder.shouldFlip() ? Rotation2d.kZero : Rotation2d.k180deg;
 
         return driveFacingAngle(angSupplier, xSpeeds, ySpeeds);
     }
