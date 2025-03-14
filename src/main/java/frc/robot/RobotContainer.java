@@ -233,7 +233,7 @@ public class RobotContainer {
             Commands.either(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TROUGH)), 
                 claw.troughOuttake()
-                .andThen(Commands.waitSeconds(0.5))
+                .andThen(Commands.waitSeconds(.75))
                 .andThen(drivetrain.driveBack())
                 .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                 troughState.negate()
