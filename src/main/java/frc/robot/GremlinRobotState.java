@@ -22,7 +22,9 @@ public class GremlinRobotState {
         TROUGH,
         ALGEAEJECT,
         CORALEJECT,
-        BARGE
+        BARGE,
+        CLIMBIN,
+        CLIMBOUT
     }
 
     private GremlinRobotState() {
@@ -48,5 +50,6 @@ public class GremlinRobotState {
         SmartDashboard.putBoolean("Teleop State", getDriveState() == DriveState.TELEOP);
         SmartDashboard.putBoolean("Scoring State", getDriveState() == DriveState.AUTOSCORE_LEFT || getDriveState() == DriveState.AUTOSCORE_RIGHT);
         SmartDashboard.putBoolean("Eject State", getDriveState() == DriveState.ALGEAEJECT);
+        
     }
 }

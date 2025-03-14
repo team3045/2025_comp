@@ -20,6 +20,8 @@ public class ClimberConstants {
     public static final float maxAmps = 80;
 
     public static final double climberSpeed = 60;
+    
+    public static final double spinAmount = 120;
 
     public static final double speedTolerance = 0.5; // RPS
 

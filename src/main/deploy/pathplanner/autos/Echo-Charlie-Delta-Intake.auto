@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.6
+                        "waitTime": 0.3
                       }
                     },
                     {
@@ -183,9 +183,35 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "driveBack"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartIntake"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Delta-Intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.0
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

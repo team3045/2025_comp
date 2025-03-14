@@ -367,8 +367,8 @@ public class GremlinApriltagVision extends SubsystemBase {
   }
 
   private void logLimelights() {
-    Optional<PoseEstimate> rightPose = limelights[0].getBotPoseEstimateMT2();
-    Optional<PoseEstimate> leftPose = limelights[1].getBotPoseEstimateMT2();
+    Optional<PoseEstimate> rightPose = limelights[0].getBotPoseEstimate();
+    Optional<PoseEstimate> leftPose = limelights[1].getBotPoseEstimate();
 
     if (rightPose.isPresent() && rightPose.get().pose != null) {
       LLrightCalculatedPosePublisher.set(rightPose.get().pose);

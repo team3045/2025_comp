@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6202868852459016,
-        "y": 5.1698258196721305
+        "x": 3.5843237704918027,
+        "y": 5.217776639344262
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9249999999999994,
-        "y": 5.697284836065573
+        "x": 2.8890368852459005,
+        "y": 5.745235655737704
       },
       "isLocked": false,
       "linkedName": "Llama"
@@ -40,8 +40,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.75,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
@@ -57,5 +57,5 @@
     "velocity": 0,
     "rotation": -59.99999999999999
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -6,11 +6,13 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.ClimberConstants.*;
 
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
   private static TalonFX motor = new TalonFX(climberID, canbus);
@@ -29,16 +31,15 @@ public class Climber extends SubsystemBase {
 
   @SuppressWarnings("unused")
   private double targetSpeed;
-/*
+
 public void spin(double numRotations) {
         PositionVoltage request = new PositionVoltage(motor.getPosition().getValueAsDouble() - numRotations)
                 .withSlot(1)
                 .withUpdateFreqHz(1000);
 
         motor.setControl(request);
-
     }
-*/
+
     
   public void setClimbTargetSpeed(double speedRPS) {
       targetSpeed = speedRPS;
@@ -51,7 +52,13 @@ public void spin(double numRotations) {
   }
 
 
+ public Command spinClimberIn() {
+  return this.runOnce(() -> spin(-ClimberConstants.spinAmount));
+ }
 
+ public Command spinClimberOut() {
+  return this.runOnce(() -> spin(ClimberConstants.spinAmount));
+ }
 
 
   public Command runForward(){
@@ -67,11 +74,11 @@ public void spin(double numRotations) {
   }
 
   public Command climberOut(){
-    return this.runOnce(() -> motor.setVoltage(8));
+    return this.runOnce(() -> motor.setVoltage(10));
   }
 
   public Command climberIn(){
-    return this.runOnce(() -> motor.setVoltage(-8));
+    return this.runOnce(() -> motor.setVoltage(-10));
   }
 
   public Command zeroClimber(){

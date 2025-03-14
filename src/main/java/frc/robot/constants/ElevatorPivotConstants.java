@@ -66,6 +66,7 @@ public class ElevatorPivotConstants {
     public static final double processingHeight = minimumHeight + 0.1;
     public static final double bargeHeight = maxHeight;
     public static final double troughHeight = minimumHeight;
+    public static final double climbHeight = 0.973;
 
     /* Collision */
     public static final double maxUpperCollisionAngle = 84;
@@ -163,8 +164,8 @@ public class ElevatorPivotConstants {
         L2(0.77),
         L4_AUTO(1.9),
         L4_V2(1.92),
-        LOW_ALGEA(1.062),
-        HIGH_ALGEA(1.49);
+        LOW_ALGEA(1.052),
+        HIGH_ALGEA(1.47);
 
         private final double height;
 

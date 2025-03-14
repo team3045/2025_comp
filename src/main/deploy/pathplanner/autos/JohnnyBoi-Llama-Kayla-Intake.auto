@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ProcStart-Echo"
+                  "pathName": "BargeStart-JohnnyBoi"
                 }
               },
               {
@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.6
+                        "waitTime": 0.1
                       }
                     },
                     {
@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AAEcho"
+            "name": "AAJhonnyBoi"
           }
         },
         {
@@ -59,7 +59,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Echo-Intake"
+                        "pathName": "JohnnyBoi-Intake"
                       }
                     },
                     {
@@ -81,7 +81,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake-Charlie"
+                  "pathName": "Intake-Llama"
                 }
               },
               {
@@ -109,7 +109,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AACharlie"
+            "name": "AALlama"
           }
         },
         {
@@ -129,7 +129,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Charlie-Intake"
+                        "pathName": "Llama-Intake"
                       }
                     },
                     {
@@ -151,7 +151,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake-Delta"
+                  "pathName": "Intake-Kayla"
                 }
               },
               {
@@ -179,19 +179,45 @@
         {
           "type": "named",
           "data": {
-            "name": "AADelta"
+            "name": "AAKayla"
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "driveBack"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartIntake"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Kayla - Intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.0
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Processor Side",
+  "folder": "Barge Side",
   "choreoAuto": false
 }

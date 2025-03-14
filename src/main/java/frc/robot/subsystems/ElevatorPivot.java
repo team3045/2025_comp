@@ -9,6 +9,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -374,7 +375,7 @@ public class ElevatorPivot extends SubsystemBase {
     // GremlinLogger.debugLog("4th", false);
 
     if (targetAngleDegrees > getPivotAngleDegrees()
-        && getPivotAngleDegrees() < maxUpperCollisionAngle) {
+        && getPivotAngleDegrees() < maxUpperCollisionAngle && !hasAlgea()) {
       tempTargetAngle = travelAngle;
       tempTargetHeight = heightMeters;
       // GremlinLogger.debugLog("first", true);
@@ -467,6 +468,10 @@ public class ElevatorPivot extends SubsystemBase {
 
   public Command troughArm(){
     return goToPosition(() -> troughHeight, () -> troughAngle);
+  }
+
+  public Command climbPosition(){
+    return goToPosition(() -> climbHeight, () -> troughAngle);
   }
 
   public Command zeroElevator(){
@@ -600,6 +605,22 @@ public class ElevatorPivot extends SubsystemBase {
       voltage = 0;
       pivotMotor.setVoltage(voltage);
       SmartDashboard.putNumber("voltage", voltage);
+    });
+  }
+
+  public Command applyDownwardCurrent(){
+    return this.runOnce(() -> {
+      double current = -10;
+      leftMotor.setControl(new TorqueCurrentFOC(current));
+      rightMotor.setControl(new TorqueCurrentFOC(current));
+    });
+  }
+
+  public Command zeroCurrent(){
+    return this.runOnce(() -> {
+      double current = 0;
+      leftMotor.setControl(new TorqueCurrentFOC(current));
+      rightMotor.setControl(new TorqueCurrentFOC(current));
     });
   }
 

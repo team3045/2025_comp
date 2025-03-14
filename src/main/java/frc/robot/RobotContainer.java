@@ -80,6 +80,8 @@ public class RobotContainer {
     public final Trigger coralEjectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.CORALEJECT);
     public final Trigger troughState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TROUGH);
     public final Trigger bargeState = new Trigger(()-> M_ROBOT_STATE.getDriveState() == DriveState.BARGE);
+    public final Trigger climbInState = new Trigger(()-> M_ROBOT_STATE.getDriveState() == DriveState.CLIMBIN);
+    public final Trigger climbOutState = new Trigger(()-> M_ROBOT_STATE.getDriveState() == DriveState.CLIMBOUT);
     public final Trigger disableGlobalEstimation = (leftScoringState.or(rightScoringState).or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
@@ -177,6 +179,7 @@ public class RobotContainer {
             .alongWith( 
                 elevatorPivot.zeroElevator().andThen( 
                     elevatorPivot.goToIntake()
+                    .andThen(elevatorPivot.applyDownwardCurrent())
                     .andThen(claw.fullIntake()
                         .andThen(Commands.waitUntil(claw.hasCoral))
                         .andThen(claw.slowIntake())
@@ -190,7 +193,7 @@ public class RobotContainer {
 
 
 
-        intakeState.onFalse(claw.fullHold());
+        intakeState.onFalse(claw.fullHold().alongWith(elevatorPivot.zeroCurrent()));
 
         joystick.triangle().onTrue(
             Commands.either(
@@ -257,16 +260,35 @@ public class RobotContainer {
         //Panic button, raises elevator on first press, zeroes on second
         joystick.povLeft().OnPressTwice(
             elevatorPivot.goToHeight(() -> firstStageLength + secondStageLength), 
-            elevatorPivot.zeroElevator());
+            elevatorPivot.stowArm().andThen(elevatorPivot.zeroElevator()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-
-        joystick.cross().OnPressTwice(
-            climber.climberOut(), 
-            climber.climberIn());
+        joystick.cross()
+            .OnPressTwice(climber.climberOut().alongWith(elevatorPivot.climbPosition()),
+            climber.climberIn().alongWith(elevatorPivot.climbPosition()));
 
         joystick.cross().onFalse(climber.zeroClimber());
+
+
+        // joystick.cross().onTrue(
+        // (
+        //     Commands.either(climber.spinClimberOut().alongWith(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CLIMBOUT))),
+        //      (climber.climberIn()).alongWith(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CLIMBOUT))), 
+        //      climbOutState.negate())
+        //     ))
+        // ;
+        
+        // climbOutState.whileTrue(drivetrain.driveFacingBarge(
+        //     () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * ReducedSpeed, 
+        //     () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * ReducedSpeed).alongWith(elevatorPivot.climbPosition()));
+
+
+        // climbOutState.onFalse(
+        //      Commands.runOnce(() -> climber.stop()));
+        
+
+        // climbInState.whileTrue(elevatorPivot.climbPosition());
 
 
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
@@ -318,6 +340,15 @@ public class RobotContainer {
         NamedCommands.registerCommand("AADelta", 
             autoScoreFactory.pidToPoleAuto(4).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
         
+        NamedCommands.registerCommand("AAJhonnyBoi", 
+            autoScoreFactory.pidToPoleAuto(10).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+        
+        NamedCommands.registerCommand("AALlama", 
+            autoScoreFactory.pidToPoleAuto(12).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+           
+        NamedCommands.registerCommand("AAKayla", 
+            autoScoreFactory.pidToPoleAuto(11).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+        
         NamedCommands.registerCommand("StartScoreF",
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
             VisionConstants.limelights[1], 
@@ -363,6 +394,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("intakePart1", 
             elevatorPivot.goToIntake()
                 .andThen(elevatorPivot.zeroElevator())
+                .andThen(elevatorPivot.applyDownwardCurrent())
                 .andThen(claw.fullIntake()
                 .andThen(Commands.waitUntil(claw.hasCoral))
                 .andThen(claw.hold()))

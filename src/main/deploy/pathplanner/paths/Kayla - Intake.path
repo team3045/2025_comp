@@ -3,45 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.342622950819672,
-        "y": 7.135809426229507
+        "x": 3.9079918032786884,
+        "y": 5.361629098360655
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0544983470480327,
-        "y": 6.34208935311933
+        "x": 2.6013319672131145,
+        "y": 6.28468237704918
       },
       "isLocked": false,
-      "linkedName": "TopIntake"
+      "linkedName": "Kayla"
     },
     {
       "anchor": {
-        "x": 3.5843237704918027,
-        "y": 5.217776639344262
+        "x": 1.342622950819672,
+        "y": 7.135809426229507
       },
       "prevControl": {
-        "x": 3.3648227414137453,
-        "y": 5.496464509690263
+        "x": 2.0978483606557377,
+        "y": 6.63232581967213
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Llama"
+      "linkedName": "TopIntake"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "StartLimelightLeft",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 2.5,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
@@ -49,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -55.0
   },
   "reversed": false,
   "folder": "Barge Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -55.0
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": false
 }
