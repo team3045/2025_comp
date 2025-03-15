@@ -47,7 +47,7 @@ public class GremlinLimelightCamera implements AutoCloseable {
         }
 
         setCamPoseRobotSpace(cameraPose);
-        setLED(VisionLEDMode.kOn);
+        setLED(VisionLEDMode.kDefault);
 
         HAL.report(tResourceType.kResourceType_PhotonCamera, InstanceCount);
         InstanceCount++;
