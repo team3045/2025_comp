@@ -80,6 +80,7 @@ public class RobotContainer {
     public final Trigger coralEjectState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.CORALEJECT);
     public final Trigger troughState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.TROUGH);
     public final Trigger bargeState = new Trigger(()-> M_ROBOT_STATE.getDriveState() == DriveState.BARGE);
+    public final Trigger groundAlgaeState = new Trigger(() -> M_ROBOT_STATE.getDriveState() == DriveState.GROUNDALGAE);
     public final Trigger disableGlobalEstimation = (leftScoringState.or(rightScoringState).or(algeaState)).and(() -> drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance)).debounce(0.4,DebounceType.kFalling);
 
     public RobotContainer() {
@@ -162,6 +163,18 @@ public class RobotContainer {
 
        
         joystick.square().onTrue(elevatorPivot.stowArm());
+
+
+        groundAlgaeState.onTrue(
+            autoScoreFactory.groundAlgaeCommand()
+            .finallyDo(() -> {
+                M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+            })
+        );
+        groundAlgaeState.onFalse(
+            elevatorPivot.stowArm()
+                            .alongWith(claw.fullHold())
+        );
 
         joystick.R2().onTrue(
             new ConditionalCommand(
@@ -504,12 +517,24 @@ public class RobotContainer {
                 updateHeight(3));
         buttonBoard.button(8).onTrue(
                 updateHeight(2));
-        buttonBoard.button(9).onTrue(
-                updateHeight(1));
+        buttonBoard.button(9).onTrue( // I'm going to comandeer this for ground algae
+                toggleGroundAlgae());
     }
 
     public Command updateHeight(int height){
         return Commands.runOnce(() -> heightPublisher.set(height));
     }
-
+    public Command toggleGroundAlgae() {
+        return new ConditionalCommand(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.GROUNDALGAE)),
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)),
+                groundAlgaeState.negate());
+    }
 }
+/*
+ * 
+ * Command groundAlgae =  new ConditionalCommand(
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.GROUNDALGAE)),
+                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)),
+                groundAlgaeState.negate());
+ */

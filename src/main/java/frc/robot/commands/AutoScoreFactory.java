@@ -273,6 +273,13 @@ public class AutoScoreFactory {
       );
   }
 
+  public Command groundAlgaeCommand() {
+    return elevatorPivot.goToGround()
+            .alongWith(claw.algeaIntake())
+            .until(ElevatorPivot.hasAlgea)
+            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea));
+  }
+
   public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera, DoubleSupplier xSpeeds,
       DoubleSupplier ySpeeds) {
     DoubleSupplier heightSupplier = () -> {
