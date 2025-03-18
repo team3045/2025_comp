@@ -175,13 +175,17 @@ public class RobotContainer {
             elevatorPivot.stowArm()
                             .alongWith(claw.fullHold())
         );
+        joystick.R2().onTrue(
+            toggleGroundAlgae()
+        );
+        /* 
 
         joystick.R2().onTrue(
             new ConditionalCommand(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.INTAKE)), 
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
                 intakeState.negate())
-        );
+        );*/
 
         intakeState.whileTrue(
             drivetrain.driveFacingIntake(
@@ -517,8 +521,8 @@ public class RobotContainer {
                 updateHeight(3));
         buttonBoard.button(8).onTrue(
                 updateHeight(2));
-        buttonBoard.button(9).onTrue( // I'm going to comandeer this for ground algae
-                toggleGroundAlgae());
+        buttonBoard.button(9).onTrue( 
+                updateHeight(1));
     }
 
     public Command updateHeight(int height){
