@@ -55,6 +55,8 @@ public class ElevatorPivotConstants {
     public static final double stowAngle = 119;
     public static final double intakingAngle = 119;
     public static final double processingAngle = -65;
+    public static final double algeaReadyAngle = -65;
+    public static final double algeaThrowAngle = 70;
 
     public static final double carriageToGround = 0.476306;// Units.inchesToMeters(16.752); //This is from the top of
                                                            // carriage to the ground, when at lowest position
@@ -67,6 +69,8 @@ public class ElevatorPivotConstants {
     public static final double bargeHeight = maxHeight;
     public static final double troughHeight = minimumHeight;
     public static final double climbHeight = 0.973;
+    public static final double algeaReadyHeight = 0.973;
+    public static final double algeaThrowHeight = algeaReadyHeight + 1;
 
     /* Collision */
     public static final double maxUpperCollisionAngle = 84;
