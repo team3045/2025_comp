@@ -175,17 +175,17 @@ public class RobotContainer {
             elevatorPivot.stowArm()
                             .alongWith(claw.fullHold())
         );
-        joystick.R2().onTrue(
+        joystick.povRight().onTrue(
             toggleGroundAlgae()
         );
-        /* 
+         
 
         joystick.R2().onTrue(
             new ConditionalCommand(
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.INTAKE)), 
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
                 intakeState.negate())
-        );*/
+        );
 
         intakeState.whileTrue(
             drivetrain.driveFacingIntake(
@@ -290,7 +290,7 @@ public class RobotContainer {
         // reset the field-centric heading on down bumper press
         joystick.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
+      //.  joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
         joystick.R3().onTrue(Commands.runOnce(()-> M_ROBOT_STATE.setDriveState(DriveState.CORALEJECT)));

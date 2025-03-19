@@ -507,7 +507,7 @@ public class ElevatorPivot extends SubsystemBase {
   }
 
   public Command goToGround() {
-    return goToPosition(() -> minimumHeight, () -> groundAngle); // min is set to -73
+    return goToPosition(() -> groundHeight, () -> groundAngle); // min is set to -73
   }
 
   /**
