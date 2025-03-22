@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveToPose;
@@ -531,6 +532,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Command driveForward() {
         return applyRequest(() -> driveForward).withTimeout(0.2);
     }
+
+    public Command driveBackwardBarge() {
+        return applyRequest(() -> driveBack).withTimeout(0.8).andThen(Commands.runOnce(() -> setControl(brake)));
+    }
+
 
     public Command driveBackAlgea() {
         return applyRequest(() -> driveBack).withTimeout(0.5);

@@ -209,10 +209,11 @@ public class RobotContainer {
             joystick.options().onTrue(
                 Commands.either(
                     Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.BARGE)), 
-                    claw.algeaOuttake()
-                    .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea.negate()))
-                    .andThen(Commands.waitSeconds(0.2))
+                    elevatorPivot.goToBargeThrow()
+                    .alongWith(drivetrain.driveBackwardBarge())
+                    .alongWith(Commands.waitSeconds(0.4).andThen(claw.algeaOuttake()))
                     .andThen(claw.hold())
+                    .andThen(elevatorPivot.stowArm())
                     .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
                     bargeState.negate()
                 ));
@@ -248,7 +249,7 @@ public class RobotContainer {
         bargeState.onTrue(drivetrain.driveFacingBarge(
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * ReducedSpeed , 
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * ReducedSpeed)
-        .alongWith(elevatorPivot.goToBarge()));
+        .alongWith(elevatorPivot.goToBargeReady()));
 
         algeaEjectState.onTrue(elevatorPivot.goToProcessor());
 

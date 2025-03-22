@@ -389,7 +389,7 @@ public class ElevatorPivot extends SubsystemBase {
       // GremlinLogger.debugLog("second", true);
     }
 
-    if (hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle) {
+    if (hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle && getHeight() < algeaReadyHeight) {
       tempTargetAngle = algeaTravelAngle;
       // GremlinLogger.debugLog("4th", true);
     };
@@ -509,6 +509,14 @@ public class ElevatorPivot extends SubsystemBase {
 
   public Command goToBarge() {
     return goToPosition(()-> bargeHeight, ()-> bargeAngle);
+  }
+
+  public Command goToBargeReady(){
+    return goToPosition(() -> algeaReadyHeight, () -> algeaReadyAngle);
+  }
+
+  public Command goToBargeThrow(){
+    return goToPosition(() -> algeaThrowHeight, () -> algeaThrowAngle);
   }
 
   /**
