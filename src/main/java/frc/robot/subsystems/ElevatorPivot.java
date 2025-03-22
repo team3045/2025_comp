@@ -511,6 +511,10 @@ public class ElevatorPivot extends SubsystemBase {
     return goToPosition(()-> bargeHeight, ()-> bargeAngle);
   }
 
+  public Command goToGround() {
+    return goToPosition(() -> groundHeight, () -> groundAngle); // min is set to -73
+  }
+
   public Command goToBargeReady(){
     return goToPosition(() -> algeaReadyHeight, () -> algeaReadyAngle);
   }
@@ -682,6 +686,7 @@ public class ElevatorPivot extends SubsystemBase {
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
     SmartDashboard.putBoolean("At Height", atTargetHeight());
     SmartDashboard.putBoolean("At Angle", atTargetAngle());
+    SmartDashboard.putNumber("Pivot Angle", getPivotAngleDegrees());
     GremlinLogger.debugLog("Elevator Velocity", getVerticalVelocity());
   }
 

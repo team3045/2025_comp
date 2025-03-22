@@ -18,6 +18,7 @@ public class GremlinRobotState {
         AUTOSCORE_RIGHT,
         INTAKE,
         ALGEA,
+        GROUNDALGAE,
         PROCESSOR,
         TROUGH,
         ALGEAEJECT,
