@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.070799180327868,
+        "y": 2.700358606557377
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.029663934426229,
+        "y": 2.0533196721311473
+      },
+      "isLocked": false,
+      "linkedName": "Echo"
+    },
+    {
+      "anchor": {
+        "x": 1.427,
+        "y": 0.794
+      },
+      "prevControl": {
+        "x": 1.8435092323227384,
+        "y": 1.6018656809528253
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "BotIntake"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "StopLimelights",
+      "waypointRelativePos": 0.04321404456448792,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.75,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 55.0
+  },
+  "reversed": false,
+  "folder": "Processor Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

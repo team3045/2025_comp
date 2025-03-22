@@ -1,0 +1,255 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.17,
+        "y": 4.17
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7421394700549975,
+        "y": 4.17
+      },
+      "isLocked": true,
+      "linkedName": "Alpha"
+    },
+    {
+      "anchor": {
+        "x": 3.17,
+        "y": 3.83
+      },
+      "prevControl": {
+        "x": 2.3240140952651966,
+        "y": 4.2586919952682605
+      },
+      "nextControl": {
+        "x": 4.015985904734803,
+        "y": 3.401308004731739
+      },
+      "isLocked": true,
+      "linkedName": "Bravo"
+    },
+    {
+      "anchor": {
+        "x": 3.62,
+        "y": 2.83
+      },
+      "prevControl": {
+        "x": 3.1720888282008284,
+        "y": 3.0397212514786682
+      },
+      "nextControl": {
+        "x": 4.067911171799173,
+        "y": 2.620278748521332
+      },
+      "isLocked": true,
+      "linkedName": "Charlie"
+    },
+    {
+      "anchor": {
+        "x": 3.86,
+        "y": 2.63
+      },
+      "prevControl": {
+        "x": 3.4091904741584433,
+        "y": 2.6856496089129163
+      },
+      "nextControl": {
+        "x": 4.310809525841556,
+        "y": 2.5743503910870835
+      },
+      "isLocked": false,
+      "linkedName": "Delta"
+    },
+    {
+      "anchor": {
+        "x": 5.070799180327868,
+        "y": 2.700358606557377
+      },
+      "prevControl": {
+        "x": 4.701895390124557,
+        "y": 2.7666556037720906
+      },
+      "nextControl": {
+        "x": 5.4397029705311795,
+        "y": 2.634061609342663
+      },
+      "isLocked": true,
+      "linkedName": "Echo"
+    },
+    {
+      "anchor": {
+        "x": 5.287,
+        "y": 2.928
+      },
+      "prevControl": {
+        "x": 5.056072198701644,
+        "y": 3.0237723894841664
+      },
+      "nextControl": {
+        "x": 5.517927801298356,
+        "y": 2.8322276105158335
+      },
+      "isLocked": true,
+      "linkedName": "Foxtrot"
+    },
+    {
+      "anchor": {
+        "x": 5.92,
+        "y": 3.8554
+      },
+      "prevControl": {
+        "x": 5.724409146180482,
+        "y": 4.011105548719858
+      },
+      "nextControl": {
+        "x": 6.115590853819518,
+        "y": 3.6996944512801426
+      },
+      "isLocked": true,
+      "linkedName": "Gamma"
+    },
+    {
+      "anchor": {
+        "x": 5.811,
+        "y": 4.188400000000001
+      },
+      "prevControl": {
+        "x": 5.820090374789801,
+        "y": 4.489779516025045
+      },
+      "nextControl": {
+        "x": 5.8019096252101985,
+        "y": 3.887020483974956
+      },
+      "isLocked": true,
+      "linkedName": "Horse"
+    },
+    {
+      "anchor": {
+        "x": 5.31,
+        "y": 5.11
+      },
+      "prevControl": {
+        "x": 5.2551274908493895,
+        "y": 5.449106401242174
+      },
+      "nextControl": {
+        "x": 5.36487250915061,
+        "y": 4.7708935987578265
+      },
+      "isLocked": true,
+      "linkedName": "Igloo"
+    },
+    {
+      "anchor": {
+        "x": 5.082786885245901,
+        "y": 5.3496413934426235
+      },
+      "prevControl": {
+        "x": 4.922652777326669,
+        "y": 5.907358143054444
+      },
+      "nextControl": {
+        "x": 5.242920993165133,
+        "y": 4.791924643830803
+      },
+      "isLocked": true,
+      "linkedName": "JohnnyBoi"
+    },
+    {
+      "anchor": {
+        "x": 3.9079918032786884,
+        "y": 5.361629098360655
+      },
+      "prevControl": {
+        "x": 3.7082519449746507,
+        "y": 5.891030114106962
+      },
+      "nextControl": {
+        "x": 4.107731661582726,
+        "y": 4.832228082614349
+      },
+      "isLocked": true,
+      "linkedName": "Kayla"
+    },
+    {
+      "anchor": {
+        "x": 3.5843237704918027,
+        "y": 5.217776639344262
+      },
+      "prevControl": {
+        "x": 4.2644931946453895,
+        "y": 5.217776639344262
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Llama"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": 59.99999999999999
+    },
+    {
+      "waypointRelativePos": 3,
+      "rotationDegrees": 59.99999999999999
+    },
+    {
+      "waypointRelativePos": 4,
+      "rotationDegrees": 119.99999999999999
+    },
+    {
+      "waypointRelativePos": 5,
+      "rotationDegrees": 119.99999999999999
+    },
+    {
+      "waypointRelativePos": 6,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 7,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 8,
+      "rotationDegrees": -119.99999999999999
+    },
+    {
+      "waypointRelativePos": 9,
+      "rotationDegrees": -119.99999999999999
+    },
+    {
+      "waypointRelativePos": 10,
+      "rotationDegrees": -59.99999999999999
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.75,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

@@ -16,12 +16,11 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveWheelRadiusCharacterization extends Command {
-  private static final double characterizationSpeed = 0.5; //Rads Per Sec
+  private static final double characterizationSpeed = 0.5; // Rads Per Sec
   private static final double driveRadius = DriveConstants.drivebaseRadius;
 
   private DoubleSupplier gyroYawRadsSupplier;
-  private CommandSwerveDrivetrain drivetrain; 
-  
+  private CommandSwerveDrivetrain drivetrain;
 
   public enum Direction {
     CLOCKWISE(-1),
@@ -29,7 +28,9 @@ public class DriveWheelRadiusCharacterization extends Command {
 
     private final int value;
 
-    private Direction(int value){this.value = value;}
+    private Direction(int value) {
+      this.value = value;
+    }
   }
 
   private Direction omegaDirection;
@@ -42,13 +43,11 @@ public class DriveWheelRadiusCharacterization extends Command {
 
   private double currentEffectiveWheelRadius = 0.0;
 
-
   /** Creates a new DriveWheelRadiusCharacterization. */
   public DriveWheelRadiusCharacterization(CommandSwerveDrivetrain drive, Direction direction) {
     this.drivetrain = drive;
     this.gyroYawRadsSupplier = () -> drivetrain.getRawHeadingRadians();
     this.omegaDirection = direction;
-
 
     addRequirements(drivetrain);
   }
@@ -56,20 +55,20 @@ public class DriveWheelRadiusCharacterization extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-     // Reset
-     lastGyroYawRads = gyroYawRadsSupplier.getAsDouble();
-     accumGyroYawRads = 0.0;
- 
-     startWheelPositions = drivetrain.getWheelPositionsRadians();
- 
-     omegaLimiter.reset(0);
+    // Reset
+    lastGyroYawRads = gyroYawRadsSupplier.getAsDouble();
+    accumGyroYawRads = 0.0;
+
+    startWheelPositions = drivetrain.getWheelPositionsRadians();
+
+    omegaLimiter.reset(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     drivetrain.turnAtRotationalRate(
-      omegaLimiter.calculate(omegaDirection.value * characterizationSpeed));
+        omegaLimiter.calculate(omegaDirection.value * characterizationSpeed));
 
     // Get yaw and wheel positions
     accumGyroYawRads += MathUtil.angleModulus(gyroYawRadsSupplier.getAsDouble() - lastGyroYawRads);
@@ -84,7 +83,8 @@ public class DriveWheelRadiusCharacterization extends Command {
     currentEffectiveWheelRadius = (accumGyroYawRads * driveRadius) / averageWheelPosition;
     SmartDashboard.putNumber("RadiusCharacterization/DrivePosition", averageWheelPosition);
     SmartDashboard.putNumber("RadiusCharacterization/AccumGyroYawRads", accumGyroYawRads);
-    SmartDashboard.putNumber("RadiusCharacterization/effectiveWheelRadius", Units.metersToInches(currentEffectiveWheelRadius));
+    SmartDashboard.putNumber("RadiusCharacterization/effectiveWheelRadius",
+        Units.metersToInches(currentEffectiveWheelRadius));
 
   }
 

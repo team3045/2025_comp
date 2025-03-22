@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.427,
+        "y": 0.794
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0983114754098358,
+        "y": 1.4653114754098362
+      },
+      "isLocked": false,
+      "linkedName": "BotIntake"
+    },
+    {
+      "anchor": {
+        "x": 3.62,
+        "y": 2.83
+      },
+      "prevControl": {
+        "x": 3.0442788285492393,
+        "y": 2.3262439749805828
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Charlie"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "StartLimelightRight",
+      "waypointRelativePos": 0.17555705604321487,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 59.99999999999999
+  },
+  "reversed": false,
+  "folder": "Processor Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 55.0
+  },
+  "useDefaultConstraints": false
+}

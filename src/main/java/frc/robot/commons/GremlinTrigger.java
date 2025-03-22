@@ -15,13 +15,18 @@ import java.util.function.BooleanSupplier;
 /**
  * This class provides an easy way to link commands to conditions.
  *
- * <p>It is very easy to link a button to a command. For instance, you could link the trigger button
+ * <p>
+ * It is very easy to link a button to a command. For instance, you could link
+ * the trigger button
  * of a joystick to a "score" command.
  *
- * <p>Triggers can easily be composed for advanced functionality using the {@link
- * #and(BooleanSupplier)}, {@link #or(BooleanSupplier)}, {@link #negate()} operators.
+ * <p>
+ * Triggers can easily be composed for advanced functionality using the {@link
+ * #and(BooleanSupplier)}, {@link #or(BooleanSupplier)}, {@link #negate()}
+ * operators.
  *
- * <p>This class is provided by the NewCommands VendorDep
+ * <p>
+ * This class is provided by the NewCommands VendorDep
  */
 public class GremlinTrigger implements BooleanSupplier {
   private final BooleanSupplier m_condition;
@@ -30,7 +35,7 @@ public class GremlinTrigger implements BooleanSupplier {
   /**
    * Creates a new trigger based on the given condition.
    *
-   * @param loop The loop instance that polls this trigger.
+   * @param loop      The loop instance that polls this trigger.
    * @param condition the condition represented by this trigger
    */
   public GremlinTrigger(EventLoop loop, BooleanSupplier condition) {
@@ -41,7 +46,8 @@ public class GremlinTrigger implements BooleanSupplier {
   /**
    * Creates a new trigger based on the given condition.
    *
-   * <p>Polled by the default scheduler button loop.
+   * <p>
+   * Polled by the default scheduler button loop.
    *
    * @param condition the condition represented by this trigger
    */
@@ -50,7 +56,8 @@ public class GremlinTrigger implements BooleanSupplier {
   }
 
   /**
-   * Starts the given command whenever the condition changes from `false` to `true`.
+   * Starts the given command whenever the condition changes from `false` to
+   * `true`.
    *
    * @param command the command to start
    * @return this trigger, so calls can be chained
@@ -76,7 +83,8 @@ public class GremlinTrigger implements BooleanSupplier {
   }
 
   /**
-   * Starts the given command whenever the condition changes from `true` to `false`.
+   * Starts the given command whenever the condition changes from `true` to
+   * `false`.
    *
    * @param command the command to start
    * @return this trigger, so calls can be chained
@@ -102,10 +110,13 @@ public class GremlinTrigger implements BooleanSupplier {
   }
 
   /**
-   * Starts the given command when the condition changes to `true` and cancels it when the condition
+   * Starts the given command when the condition changes to `true` and cancels it
+   * when the condition
    * changes to `false`.
    *
-   * <p>Doesn't re-start the command if it ends while the condition is still `true`. If the command
+   * <p>
+   * Doesn't re-start the command if it ends while the condition is still `true`.
+   * If the command
    * should restart, see {@link edu.wpi.first.wpilibj2.command.RepeatCommand}.
    *
    * @param command the command to start
@@ -134,10 +145,13 @@ public class GremlinTrigger implements BooleanSupplier {
   }
 
   /**
-   * Starts the given command when the condition changes to `false` and cancels it when the
+   * Starts the given command when the condition changes to `false` and cancels it
+   * when the
    * condition changes to `true`.
    *
-   * <p>Doesn't re-start the command if it ends while the condition is still `false`. If the command
+   * <p>
+   * Doesn't re-start the command if it ends while the condition is still `false`.
+   * If the command
    * should restart, see {@link edu.wpi.first.wpilibj2.command.RepeatCommand}.
    *
    * @param command the command to start
@@ -251,7 +265,8 @@ public class GremlinTrigger implements BooleanSupplier {
   }
 
   /**
-   * Creates a new trigger that is active when this trigger is inactive, i.e. that acts as the
+   * Creates a new trigger that is active when this trigger is inactive, i.e. that
+   * acts as the
    * negation of this trigger.
    *
    * @return the negated trigger
@@ -261,7 +276,8 @@ public class GremlinTrigger implements BooleanSupplier {
   }
 
   /**
-   * Creates a new debounced trigger from this trigger - it will become active when this trigger has
+   * Creates a new debounced trigger from this trigger - it will become active
+   * when this trigger has
    * been active for longer than the specified period.
    *
    * @param seconds The debounce period.
@@ -272,11 +288,12 @@ public class GremlinTrigger implements BooleanSupplier {
   }
 
   /**
-   * Creates a new debounced trigger from this trigger - it will become active when this trigger has
+   * Creates a new debounced trigger from this trigger - it will become active
+   * when this trigger has
    * been active for longer than the specified period.
    *
    * @param seconds The debounce period.
-   * @param type The debounce type.
+   * @param type    The debounce type.
    * @return The debounced trigger.
    */
   public GremlinTrigger debounce(double seconds, Debouncer.DebounceType type) {
@@ -291,7 +308,7 @@ public class GremlinTrigger implements BooleanSupplier {
         });
   }
 
-  public GremlinTrigger toggleOnTrueNoInterrupt(Command command){
+  public GremlinTrigger toggleOnTrueNoInterrupt(Command command) {
     requireNonNullParam(command, "command", "toggleOnTrueNoInterrupt");
     m_loop.bind(
         new Runnable() {
@@ -315,32 +332,31 @@ public class GremlinTrigger implements BooleanSupplier {
     return this;
   }
 
-  public GremlinTrigger OnPressTwice(Command firstCommand, Command secondCommand){
+  public GremlinTrigger OnPressTwice(Command firstCommand, Command secondCommand) {
     requireNonNullParam(firstCommand, "firstCommand", "runOnPressTwice");
     requireNonNullParam(secondCommand, "secondCommand", "runOnPressTwice");
     m_loop.bind(
         new Runnable() {
-            private boolean m_secondPress = false;
-            private boolean m_pressedLast = m_condition.getAsBoolean();
+          private boolean m_secondPress = false;
+          private boolean m_pressedLast = m_condition.getAsBoolean();
 
-            @Override
-            public void run(){
-                boolean pressed = m_condition.getAsBoolean();
-                
-                if(!m_pressedLast && pressed){
-                    if(m_secondPress){
-                        secondCommand.schedule();
-                        m_secondPress = false;
-                    } else {
-                        firstCommand.schedule();
-                        m_secondPress = true;
-                    }
-                }
+          @Override
+          public void run() {
+            boolean pressed = m_condition.getAsBoolean();
 
-                m_pressedLast = pressed;
+            if (!m_pressedLast && pressed) {
+              if (m_secondPress) {
+                secondCommand.schedule();
+                m_secondPress = false;
+              } else {
+                firstCommand.schedule();
+                m_secondPress = true;
+              }
             }
-        }
-    );
+
+            m_pressedLast = pressed;
+          }
+        });
 
     return this;
   }

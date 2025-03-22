@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.FlippingUtil;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -25,7 +26,10 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  */
 public class DriveToPose extends Command {
 
-  /** Default constraints are 90% of max speed, accelerate to full speed in 1/3 second */
+  /**
+   * Default constraints are 90% of max speed, accelerate to full speed in 1/3
+   * second
+   */
   private static final TrapezoidProfile.Constraints DEFAULT_XY_CONSTRAINTS = new TrapezoidProfile.Constraints(
       DriveConstants.MAX_VELO_AUTOSCORE,
       DriveConstants.MAX_ACCEL_AUTOSCORE);
@@ -33,8 +37,8 @@ public class DriveToPose extends Command {
       MAX_ANGULAR_VELOCITY_AUTOSCORE,
       MAX_ANGULAR_ACCEL_AUTOSCORE);
 
-  private final ProfiledPIDController xController;
-  private final ProfiledPIDController yController;
+  private final PIDController xController;
+  private final PIDController yController;
   private final ProfiledPIDController thetaController;
 
   private final CommandSwerveDrivetrain drivetrainSubsystem;
@@ -47,81 +51,113 @@ public class DriveToPose extends Command {
       .getStructTopic("DriveState/targetPose", Pose2d.struct).publish();
 
   public DriveToPose(
-        CommandSwerveDrivetrain drivetrainSubsystem,
-        Supplier<Pose2d> poseProvider,
-        Supplier<Pose2d> goalPoseSup) {
+      CommandSwerveDrivetrain drivetrainSubsystem,
+      Supplier<Pose2d> poseProvider,
+      Supplier<Pose2d> goalPoseSup) {
     this(drivetrainSubsystem, poseProvider, goalPoseSup, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS);
   }
 
   public DriveToPose(
-        CommandSwerveDrivetrain drivetrainSubsystem,
-        Supplier<Pose2d> poseProvider,
-        Supplier<Pose2d> goalPoseSup,
-        TrapezoidProfile.Constraints xyConstraints,
-        TrapezoidProfile.Constraints omegaConstraints) {
+      CommandSwerveDrivetrain drivetrainSubsystem,
+      Supplier<Pose2d> poseProvider,
+      Supplier<Pose2d> goalPoseSup,
+      TrapezoidProfile.Constraints xyConstraints,
+      TrapezoidProfile.Constraints omegaConstraints) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.poseProvider = poseProvider;
     this.goalPoseSupplier = goalPoseSup;
 
-    xController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseTranslationkD, xyConstraints);
-    yController = new ProfiledPIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseTranslationkD, xyConstraints);
+    xController = new PIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseTranslationkI,
+        DriveConstants.preciseTranslationkD);
+    yController = new PIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseTranslationkI,
+        DriveConstants.preciseTranslationkD);
     xController.setTolerance(DriveConstants.preciseTranslationTolerance);
     yController.setTolerance(DriveConstants.preciseTranslationTolerance);
-    thetaController = new ProfiledPIDController(DriveConstants.preciseRotationkP, DriveConstants.preciseRotationkI, DriveConstants.preciseRotationkD, omegaConstraints);
+    thetaController = new ProfiledPIDController(DriveConstants.preciseRotationkP, DriveConstants.preciseRotationkI,
+        DriveConstants.preciseRotationkD, omegaConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(Units.degreesToRadians(DriveConstants.preciseRotationTolerance));
 
-    addRequirements(drivetrainSubsystem);
-  }
+    resetPIDControllers();
+    
+    if(goalPoseSupplier.get() == null){
+      try {
+        throw new Exception("How the hell is this null");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    } else {
+      goalPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(goalPoseSupplier.get()) : goalPoseSupplier.get();
+    }
 
+    addRequirements(this.drivetrainSubsystem);
+  }
 
   @Override
   public void initialize() {
     resetPIDControllers();
-    goalPose = goalPoseSupplier.get();
-    if (AutoBuilder.shouldFlip()) {
-      goalPose = FlippingUtil.flipFieldPose(goalPose);
-      SmartDashboard.putString("TargetPose", goalPose.toString());
-    }
-    thetaController.setGoal(goalPose.getRotation().getRadians());
-    xController.setGoal(goalPose.getX());
-    yController.setGoal(goalPose.getY()); 
     
+    if(goalPoseSupplier.get() == null){
+      try {
+        throw new Exception("How the hell is this null");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    } else {
+      goalPose = AutoBuilder.shouldFlip() ? FlippingUtil.flipFieldPose(goalPoseSupplier.get()) : goalPoseSupplier.get();
+    }
+
+    thetaController.setGoal(goalPose.getRotation().getRadians());
+    xController.setSetpoint(goalPose.getX());
+    yController.setSetpoint(goalPose.getY());
+
     targetPosePublisher.set(goalPose);
   }
 
   public boolean atGoal() {
-    return xController.atGoal() && yController.atGoal() && thetaController.atGoal();
+    return xController.atSetpoint() && yController.atSetpoint() && thetaController.atGoal() 
+      && drivetrainSubsystem.getState().Speeds.vxMetersPerSecond < 0.1
+      && drivetrainSubsystem.getState().Speeds.vyMetersPerSecond < 0.1
+      && drivetrainSubsystem.getState().Speeds.omegaRadiansPerSecond < Units.degreesToRadians(5);
   }
 
   private void resetPIDControllers() {
     var robotPose = poseProvider.get();
     thetaController.reset(robotPose.getRotation().getRadians());
-    xController.reset(robotPose.getX());
-    yController.reset(robotPose.getY());
   }
 
   @Override
   public void execute() {
-    var robotPose = poseProvider.get();
+    if(goalPose == null){
+      initialize();
+    }
+
+    Pose2d robotPose = poseProvider.get();
     // Drive to the goal
-    var xSpeed = xController.calculate(robotPose.getX());
-    if (xController.atGoal()) {
+    double xSpeed = xController.calculate(robotPose.getX());
+    if (xController.atSetpoint()) {
       xSpeed = 0;
     }
 
-    var ySpeed = yController.calculate(robotPose.getY());
-    if (yController.atGoal()) {
+    double ySpeed = yController.calculate(robotPose.getY());
+    if (yController.atSetpoint()) {
       ySpeed = 0;
     }
 
-    var omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
+    double omegaSpeed = thetaController.calculate(robotPose.getRotation().getRadians());
     if (thetaController.atGoal()) {
       omegaSpeed = 0;
     }
 
     drivetrainSubsystem.setControl(DriveConstants.APPLY_FIELD_SPEEDS
-      .withSpeeds(new ChassisSpeeds(xSpeed,ySpeed,omegaSpeed)));
+        .withSpeeds(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed)));
+      
+    SmartDashboard.putNumber("DriveState/X", xSpeed);
+    SmartDashboard.putNumber("DriveState/Y", ySpeed);
+    SmartDashboard.putNumber("DriveState/Theta", omegaSpeed);
+    SmartDashboard.putNumber("DriveState/GoalX", xController.getSetpoint());
+    SmartDashboard.putNumber("DriveState/GoalY", yController.getSetpoint());
+    SmartDashboard.putNumber("DriveState/GoalTheta", thetaController.getGoal().position);
   }
 
   @Override

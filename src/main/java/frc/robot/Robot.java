@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -21,35 +22,43 @@ public class Robot extends TimedRobot {
   public static final Pathfinder pathfinder = new GremlinPathFinder();
 
   private final RobotContainer m_robotContainer;
+
   public Robot() {
     Pathfinding.setPathfinder(pathfinder);
     m_robotContainer = new RobotContainer();
-    //m_robotContainer.drivetrain.resetPose(new Pose2d(5.335,5.134,Rotation2d.fromDegrees(-121.25)));
-    //m_robotContainer.drivetrain.resetPose(new Pose2d(9,5.5, new Rotation2d()));
-    //m_robotContainer.drivetrain.resetPose(new Pose2d(5,8,Rotation2d.kZero));
-   // m_robotContainer.drivetrain.resetPose(new Pose2d(17,7,Rotation2d.fromDegrees(-90)));
-    m_robotContainer.drivetrain.resetPose(new Pose2d(10.85,3.9, Rotation2d.kZero));
+   // m_robotContainer.drivetrain.resetPose(new Pose2d(5.23,2.55, Rotation2d.fromDegrees(123)));
+    m_robotContainer.drivetrain.resetPose(new Pose2d(1.73,4.08, Rotation2d.kZero));
+    // m_robotContainer.drivetrain.resetPose(new Pose2d(10.1,3.7,Rotation2d.kZero));
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(7.121, 1.310, Rotation2d.k180deg));
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(3.17, 3.7, Rotation2d.kZero)); //auto
+    //auto
+    //m_robotContainer.drivetrain.resetPose(new Pose2d(1.427,0.794,Rotation2d.fromDegrees(55)));
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
   @Override
   public void robotInit() {
     PathfindingCommand.warmupCommand().schedule();
+    FollowPathCommand.warmupCommand().schedule();
+
   }
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().run(); 
+    CommandScheduler.getInstance().run();
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
   public void autonomousInit() {
@@ -61,23 +70,33 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
   public void teleopInit() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    CommandScheduler.getInstance().cancel(
+                m_robotContainer.autoScoreFactory.addLimelightPose(1),
+                m_robotContainer.autoScoreFactory.addLimelightPose(0));
+
+    m_robotContainer.vision.setRejectAllUpdates(false);
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
   public void testInit() {
@@ -85,11 +104,14 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }

@@ -52,10 +52,12 @@ public class VisionConstants {
                         new double[] { 0.008, 0.027, 0.015, 0.044, 0.04, 0.078, 0.049, 0.027, 0.059, 0.029, 0.068 },
                         1);
 
-        public static final double thetaModifier = 50;
+        public static final double thetaModifier = 200000;
         public static final double multiTagModifier = 0.6;
-        public static final double stabilityModifier = 15;
-        public static final double maxChangeDistance = 40; // m
+        public static final double stabilityModifier = 7.5;
+        public static final double maxChangeDistance = 4; // m
+        public static final double maxOmegaRadiansPerSec = Math.PI / 2;
+
 
         public static SimCameraProperties getOV2311() {
                 SimCameraProperties properties = new SimCameraProperties();
@@ -69,7 +71,7 @@ public class VisionConstants {
                 return properties;
         }
 
-        public static SimCameraProperties getLL3(){
+        public static SimCameraProperties getLL3() {
                 SimCameraProperties properties = new SimCameraProperties();
                 properties.setCalibration(LL3_RES_HORIZONTAL, LL3_RES_VERTICAL, Rotation2d.fromDegrees(LL3_FOV_DIAG));
                 properties.setCalibError(0.25, 0.08);
@@ -82,61 +84,59 @@ public class VisionConstants {
         }
 
         public static final Pose3d[] cameraPoses = {
-                        new Pose3d( // Front Left
+                        new Pose3d( // Top Left
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886),
-                                                        Units.inchesToMeters(9.362),
-                                                        Units.inchesToMeters(8.398)),
-                                        new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(30))),
-                        new Pose3d( // Front Right
+                                                        Units.inchesToMeters(4.746),
+                                                        Units.inchesToMeters(9.825+2),
+                                                        Units.inchesToMeters(37.330)),
+                                        new Rotation3d(Units.degreesToRadians(-10.489), Units.degreesToRadians(-30), Units.degreesToRadians(-150))),
+                        new Pose3d( // Top Right
                                         new Translation3d(
-                                                        Units.inchesToMeters(10.886),
-                                                       -Units.inchesToMeters(9.362),
-                                                        Units.inchesToMeters(8.398)),
-                                        new Rotation3d(0, Units.degreesToRadians(-28.125),
-                                                        Units.degreesToRadians(-30))),
+                                                        Units.inchesToMeters(4.746),
+                                                        -Units.inchesToMeters(9.825+2),
+                                                        Units.inchesToMeters(37.330)),
+                                        new Rotation3d(Units.degreesToRadians(10.489), Units.degreesToRadians(-30),
+                                                        Units.degreesToRadians(150))),
                         new Pose3d( // Back Left
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886),
-                                                        Units.inchesToMeters(9.362),
+                                                        -Units.inchesToMeters(11.637),
+                                                        Units.inchesToMeters(10.111),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(150))),
                         new Pose3d( // Back Right
                                         new Translation3d(
-                                                        -Units.inchesToMeters(10.886),
-                                                        -Units.inchesToMeters(9.362),
+                                                        -Units.inchesToMeters(11.637),
+                                                        -Units.inchesToMeters(10.111),
                                                         Units.inchesToMeters(8.398)),
                                         new Rotation3d(0, Units.degreesToRadians(-28.125),
                                                         Units.degreesToRadians(-150))),
         };
 
         public static final Pose3d[] limelightPoses = {
-                new Pose3d( //right
-                        new Translation3d(
-                                0.2063496-0.0381,
-                                0.1143,
-                                0.2320544),
-                        new Rotation3d(0, Units.degreesToRadians(-10),0)
-                ),
-                new Pose3d(
-                        new Translation3d(
-                                0.2063496-0.0381,
-                                -0.1143,
-                                0.2320544),
-                        new Rotation3d(0, Units.degreesToRadians(-10),0)
-                ) // left
+                        new Pose3d( // right
+                                        new Translation3d(
+                                                        Units.inchesToMeters(8.055),
+                                                        Units.inchesToMeters(6.35),
+                                                        Units.inchesToMeters(6.9205)),
+                                        new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(7.5))),
+                        new Pose3d(
+                                        new Translation3d(
+                                                        Units.inchesToMeters(8.055),
+                                                        Units.inchesToMeters(-6.35),
+                                                        Units.inchesToMeters(6.9205)),
+                                        new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(-7.5))) // left
         };
 
-        public static final GremlinPhotonCamera[] cameras = { //Retain this Order
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontLeft", cameraPoses[0]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "frontRight", cameraPoses[1]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
-        };    
+        public static final GremlinPhotonCamera[] cameras = { // Retain this Order
+                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "topLeft", cameraPoses[0]),
+                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "topRight", cameraPoses[1]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
+                        // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
+        };
 
-        public static final GremlinLimelightCamera[] limelights = { //retain this order
-                new GremlinLimelightCamera("limelight-right", limelightPoses[0]),
-                new GremlinLimelightCamera("limelight-left", limelightPoses[1])
+        public static final GremlinLimelightCamera[] limelights = { // retain this order
+                        new GremlinLimelightCamera("limelight-right", limelightPoses[0]),
+                        new GremlinLimelightCamera("limelight-left", limelightPoses[1])
         };
 }

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.86,
+        "y": 2.63
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.7160655737704915,
+        "y": 2.3725307377049183
+      },
+      "isLocked": false,
+      "linkedName": "Delta"
+    },
+    {
+      "anchor": {
+        "x": 3.845,
+        "y": 2.938
+      },
+      "prevControl": {
+        "x": 3.6451208475826533,
+        "y": 2.7878390049682573
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CAlgae"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.75,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 59.99999999999999
+  },
+  "reversed": false,
+  "folder": "Processor Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 59.99999999999999
+  },
+  "useDefaultConstraints": true
+}

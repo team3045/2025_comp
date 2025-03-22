@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.9079918032786884,
+        "y": 5.361629098360655
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.6013319672131145,
+        "y": 6.28468237704918
+      },
+      "isLocked": false,
+      "linkedName": "Kayla"
+    },
+    {
+      "anchor": {
+        "x": 1.342622950819672,
+        "y": 7.135809426229507
+      },
+      "prevControl": {
+        "x": 2.0978483606557377,
+        "y": 6.63232581967213
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TopIntake"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "reversed": false,
+  "folder": "Barge Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "useDefaultConstraints": false
+}

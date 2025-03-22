@@ -1,0 +1,66 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.120696721311476,
+        "y": 1.3097848360655735
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.485348360655738,
+        "y": 1.489600409836065
+      },
+      "isLocked": false,
+      "linkedName": "ProcStart"
+    },
+    {
+      "anchor": {
+        "x": 5.070799180327868,
+        "y": 2.700358606557377
+      },
+      "prevControl": {
+        "x": 5.77792213114754,
+        "y": 1.921454918032787
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Echo"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15351812366737688,
+      "rotationDegrees": 119.99999999999999
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "StartLimelightRight",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 119.99999999999999
+  },
+  "reversed": false,
+  "folder": "Processor Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": false
+}

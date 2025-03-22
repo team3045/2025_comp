@@ -1,4 +1,5 @@
 package frc.robot.commons;
+
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilderException;
@@ -38,26 +39,40 @@ public class GremlinAutoBuilder {
   // Pathfinding builders
   private static boolean pathfindingConfigured = false;
   private static TriFunction<Pose2d, PathConstraints, Double, Command> pathfindToPoseCommandBuilder;
-  private static BiFunction<PathPlannerPath, PathConstraints, Command>
-      pathfindThenFollowPathCommandBuilder;
+  private static BiFunction<PathPlannerPath, PathConstraints, Command> pathfindThenFollowPathCommandBuilder;
 
   /**
    * Configures the GremlinAutoBuilder for using PathPlanner's built-in commands.
    *
-   * @param poseSupplier a supplier for the robot's current pose
-   * @param resetPose a consumer for resetting the robot's pose
-   * @param robotRelativeSpeedsSupplier a supplier for the robot's current robot relative chassis
-   *     speeds
-   * @param output Output function that accepts robot-relative ChassisSpeeds and feedforwards for
-   *     each drive motor. If using swerve, these feedforwards will be in FL, FR, BL, BR order. If
-   *     using a differential drive, they will be in L, R order.
-   *     <p>NOTE: These feedforwards are assuming unoptimized module states. When you optimize your
-   *     module states, you will need to reverse the feedforwards for modules that have been flipped
-   * @param controller Path following controller that will be used to follow paths
-   * @param robotConfig The robot configuration
-   * @param shouldFlipPath Supplier that determines if paths should be flipped to the other side of
-   *     the field. This will maintain a global blue alliance origin.
-   * @param driveRequirements the subsystem requirements for the robot's drive train
+   * @param poseSupplier                a supplier for the robot's current pose
+   * @param resetPose                   a consumer for resetting the robot's pose
+   * @param robotRelativeSpeedsSupplier a supplier for the robot's current robot
+   *                                    relative chassis
+   *                                    speeds
+   * @param output                      Output function that accepts
+   *                                    robot-relative ChassisSpeeds and
+   *                                    feedforwards for
+   *                                    each drive motor. If using swerve, these
+   *                                    feedforwards will be in FL, FR, BL, BR
+   *                                    order. If
+   *                                    using a differential drive, they will be
+   *                                    in L, R order.
+   *                                    <p>
+   *                                    NOTE: These feedforwards are assuming
+   *                                    unoptimized module states. When you
+   *                                    optimize your
+   *                                    module states, you will need to reverse
+   *                                    the feedforwards for modules that have
+   *                                    been flipped
+   * @param controller                  Path following controller that will be
+   *                                    used to follow paths
+   * @param robotConfig                 The robot configuration
+   * @param shouldFlipPath              Supplier that determines if paths should
+   *                                    be flipped to the other side of
+   *                                    the field. This will maintain a global
+   *                                    blue alliance origin.
+   * @param driveRequirements           the subsystem requirements for the robot's
+   *                                    drive train
    */
   public static void configure(
       Supplier<Pose2d> poseSupplier,
@@ -73,63 +88,63 @@ public class GremlinAutoBuilder {
           "Auto builder has already been configured. This is likely in error.", true);
     }
 
-    GremlinAutoBuilder.pathFollowingCommandBuilder =
-        (path) ->
-            new FollowPathCommand(
-                path,
-                poseSupplier,
-                robotRelativeSpeedsSupplier,
-                output,
-                controller,
-                robotConfig,
-                shouldFlipPath,
-                driveRequirements);
+    GremlinAutoBuilder.pathFollowingCommandBuilder = (path) -> new FollowPathCommand(
+        path,
+        poseSupplier,
+        robotRelativeSpeedsSupplier,
+        output,
+        controller,
+        robotConfig,
+        shouldFlipPath,
+        driveRequirements);
     GremlinAutoBuilder.poseSupplier = poseSupplier;
     GremlinAutoBuilder.resetPose = resetPose;
     GremlinAutoBuilder.configured = true;
     GremlinAutoBuilder.shouldFlipPath = shouldFlipPath;
     GremlinAutoBuilder.isHolonomic = robotConfig.isHolonomic;
 
-    GremlinAutoBuilder.pathfindToPoseCommandBuilder =
-        (pose, constraints, goalEndVel) ->
-            new GremlinPathfindingCommand(
-                pose,
-                constraints,
-                goalEndVel,
-                poseSupplier,
-                robotRelativeSpeedsSupplier,
-                output,
-                controller,
-                robotConfig,
-                driveRequirements);
-    GremlinAutoBuilder.pathfindThenFollowPathCommandBuilder =
-        (path, constraints) ->
-            new PathfindThenFollowPath(
-                path,
-                constraints,
-                poseSupplier,
-                robotRelativeSpeedsSupplier,
-                output,
-                controller,
-                robotConfig,
-                shouldFlipPath,
-                driveRequirements);
+    GremlinAutoBuilder.pathfindToPoseCommandBuilder = (pose, constraints, goalEndVel) -> new GremlinPathfindingCommand(
+        pose,
+        constraints,
+        goalEndVel,
+        poseSupplier,
+        robotRelativeSpeedsSupplier,
+        output,
+        controller,
+        robotConfig,
+        driveRequirements);
+    GremlinAutoBuilder.pathfindThenFollowPathCommandBuilder = (path, constraints) -> new PathfindThenFollowPath(
+        path,
+        constraints,
+        poseSupplier,
+        robotRelativeSpeedsSupplier,
+        output,
+        controller,
+        robotConfig,
+        shouldFlipPath,
+        driveRequirements);
     GremlinAutoBuilder.pathfindingConfigured = true;
   }
 
   /**
    * Configures the GremlinAutoBuilder for using PathPlanner's built-in commands.
    *
-   * @param poseSupplier a supplier for the robot's current pose
-   * @param resetPose a consumer for resetting the robot's pose
-   * @param robotRelativeSpeedsSupplier a supplier for the robot's current robot relative chassis
-   *     speeds
-   * @param output Output function that accepts robot-relative ChassisSpeeds.
-   * @param controller Path following controller that will be used to follow paths
-   * @param robotConfig The robot configuration
-   * @param shouldFlipPath Supplier that determines if paths should be flipped to the other side of
-   *     the field. This will maintain a global blue alliance origin.
-   * @param driveRequirements the subsystem requirements for the robot's drive train
+   * @param poseSupplier                a supplier for the robot's current pose
+   * @param resetPose                   a consumer for resetting the robot's pose
+   * @param robotRelativeSpeedsSupplier a supplier for the robot's current robot
+   *                                    relative chassis
+   *                                    speeds
+   * @param output                      Output function that accepts
+   *                                    robot-relative ChassisSpeeds.
+   * @param controller                  Path following controller that will be
+   *                                    used to follow paths
+   * @param robotConfig                 The robot configuration
+   * @param shouldFlipPath              Supplier that determines if paths should
+   *                                    be flipped to the other side of
+   *                                    the field. This will maintain a global
+   *                                    blue alliance origin.
+   * @param driveRequirements           the subsystem requirements for the robot's
+   *                                    drive train
    */
   public static void configure(
       Supplier<Pose2d> poseSupplier,
@@ -152,18 +167,27 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Configures the GremlinAutoBuilder with custom path following command builder. Building pathfinding
-   * commands is not supported if using a custom command builder. Custom path following commands
-   * will not have the path flipped for them, and event markers will not be triggered automatically.
+   * Configures the GremlinAutoBuilder with custom path following command builder.
+   * Building pathfinding
+   * commands is not supported if using a custom command builder. Custom path
+   * following commands
+   * will not have the path flipped for them, and event markers will not be
+   * triggered automatically.
    *
-   * @param pathFollowingCommandBuilder a function that builds a command to follow a given path
-   * @param poseSupplier a supplier for the robot's current pose
-   * @param resetPose a consumer for resetting the robot's pose
-   * @param shouldFlipPose Supplier that determines if the starting pose should be flipped to the
-   *     other side of the field. This will maintain a global blue alliance origin. NOTE: paths will
-   *     not be flipped when configured with a custom path following command. Flipping the paths
-   *     must be handled in your command.
-   * @param isHolonomic Does the robot have a holonomic drivetrain
+   * @param pathFollowingCommandBuilder a function that builds a command to follow
+   *                                    a given path
+   * @param poseSupplier                a supplier for the robot's current pose
+   * @param resetPose                   a consumer for resetting the robot's pose
+   * @param shouldFlipPose              Supplier that determines if the starting
+   *                                    pose should be flipped to the
+   *                                    other side of the field. This will
+   *                                    maintain a global blue alliance origin.
+   *                                    NOTE: paths will
+   *                                    not be flipped when configured with a
+   *                                    custom path following command. Flipping
+   *                                    the paths
+   *                                    must be handled in your command.
+   * @param isHolonomic                 Does the robot have a holonomic drivetrain
    */
   public static void configureCustom(
       Function<PathPlannerPath, Command> pathFollowingCommandBuilder,
@@ -187,14 +211,18 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Configures the GremlinAutoBuilder with custom path following command builder. Building pathfinding
-   * commands is not supported if using a custom command builder. Custom path following commands
-   * will not have the path flipped for them, and event markers will not be triggered automatically.
+   * Configures the GremlinAutoBuilder with custom path following command builder.
+   * Building pathfinding
+   * commands is not supported if using a custom command builder. Custom path
+   * following commands
+   * will not have the path flipped for them, and event markers will not be
+   * triggered automatically.
    *
-   * @param pathFollowingCommandBuilder a function that builds a command to follow a given path
-   * @param poseSupplier a supplier for the robot's current pose
-   * @param resetPose a consumer for resetting the robot's pose
-   * @param isHolonomic Does the robot have a holonomic drivetrain
+   * @param pathFollowingCommandBuilder a function that builds a command to follow
+   *                                    a given path
+   * @param poseSupplier                a supplier for the robot's current pose
+   * @param resetPose                   a consumer for resetting the robot's pose
+   * @param isHolonomic                 Does the robot have a holonomic drivetrain
    */
   public static void configureCustom(
       Function<PathPlannerPath, Command> pathFollowingCommandBuilder,
@@ -216,7 +244,8 @@ public class GremlinAutoBuilder {
   /**
    * Returns whether the GremlinAutoBuilder has been configured for pathfinding.
    *
-   * @return true if the GremlinAutoBuilder has been configured for pathfinding, false otherwise
+   * @return true if the GremlinAutoBuilder has been configured for pathfinding,
+   *         false otherwise
    */
   public static boolean isPathfindingConfigured() {
     return pathfindingConfigured;
@@ -241,12 +270,14 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Builds a command to follow a path. PathPlannerLib commands will also trigger event markers
+   * Builds a command to follow a path. PathPlannerLib commands will also trigger
+   * event markers
    * along the way.
    *
    * @param path the path to follow
    * @return a path following command with for the given path
-   * @throws GremlinAutoBuilderException if the GremlinAutoBuilder has not been configured
+   * @throws GremlinAutoBuilderException if the GremlinAutoBuilder has not been
+   *                                     configured
    */
   public static Command followPath(PathPlannerPath path) {
     if (!isConfigured()) {
@@ -258,12 +289,14 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Build a command to pathfind to a given pose. If not using a holonomic drivetrain, the pose
+   * Build a command to pathfind to a given pose. If not using a holonomic
+   * drivetrain, the pose
    * rotation and rotation delay distance will have no effect.
    *
-   * @param pose The pose to pathfind to
-   * @param constraints The constraints to use while pathfinding
-   * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
+   * @param pose            The pose to pathfind to
+   * @param constraints     The constraints to use while pathfinding
+   * @param goalEndVelocity The goal end velocity of the robot when reaching the
+   *                        target pose
    * @return A command to pathfind to a given pose
    */
   public static Command pathfindToPose(
@@ -277,12 +310,14 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Build a command to pathfind to a given pose. If not using a holonomic drivetrain, the pose
+   * Build a command to pathfind to a given pose. If not using a holonomic
+   * drivetrain, the pose
    * rotation and rotation delay distance will have no effect.
    *
-   * @param pose The pose to pathfind to
-   * @param constraints The constraints to use while pathfinding
-   * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
+   * @param pose            The pose to pathfind to
+   * @param constraints     The constraints to use while pathfinding
+   * @param goalEndVelocity The goal end velocity of the robot when reaching the
+   *                        target pose
    * @return A command to pathfind to a given pose
    */
   public static Command pathfindToPose(
@@ -291,10 +326,11 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Build a command to pathfind to a given pose. If not using a holonomic drivetrain, the pose
+   * Build a command to pathfind to a given pose. If not using a holonomic
+   * drivetrain, the pose
    * rotation will have no effect.
    *
-   * @param pose The pose to pathfind to
+   * @param pose        The pose to pathfind to
    * @param constraints The constraints to use while pathfinding
    * @return A command to pathfind to a given pose
    */
@@ -303,14 +339,18 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Build a command to pathfind to a given pose that will be flipped based on the value of the path
-   * flipping supplier when this command is run. If not using a holonomic drivetrain, the pose
+   * Build a command to pathfind to a given pose that will be flipped based on the
+   * value of the path
+   * flipping supplier when this command is run. If not using a holonomic
+   * drivetrain, the pose
    * rotation and rotation delay distance will have no effect.
    *
-   * @param pose The pose to pathfind to. This will be flipped if the path flipping supplier returns
-   *     true
-   * @param constraints The constraints to use while pathfinding
-   * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
+   * @param pose            The pose to pathfind to. This will be flipped if the
+   *                        path flipping supplier returns
+   *                        true
+   * @param constraints     The constraints to use while pathfinding
+   * @param goalEndVelocity The goal end velocity of the robot when reaching the
+   *                        target pose
    * @return A command to pathfind to a given pose
    */
   public static Command pathfindToPoseFlipped(
@@ -322,14 +362,18 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Build a command to pathfind to a given pose that will be flipped based on the value of the path
-   * flipping supplier when this command is run. If not using a holonomic drivetrain, the pose
+   * Build a command to pathfind to a given pose that will be flipped based on the
+   * value of the path
+   * flipping supplier when this command is run. If not using a holonomic
+   * drivetrain, the pose
    * rotation and rotation delay distance will have no effect.
    *
-   * @param pose The pose to pathfind to. This will be flipped if the path flipping supplier returns
-   *     true
-   * @param constraints The constraints to use while pathfinding
-   * @param goalEndVelocity The goal end velocity of the robot when reaching the target pose
+   * @param pose            The pose to pathfind to. This will be flipped if the
+   *                        path flipping supplier returns
+   *                        true
+   * @param constraints     The constraints to use while pathfinding
+   * @param goalEndVelocity The goal end velocity of the robot when reaching the
+   *                        target pose
    * @return A command to pathfind to a given pose
    */
   public static Command pathfindToPoseFlipped(
@@ -338,12 +382,15 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Build a command to pathfind to a given pose that will be flipped based on the value of the path
-   * flipping supplier when this command is run. If not using a holonomic drivetrain, the pose
+   * Build a command to pathfind to a given pose that will be flipped based on the
+   * value of the path
+   * flipping supplier when this command is run. If not using a holonomic
+   * drivetrain, the pose
    * rotation and rotation delay distance will have no effect.
    *
-   * @param pose The pose to pathfind to. This will be flipped if the path flipping supplier returns
-   *     true
+   * @param pose        The pose to pathfind to. This will be flipped if the path
+   *                    flipping supplier returns
+   *                    true
    * @param constraints The constraints to use while pathfinding
    * @return A command to pathfind to a given pose
    */
@@ -352,10 +399,11 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Build a command to pathfind to a given path, then follow that path. If not using a holonomic
+   * Build a command to pathfind to a given path, then follow that path. If not
+   * using a holonomic
    * drivetrain, the pose rotation delay distance will have no effect.
    *
-   * @param goalPath The path to pathfind to, then follow
+   * @param goalPath               The path to pathfind to, then follow
    * @param pathfindingConstraints The constraints to use while pathfinding
    * @return A command to pathfind to a given path, then follow the path
    */
@@ -370,7 +418,8 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Create and populate a sendable chooser with all PathPlannerAutos in the project. The default
+   * Create and populate a sendable chooser with all PathPlannerAutos in the
+   * project. The default
    * option will be Commands.none()
    *
    * @return SendableChooser populated with all autos
@@ -380,11 +429,14 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Create and populate a sendable chooser with all PathPlannerAutos in the project
+   * Create and populate a sendable chooser with all PathPlannerAutos in the
+   * project
    *
-   * @param defaultAutoName The name of the auto that should be the default option. If this is an
-   *     empty string, or if an auto with the given name does not exist, the default option will be
-   *     Commands.none()
+   * @param defaultAutoName The name of the auto that should be the default
+   *                        option. If this is an
+   *                        empty string, or if an auto with the given name does
+   *                        not exist, the default option will be
+   *                        Commands.none()
    * @return SendableChooser populated with all autos
    */
   public static SendableChooser<Command> buildAutoChooser(String defaultAutoName) {
@@ -392,11 +444,13 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Create and populate a sendable chooser with all PathPlannerAutos in the project. The default
+   * Create and populate a sendable chooser with all PathPlannerAutos in the
+   * project. The default
    * option will be Commands.none()
    *
-   * @param optionsModifier A lambda function that can be used to modify the options before they go
-   *     into the AutoChooser
+   * @param optionsModifier A lambda function that can be used to modify the
+   *                        options before they go
+   *                        into the AutoChooser
    * @return SendableChooser populated with all autos
    */
   public static SendableChooser<Command> buildAutoChooserWithOptionsModifier(
@@ -405,13 +459,17 @@ public class GremlinAutoBuilder {
   }
 
   /**
-   * Create and populate a sendable chooser with all PathPlannerAutos in the project
+   * Create and populate a sendable chooser with all PathPlannerAutos in the
+   * project
    *
-   * @param defaultAutoName The name of the auto that should be the default option. If this is an
-   *     empty string, or if an auto with the given name does not exist, the default option will be
-   *     Commands.none()
-   * @param optionsModifier A lambda function that can be used to modify the options before they go
-   *     into the AutoChooser
+   * @param defaultAutoName The name of the auto that should be the default
+   *                        option. If this is an
+   *                        empty string, or if an auto with the given name does
+   *                        not exist, the default option will be
+   *                        Commands.none()
+   * @param optionsModifier A lambda function that can be used to modify the
+   *                        options before they go
+   *                        into the AutoChooser
    * @return SendableChooser populated with all autos
    */
   public static SendableChooser<Command> buildAutoChooserWithOptionsModifier(

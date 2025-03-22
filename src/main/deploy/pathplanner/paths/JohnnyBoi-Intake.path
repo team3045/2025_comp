@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.082786885245901,
+        "y": 5.3496413934426235
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.543640383958126,
+        "y": 5.813827206348627
+      },
+      "isLocked": false,
+      "linkedName": "JohnnyBoi"
+    },
+    {
+      "anchor": {
+        "x": 1.342622950819672,
+        "y": 7.135809426229507
+      },
+      "prevControl": {
+        "x": 1.8177881699249285,
+        "y": 6.226996127428209
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TopIntake"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "StopLimelights",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "reversed": false,
+  "folder": "Barge Side",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": false
+}

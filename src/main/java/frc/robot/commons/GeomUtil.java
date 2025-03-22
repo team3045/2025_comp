@@ -32,7 +32,7 @@ public class GeomUtil {
    * @param y The y componenet of the translation
    * @return The resulting transform
    */
-  public static Transform2d translationToTransform(double x, double y) {
+  public static Transform2d toTransform2d(double x, double y) {
     return new Transform2d(new Translation2d(x, y), new Rotation2d());
   }
 
@@ -153,29 +153,46 @@ public class GeomUtil {
     return new Transform3d(translation, new Rotation3d());
   }
 
-  /** Check if poses are close to each other
+  /**
+   * Check if poses are close to each other
    * Currently only checks their translations
    * 
    * @param targetPose Targetted Pose
    * @param actualPose Actual Pose
-   * @param tolerance tolerance to be considered close enough
+   * @param tolerance  tolerance to be considered close enough
    * @return whether or not the poses are near each other
    */
-  public static boolean isNearPose(Pose2d targetPose, Pose2d actualPose, double tolerance){
+  public static boolean isNearPose(Pose2d targetPose, Pose2d actualPose, double tolerance) {
     return targetPose.getTranslation().getDistance(actualPose.getTranslation()) < tolerance;
   }
 
-  /** Check if poses are close to each other
+  /**
+   * Check if poses are close to each other
    * Checks both rotation and translation
    * 
-   * @param targetPose Targetted Pose
-   * @param actualPose Actual Pose
-   * @param translationToleranceMeters tolerance to be considered close enough in meters
-   * @param rotationToleranceDegrees tolerance to be considered close enough in Degrees
+   * @param targetPose                 Targetted Pose
+   * @param actualPose                 Actual Pose
+   * @param translationToleranceMeters tolerance to be considered close enough in
+   *                                   meters
+   * @param rotationToleranceDegrees   tolerance to be considered close enough in
+   *                                   Degrees
    * @return whether or not the poses are near each other
    */
-  public static boolean isNearPoseWithRotation(Pose2d targetPose, Pose2d actualPose, double translationToleranceMeters, double rotationToleranceDegrees){
+  public static boolean isNearPoseWithRotation(Pose2d targetPose, Pose2d actualPose, double translationToleranceMeters,
+      double rotationToleranceDegrees) {
     return targetPose.getTranslation().getDistance(actualPose.getTranslation()) < translationToleranceMeters
-      && Math.abs(targetPose.getRotation().minus(actualPose.getRotation()).getDegrees()) < rotationToleranceDegrees;
+        && Math.abs(targetPose.getRotation().minus(actualPose.getRotation()).getDegrees()) < rotationToleranceDegrees;
   }
+
+  public static final Transform2d transform2dFromTranslation(Translation2d translation) {
+    return new Transform2d(translation, Rotation2d.kZero);
+  }
+
+  public static final Pose2d pose2dFromRotation(Rotation2d rotation) {
+    return new Pose2d(Translation2d.kZero, rotation);
+}
+
+public static final Pose2d pose2dFromTranslation(Translation2d translation) {
+    return new Pose2d(translation, Rotation2d.kZero);
+}
 }
