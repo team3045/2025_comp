@@ -90,10 +90,13 @@ public class DynamicPathfindWithFeedback extends Command {
   @Override
   public void execute() {
     if (overrideWithFeedback.getAsBoolean()) {
-      feedbackPosePublisher.set(feedbackPoseSupplier.get());
-      if (!feedbackPoseSupplier.get().equals(Pose2d.kZero)) {
+      Pose2d feedbackPose2d = feedbackPoseSupplier.get();
+      feedbackPosePublisher.set(feedbackPose2d);
+      
+
+      if (!feedbackPose2d.equals(Pose2d.kZero)) {
         drivetrain.addVisionMeasurement(
-            feedbackPoseSupplier.get(),
+            feedbackPose2d,
             Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
             VecBuilder.fill(0.001, 0.001, 0.001));
       }

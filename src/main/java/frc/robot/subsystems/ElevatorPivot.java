@@ -636,6 +636,29 @@ public class ElevatorPivot extends SubsystemBase {
     });
   }
 
+  public Command applyPivotCurrent(){
+    return this.runOnce(() -> {
+      double current = 5;
+      pivotMotor.setControl(new TorqueCurrentFOC(current));
+    });
+  }
+
+  public Command zeroPivotCurrent(){
+    return this.runOnce(() -> {
+      double current = 0;
+      pivotMotor.setControl(new TorqueCurrentFOC(current));
+    });
+  }
+
+  public Command zeroPivotAndElevCurrent(){
+    return this.runOnce(() -> {
+      double current = 0;
+      pivotMotor.setControl(new TorqueCurrentFOC(current));
+      leftMotor.setControl(new TorqueCurrentFOC(current));
+      rightMotor.setControl(new TorqueCurrentFOC(current));
+    });
+  }
+
   public Command quasistaticVoltage(){
     return
      this.runOnce(() -> voltage = 0)

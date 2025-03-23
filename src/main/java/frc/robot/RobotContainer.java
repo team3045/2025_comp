@@ -197,6 +197,7 @@ public class RobotContainer {
                 elevatorPivot.zeroElevator().andThen( 
                     elevatorPivot.goToIntake()
                     .andThen(elevatorPivot.applyDownwardCurrent())
+                    .andThen(elevatorPivot.applyPivotCurrent())
                     .andThen(claw.fullIntake()
                         .andThen(Commands.waitUntil(claw.hasCoral))
                         .andThen(claw.slowIntake())
@@ -210,7 +211,7 @@ public class RobotContainer {
 
 
 
-        intakeState.onFalse(claw.fullHold().alongWith(elevatorPivot.zeroCurrent()));
+        intakeState.onFalse(claw.fullHold().alongWith(elevatorPivot.zeroPivotAndElevCurrent()));
 
         joystick.triangle().onTrue(
             Commands.either(
@@ -229,9 +230,15 @@ public class RobotContainer {
                     elevatorPivot.goToBargeThrow()
                     .alongWith(drivetrain.driveBackwardBarge())
                     .alongWith(Commands.waitSeconds(0.4).andThen(claw.algeaOuttake()))
-                    .andThen(claw.hold())
-                    .andThen(elevatorPivot.stowArm())
-                    .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))),
+                    .andThen(// Drive Normally
+                        drivetrain.applyRequest(() ->
+                            DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
+                                .withVelocityY(GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed) // Drive left with negative X (left)
+                                .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    ).alongWith(
+                        claw.hold()
+                        .andThen(elevatorPivot.stowArm())
+                        .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))))),
                     bargeState.negate()
                 ));
 
@@ -264,8 +271,8 @@ public class RobotContainer {
             .alongWith(elevatorPivot.goToProcessor()));
 
         bargeState.onTrue(drivetrain.driveFacingBarge(
-            () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * ReducedSpeed , 
-            () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * ReducedSpeed)
+            () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
+            () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
         .alongWith(elevatorPivot.goToBargeReady()));
 
         algeaEjectState.onTrue(elevatorPivot.goToProcessor());
@@ -312,8 +319,6 @@ public class RobotContainer {
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
         // reset the field-centric heading on down bumper press
         joystick.povUp().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
-      //.  joystick.povRight().whileTrue(autoScoreFactory.failSafeResetToLLPose());
        
         //coral outtake
         joystick.R3().onTrue(Commands.runOnce(()-> M_ROBOT_STATE.setDriveState(DriveState.CORALEJECT)));
@@ -413,6 +418,7 @@ public class RobotContainer {
             elevatorPivot.goToIntake()
                 .andThen(elevatorPivot.zeroElevator())
                 .andThen(elevatorPivot.applyDownwardCurrent())
+                .andThen(elevatorPivot.applyPivotCurrent())
                 .andThen(claw.fullIntake()
                 .andThen(Commands.waitUntil(claw.hasCoral))
                 .andThen(claw.hold()))
