@@ -706,11 +706,15 @@ public class ElevatorPivot extends SubsystemBase {
     if (GremlinLogger.isDebug())
       updateMechanism2d();
 
+    GremlinLogger.debugLog("Elevator Height", carriageHeight);
+    GremlinLogger.debugLog("Target Heght", targetHeight);
+    GremlinLogger.debugLog("Arm Target", targetAngleDegrees);
+    GremlinLogger.debugLog("Arm Angle", getPivotAngleDegrees());
+    GremlinLogger.debugLog("Elevator Velocity", getVerticalVelocity());
+
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
     SmartDashboard.putBoolean("At Height", atTargetHeight());
     SmartDashboard.putBoolean("At Angle", atTargetAngle());
-    SmartDashboard.putNumber("Pivot Angle", getPivotAngleDegrees());
-    GremlinLogger.debugLog("Elevator Velocity", getVerticalVelocity());
   }
 
   /* SIMULATION */
@@ -840,11 +844,6 @@ public class ElevatorPivot extends SubsystemBase {
         new Pose3d(0, 0, stage2Z, new Rotation3d()),
         new Pose3d(pivotOffsetX, pivotOffsetY, carriageZ + pivotOffsetZ, new Rotation3d(0, -getPivotAngleRadians(), 0))
     });
-
-    SmartDashboard.putNumber("Elevator Height", carriageHeight);
-    SmartDashboard.putNumber("Target Heght", targetHeight);
-    SmartDashboard.putNumber("Arm Target", targetAngleDegrees);
-    SmartDashboard.putNumber("Arm Angle", currentAngle);
   }
 
   // elevtor sysid

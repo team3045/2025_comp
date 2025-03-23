@@ -130,7 +130,7 @@ public class VisionConstants {
 
         public static final GremlinPhotonCamera[] cameras = { // Retain this Order
                         new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "topLeft", cameraPoses[0]),
-                        new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "topRight", cameraPoses[1]),
+                        //new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "topRight", cameraPoses[1]),
                         // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backLeft", cameraPoses[2]),
                         // new GremlinPhotonCamera(NetworkTableInstance.getDefault(), "backRight", cameraPoses[3])
         };
