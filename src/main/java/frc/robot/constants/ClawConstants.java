@@ -22,7 +22,7 @@ public class ClawConstants {
     public static final String canbus = "Canivore 3045";
 
     public static final double intakeSpeed = 20;
-    public static final double outtakeSpeed = 30;
+    public static final double outtakeSpeed = 25;
     public static final double slowSpeed = 6;
     public static final double hopperSpeed = 30;
     public static final double algeaIntakeSpeed = -35;
@@ -30,7 +30,7 @@ public class ClawConstants {
     public static final double algaeEjectSpeed = 20; //Same as processor for testing - may change
     public static final double holdSpeed = 0;
     public static final double troughSpeed = -15;
-        
+
     public static final double speedTolerance = 0.5; // RPS
 
     public static final double gearing = 30 / 12;
