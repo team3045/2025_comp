@@ -3,52 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.83,
-        "y": 5.36
+        "x": 7.132684426229508,
+        "y": 6.956
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.078432960917338,
-        "y": 5.3879475209963985
+        "x": 7.893133430919125,
+        "y": 8.083412012897188
       },
       "isLocked": false,
-      "linkedName": "Kayla"
+      "linkedName": "ClimbStart"
     },
     {
       "anchor": {
-        "x": 3.87,
-        "y": 5.11
+        "x": 5.071,
+        "y": 5.3518
       },
       "prevControl": {
-        "x": 3.687648899180246,
-        "y": 5.281020688894134
+        "x": 5.603381524033069,
+        "y": 6.171595656240735
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "KAlgae"
+      "linkedName": "JohnnyBoi"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 1.75,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -59.99999999999999
+    "velocity": 0.25,
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Barge Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

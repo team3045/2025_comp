@@ -82,7 +82,7 @@ public class ElevatorPivotConstants {
     public static final double maxCollisionHeight = minimumHeight + 0.10;
     public static final double troughAngle = 6;
     public static final double bargeAngle = 70;
-    public static final double groundAngle = -50; // at bumpers when elevator is minimized is -43.506, degrees
+    public static final double groundAngle = -60; // at bumpers when elevator is minimized is -43.506, degrees
 
     public static final double rotorToSensorRatio = 1.0;
     public static final double sensorToMechanismRatio = (56.0 / 12.0);
