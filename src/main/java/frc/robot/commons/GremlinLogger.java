@@ -84,7 +84,7 @@ public class GremlinLogger extends DogLog {
         }
 
         log(path + "/Stddevs/XY", stddevs.getData()[0]);
-        log(path + "/Stddevs/Theta", stddevs.getData()[0]);
+        log(path + "/Stddevs/Theta", stddevs.getData()[2]);
     }
 
     public static void debugLog(String path, Pose2d pose){
