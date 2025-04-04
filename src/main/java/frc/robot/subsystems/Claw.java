@@ -46,7 +46,7 @@ public class Claw extends SubsystemBase {
     public void configDevices() {
         clawMotor.getConfigurator().apply(motorConfig);
         coralSensor.getConfigurator().apply(canRangeConfig);
-        hopperMotor.getConfigurator().apply(motorConfig.withMotorOutput(
+        hopperMotor.getConfigurator().apply(hopperConfig.withMotorOutput(
                 MotorOutputConfigs.withInverted(InvertedValue.Clockwise_Positive)));
     }
 

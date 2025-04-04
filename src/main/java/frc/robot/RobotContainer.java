@@ -190,9 +190,10 @@ public class RobotContainer {
         );
 
         intakeState.whileTrue(
-            drivetrain.driveFacingIntake(
-                () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
-                () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
+            // drivetrain.driveFacingIntake(
+            //     () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
+            //     () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
+            Commands.none()
             .alongWith( 
                 elevatorPivot.zeroElevator().andThen( 
                     elevatorPivot.goToIntake()

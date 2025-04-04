@@ -538,11 +538,11 @@ public class AutoScoreFactory {
   public Command autoScoreLeftPole(){
     return setElevatorHeightIntermediate()
         .andThen(setElevatorHeight())
-        .alongWith(pathFindToLeftPole())
+        //.alongWith(pathFindToLeftPole())
         .deadlineFor(claw.nudge().unless(claw.hasCoral).repeatedly())
-        .andThen(claw.clawOutake())
+        //.andThen(claw.clawOutake())
         .andThen(Commands.waitSeconds(0.4))
-        .andThen(drivetrain.driveBack())
+        //.andThen(drivetrain.driveBack())
         .finallyDo(() -> {
           if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_RIGHT && M_ROBOT_STATE.getDriveState() != DriveState.CORALEJECT)
             M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
@@ -552,11 +552,11 @@ public class AutoScoreFactory {
   public Command autoScoreRightPole(){
     return setElevatorHeightIntermediate()
       .andThen(setElevatorHeight())
-      .alongWith(pathFindToRightPole())
+      //.alongWith(pathFindToRightPole())
       .deadlineFor(claw.nudge().unless(claw.hasCoral).repeatedly())
-      .andThen(claw.clawOutake())
+      //.andThen(claw.clawOutake())
       .andThen(Commands.waitSeconds(0.4))
-      .andThen(drivetrain.driveBack())
+      //.andThen(drivetrain.driveBack())
       .finallyDo(() -> {
         if(M_ROBOT_STATE.getDriveState() != DriveState.AUTOSCORE_LEFT && M_ROBOT_STATE.getDriveState() != DriveState.CORALEJECT)
           M_ROBOT_STATE.setDriveState(DriveState.TELEOP);

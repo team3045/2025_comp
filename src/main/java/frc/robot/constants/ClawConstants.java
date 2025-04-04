@@ -103,6 +103,14 @@ public class ClawConstants {
     public static final double kA = 0;
     public static final double kV = 12 / 93.8;
 
+    public static final double hopperkP = 0.01;
+    public static final double hopperkI = 0;
+    public static final double hopperkD = 0;
+    public static final double hopperkG = 0;
+    public static final double hopperkS = 0;
+    public static final double hopperkA = 0;
+    public static final double hopperkV = 12 / 93.8;
+
     public static final double slot1kP = 5;
     public static final double slot1kI = 0;
     public static final double slot1kD = 0;
@@ -124,6 +132,15 @@ public class ClawConstants {
             .withKS(kS)
             .withKV(kV);
 
+        public static final Slot0Configs hopperConfigs = new Slot0Configs()
+            .withKA(hopperkA)
+            .withKD(hopperkD)
+            .withKG(hopperkG)
+            .withKI(hopperkI)
+            .withKP(hopperkP)
+            .withKS(hopperkS)
+            .withKV(hopperkV);
+
     public static final Slot1Configs clawSlot1Configs = new Slot1Configs()
             .withKA(slot1kA)
             .withKD(slot1kD)
@@ -141,6 +158,15 @@ public class ClawConstants {
             .withMotionMagic(clawMotionMagicConfigs)
             .withFeedback(clawFeedbackConfigs)
             .withSlot0(clawSlot0Configs)
+            .withSlot1(clawSlot1Configs);
+
+
+        public static final TalonFXConfiguration hopperConfig = new TalonFXConfiguration()
+            .withCurrentLimits(currentLimitConfigs)
+            .withMotorOutput(MotorOutputConfigs)
+            .withMotionMagic(clawMotionMagicConfigs)
+            .withFeedback(clawFeedbackConfigs)
+            .withSlot0(hopperConfigs)
             .withSlot1(clawSlot1Configs);
 
 }
