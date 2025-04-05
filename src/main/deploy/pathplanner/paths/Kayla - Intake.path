@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.83,
-        "y": 5.36
+        "x": 3.9319672131147536,
+        "y": 5.325665983606557
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.523340163934426,
-        "y": 6.283053278688525
+        "x": 2.6253073770491797,
+        "y": 6.248719262295082
       },
       "isLocked": false,
-      "linkedName": "Kayla"
+      "linkedName": "KaylaAcc"
     },
     {
       "anchor": {

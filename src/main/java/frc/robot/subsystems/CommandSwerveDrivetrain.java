@@ -47,6 +47,7 @@ import frc.robot.commands.DriveToPoseV2;
 import frc.robot.commands.DriveToPoseV3;
 import frc.robot.commands.DynamicPathfindCommand;
 import frc.robot.commons.GremlinAutoBuilder;
+import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
@@ -500,6 +501,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         //     this, () -> getState(), targetPose);
     }
 
+    public Command preciseTargetPoseWithFF(Supplier<Pose2d> targetPose, DoubleSupplier xFF, DoubleSupplier yFF) {
+        return new DriveToPose(this, () -> getState().Pose, targetPose, xFF, yFF);
+    }
+
     public Command targetPoseWithJoystick(Supplier<Pose2d> targetPose){
         return new DriveToPoseV2(
             this, 
@@ -593,6 +598,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         VisionConstants.limelights[0].setRobotHeading(getState().Pose.getRotation().getDegrees());
         VisionConstants.limelights[1].setRobotHeading(getState().Pose.getRotation().getDegrees());
+        GremlinLogger.debugLog("RawHeading", getState().RawHeading.getDegrees());
     }
 
     private void startSimThread() {

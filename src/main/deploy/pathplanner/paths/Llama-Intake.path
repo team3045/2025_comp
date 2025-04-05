@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.524385245901639,
-        "y": 5.241752049180327
+        "x": 3.6442622950819668,
+        "y": 5.181813524590163
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.829098360655737,
-        "y": 5.76921106557377
+        "x": 2.9489754098360645,
+        "y": 5.709272540983606
       },
       "isLocked": false,
-      "linkedName": "Llama"
+      "linkedName": "LlamaAcc"
     },
     {
       "anchor": {
@@ -48,7 +48,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": -55.0
   },
   "reversed": false,

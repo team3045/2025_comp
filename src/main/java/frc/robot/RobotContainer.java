@@ -237,6 +237,7 @@ public class RobotContainer {
                     ).alongWith(
                         claw.hold()
                         .andThen(elevatorPivot.stowArm())
+                        .andThen(Commands.runOnce(() -> elevatorPivot.raiseElevatorSpeed()))
                         .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))))),
                     bargeState.negate()
                 ));
@@ -272,7 +273,9 @@ public class RobotContainer {
         bargeState.onTrue(drivetrain.driveFacingBarge(
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
-        .alongWith(elevatorPivot.goToBargeReady()));
+        .alongWith(
+            Commands.runOnce(() -> elevatorPivot.lowerElevatorSpeed())    
+            .andThen(elevatorPivot.goToBargeReady())));
 
         algeaEjectState.onTrue(elevatorPivot.goToProcessor());
 
@@ -293,26 +296,6 @@ public class RobotContainer {
             climber.climberIn().alongWith(elevatorPivot.climbPosition()));
 
         joystick.cross().onFalse(climber.zeroClimber());
-
-
-        // joystick.cross().onTrue(
-        // (
-        //     Commands.either(climber.spinClimberOut().alongWith(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CLIMBOUT))),
-        //      (climber.climberIn()).alongWith(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.CLIMBOUT))), 
-        //      climbOutState.negate())
-        //     ))
-        // ;
-        
-        // climbOutState.whileTrue(drivetrain.driveFacingBarge(
-        //     () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * ReducedSpeed, 
-        //     () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * ReducedSpeed).alongWith(elevatorPivot.climbPosition()));
-
-
-        // climbOutState.onFalse(
-        //      Commands.runOnce(() -> climber.stop()));
-        
-
-        // climbInState.whileTrue(elevatorPivot.climbPosition());
 
 
         joystick.povDown().onTrue(elevatorPivot.zeroElevator());
@@ -370,6 +353,9 @@ public class RobotContainer {
            
         NamedCommands.registerCommand("AAKayla", 
             autoScoreFactory.pidToPoleAuto(11).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+
+        NamedCommands.registerCommand("AAGamma", 
+            autoScoreFactory.pidToPoleAuto(7).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
         
         NamedCommands.registerCommand("StartScoreF",
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
@@ -403,6 +389,19 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("StowArm", 
             elevatorPivot.stowArm().alongWith(claw.fullHold())
+        );
+
+        NamedCommands.registerCommand("RdyBarge", 
+            Commands.runOnce(() -> elevatorPivot.lowerElevatorSpeed())    
+            .andThen(elevatorPivot.goToBargeReady()));
+
+        NamedCommands.registerCommand("ThrowBarge", 
+            elevatorPivot.goToBargeThrow()
+            .alongWith(Commands.waitSeconds(0.3).andThen(claw.algeaOuttake()))
+            .andThen(
+                claw.hold()
+                .andThen(elevatorPivot.stowArm()).withTimeout(0.5))
+            .andThen(Commands.runOnce( () -> elevatorPivot.raiseElevatorSpeed()))
         );
 
         NamedCommands.registerCommand("intakePart2", 
@@ -462,6 +461,16 @@ public class RobotContainer {
             elevatorPivot.goToPosition(
                 () -> ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight(), 
                 () -> ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle())
+            .alongWith(claw.algeaIntake())
+            .until(ElevatorPivot.hasAlgea)
+            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea))
+            .andThen(claw.fullHold())
+        );
+
+        NamedCommands.registerCommand("HighAlgea", 
+            elevatorPivot.goToPosition(
+                () -> ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight(), 
+                () -> ElevatorPivotConstants.AnglePositions.HIGH_ALGEA.getAngle())
             .alongWith(claw.algeaIntake())
             .until(ElevatorPivot.hasAlgea)
             .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea))

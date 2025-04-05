@@ -5,15 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "BargeStart-JohnnyBoi"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -21,16 +15,22 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.1
+                        "waitTime": 0.5
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "path",
                       "data": {
-                        "name": "SetL4"
+                        "pathName": "Middle - Gamma"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetL4"
                 }
               }
             ]
@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AAJhonnyBoi"
+            "name": "AAGamma"
           }
         },
         {
@@ -47,41 +47,22 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "intakePart1"
-                }
-              },
-              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "JohnnyBoi-Intake"
+                        "pathName": "Gamma - GAlgea"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 3.0
                       }
                     }
                   ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Intake-Llama"
                 }
               },
               {
@@ -89,15 +70,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "intakePart2"
+                        "waitTime": 0.2
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "SetL4"
+                        "name": "LowAlgea"
                       }
                     }
                   ]
@@ -107,9 +88,35 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "AALlama"
+            "commands": [
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RdyBarge"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "GAlgea-Barge1"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ThrowBarge"
+                }
+              }
+            ]
           }
         },
         {
@@ -117,41 +124,22 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "intakePart1"
-                }
-              },
-              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Llama-Intake"
+                        "pathName": "Barge1-IAlgea"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 3.0
                       }
                     }
                   ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Intake-Kayla"
                 }
               },
               {
@@ -161,13 +149,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "intakePart2"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "SetL4"
+                        "name": "HighAlgea"
                       }
                     }
                   ]
@@ -177,47 +159,60 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "AAKayla"
-          }
-        },
-        {
-          "type": "race",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "StartIntake"
-                }
-              },
-              {
-                "type": "sequential",
+                "type": "parallel",
                 "data": {
                   "commands": [
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Kayla - Intake"
+                        "pathName": "IAlgea-Barge2"
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "sequential",
                       "data": {
-                        "waitTime": 4.0
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.75
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RdyBarge"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ThrowBarge"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Barge2 - Leave"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Barge Side",
+  "folder": "Middle",
   "choreoAuto": false
 }

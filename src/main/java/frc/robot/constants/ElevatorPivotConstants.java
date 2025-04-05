@@ -132,9 +132,12 @@ public class ElevatorPivotConstants {
 
     public static final double maxAccelerationLinear = 9; // m per sec^2
     public static final double maxVelocityLinear = 6; // m per sec
-    public static final double maxAccelerationRotations = maxAccelerationLinear / rotationToLengthRatio; // rot per
-                                                                                                         // sec^2
+    public static final double lowerAccelerationLinear = 4; // m per sec^2
+    public static final double lowerVelocityLinear = 4; // m per sec
+    public static final double maxAccelerationRotations = maxAccelerationLinear / rotationToLengthRatio; // rot per sec^2
     public static final double maxVelocityRotations = maxVelocityLinear / rotationToLengthRatio; // rot per sec
+    public static final double lowerAccelerationRotations = lowerAccelerationLinear / rotationToLengthRatio; // rot per sec^2
+    public static final double lowerVelocityRotations = lowerVelocityLinear / rotationToLengthRatio; // rot per sec
 
     public static final double pivotMaxAcceleration = 4; // rot per sec^2
     public static final double pivotMaxVelocity = 2; // rot per sec

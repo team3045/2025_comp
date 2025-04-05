@@ -50,9 +50,12 @@ public class DynamicPathfindWithFeedback extends Command {
   private Supplier<Pose2d> feedbackPoseSupplier;
   private DoubleSupplier timestampSupplier;
   private Pose2d targetPose;
+  private DoubleSupplier xFeedforward;
+  private DoubleSupplier yFeedforward;
 
   private BooleanSupplier overrideWithFeedback;
   private boolean startedPId;
+
 
   public DynamicPathfindWithFeedback(
       Supplier<Pose2d> targetPoseSupplier,
@@ -63,6 +66,30 @@ public class DynamicPathfindWithFeedback extends Command {
       BooleanSupplier overrideWithFeedback,
       DoubleSupplier timestampSupplier) {
 
+    this(
+      targetPoseSupplier,
+      desiredEndVelocitySupplier, 
+      constraints, 
+      drivetrain, 
+      feedbackPoseSupplier, 
+      overrideWithFeedback, 
+      timestampSupplier, 
+      () -> 0, 
+      () -> 0
+      );
+  }
+
+  public DynamicPathfindWithFeedback(
+      Supplier<Pose2d> targetPoseSupplier,
+      DoubleSupplier desiredEndVelocitySupplier,
+      PathConstraints constraints,
+      CommandSwerveDrivetrain drivetrain,
+      Supplier<Pose2d> feedbackPoseSupplier,
+      BooleanSupplier overrideWithFeedback,
+      DoubleSupplier timestampSupplier,
+      DoubleSupplier xFeedForward,
+      DoubleSupplier yFeedForward) {
+
     this.targetPoseSupplier = targetPoseSupplier;
     this.desiredEndVelocitySupplier = desiredEndVelocitySupplier;
     this.constraints = constraints;
@@ -70,6 +97,8 @@ public class DynamicPathfindWithFeedback extends Command {
     this.feedbackPoseSupplier = feedbackPoseSupplier;
     this.drivetrain = drivetrain;
     this.timestampSupplier = timestampSupplier;
+    this.xFeedforward = xFeedForward;
+    this.yFeedforward = yFeedForward;
 
     addRequirements(drivetrain);
   }
@@ -111,6 +140,8 @@ public class DynamicPathfindWithFeedback extends Command {
     if(drivetrain.getState().Pose.getTranslation().getDistance(targetPose.getTranslation()) < 0.1 && !startedPId){
       updatePathfindCommand();
     }
+
+    GremlinLogger.debugLog("StartedPID", startedPId);
   }
 
   @Override
@@ -147,7 +178,7 @@ public class DynamicPathfindWithFeedback extends Command {
 
     if (drivetrain.getState().Pose.getTranslation()
         .getDistance(targetPose.getTranslation()) < AutoScoreConstants.basicPIDDistance) {
-      currentPathfindCommand = drivetrain.preciseTargetPose(targetPoseSupplier);
+      currentPathfindCommand = drivetrain.preciseTargetPoseWithFF(targetPoseSupplier, xFeedforward, yFeedforward);
       currentPathfindCommand.initialize();
       startedPId = true;
     } else {

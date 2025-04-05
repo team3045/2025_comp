@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import static frc.robot.constants.DriveConstants.autoScoreConstraints;
+import static frc.robot.constants.DriveConstants.drive;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -223,7 +224,7 @@ public class AutoScoreFactory {
         }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
   }
 
-  public Command goToNearestAlgea(Supplier<Pose2d> poseSupplier, GremlinLimelightCamera feedbackCamera) {
+  public Command goToNearestAlgea(Supplier<Pose2d> poseSupplier, GremlinLimelightCamera feedbackCamera, DoubleSupplier xFF, DoubleSupplier yFF) {
     Supplier<Pose2d> targetPoseSupplier = () -> {
       List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
 
@@ -255,7 +256,9 @@ public class AutoScoreFactory {
         feedbackCamera::seesObject,
         () -> feedbackCamera.getBotPoseEstimateMT2().isPresent()
             ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds()),
+            : Utils.getCurrentTimeSeconds(),
+        xFF,
+        yFF),
     
       drivetrain.driveBackAlgea()
       .andThen(new DynamicPathfindWithFeedback(
@@ -268,7 +271,9 @@ public class AutoScoreFactory {
         feedbackCamera::seesObject,
         () -> feedbackCamera.getBotPoseEstimateMT2().isPresent()
             ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds())),
+            : Utils.getCurrentTimeSeconds(),
+        xFF,
+        yFF)),
         
         () -> targetPoseSupplier.get().getTranslation().getDistance(
             AutoBuilder.shouldFlip() ? 
@@ -284,8 +289,8 @@ public class AutoScoreFactory {
             .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea));
   }
 
-  public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera, DoubleSupplier xSpeeds,
-      DoubleSupplier ySpeeds) {
+  public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera, DoubleSupplier xFF,
+      DoubleSupplier yFF) {
     DoubleSupplier heightSupplier = () -> {
       List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
 
@@ -328,7 +333,8 @@ public class AutoScoreFactory {
       }
     };
 
-    return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
+    return (goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera, xFF, yFF)
+            .andThen(drivetrain.driveFacingAngle(() -> drivetrain.getState().Pose.getRotation(), xFF, yFF)))
         .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
         .alongWith(claw.algeaIntake())
         .until(ElevatorPivot.hasAlgea)

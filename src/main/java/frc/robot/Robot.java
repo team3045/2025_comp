@@ -88,6 +88,7 @@ public class Robot extends TimedRobot {
                 m_robotContainer.autoScoreFactory.addLimelightPose(0));
 
     m_robotContainer.vision.setRejectAllUpdates(false);
+    m_robotContainer.elevatorPivot.raiseElevatorSpeed();
   }
 
   @Override

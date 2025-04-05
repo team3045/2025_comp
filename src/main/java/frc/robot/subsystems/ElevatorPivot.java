@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -111,6 +112,34 @@ public class ElevatorPivot extends SubsystemBase {
         leftMotor.getPosition(),
         pivotMotor.getPosition(),
         pivotCancoder.getPosition());
+  }
+
+  public void lowerElevatorSpeed(){
+    rightMotor.getConfigurator()
+        .apply(
+          elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted))
+          .withMotionMagic(motionMagicConfigs
+            .withMotionMagicAcceleration(lowerAccelerationRotations)
+            .withMotionMagicCruiseVelocity(lowerVelocityRotations)));
+    leftMotor.getConfigurator()
+        .apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted))
+        .withMotionMagic(motionMagicConfigs
+            .withMotionMagicAcceleration(lowerAccelerationRotations)
+            .withMotionMagicCruiseVelocity(lowerVelocityRotations)));
+  }
+
+  public void raiseElevatorSpeed(){
+    rightMotor.getConfigurator()
+        .apply(
+          elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(rightInverted))
+          .withMotionMagic(motionMagicConfigs
+            .withMotionMagicAcceleration(maxAccelerationRotations)
+            .withMotionMagicCruiseVelocity(maxVelocityRotations)));
+    leftMotor.getConfigurator()
+        .apply(elevatorMotorConfig.withMotorOutput(motorOutputConfigs.withInverted(leftInverted))
+        .withMotionMagic(motionMagicConfigs
+            .withMotionMagicAcceleration(maxAccelerationRotations)
+            .withMotionMagicCruiseVelocity(maxVelocityRotations)));
   }
 
   /**

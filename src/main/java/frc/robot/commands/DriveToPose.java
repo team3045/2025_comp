@@ -2,7 +2,10 @@ package frc.robot.commands;
 
 import static frc.robot.constants.DriveConstants.MAX_ANGULAR_ACCEL_AUTOSCORE;
 import static frc.robot.constants.DriveConstants.MAX_ANGULAR_VELOCITY_AUTOSCORE;
+import static frc.robot.constants.DriveConstants.MaxSpeed;
 
+import java.util.DoubleSummaryStatistics;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -44,6 +47,8 @@ public class DriveToPose extends Command {
   private final CommandSwerveDrivetrain drivetrainSubsystem;
   private final Supplier<Pose2d> poseProvider;
   private final Supplier<Pose2d> goalPoseSupplier;
+  private final DoubleSupplier xFF;
+  private final DoubleSupplier yFF;
 
   private Pose2d goalPose;
 
@@ -61,11 +66,41 @@ public class DriveToPose extends Command {
       CommandSwerveDrivetrain drivetrainSubsystem,
       Supplier<Pose2d> poseProvider,
       Supplier<Pose2d> goalPoseSup,
+      DoubleSupplier xFF,
+      DoubleSupplier yFF) {
+    this(drivetrainSubsystem, poseProvider, goalPoseSup, DEFAULT_XY_CONSTRAINTS, DEFAULT_OMEGA_CONSTRAINTS, xFF, yFF);
+  }
+
+  public DriveToPose(
+      CommandSwerveDrivetrain drivetrainSubsystem,
+      Supplier<Pose2d> poseProvider,
+      Supplier<Pose2d> goalPoseSup,
       TrapezoidProfile.Constraints xyConstraints,
       TrapezoidProfile.Constraints omegaConstraints) {
+    
+        this(
+          drivetrainSubsystem, 
+          poseProvider, 
+          goalPoseSup, 
+          DEFAULT_XY_CONSTRAINTS, 
+          DEFAULT_OMEGA_CONSTRAINTS,
+          () -> 0,
+          () -> 0);
+  }
+
+  public DriveToPose(
+      CommandSwerveDrivetrain drivetrainSubsystem,
+      Supplier<Pose2d> poseProvider,
+      Supplier<Pose2d> goalPoseSup,
+      TrapezoidProfile.Constraints xyConstraints,
+      TrapezoidProfile.Constraints omegaConstraints,
+      DoubleSupplier xFF,
+      DoubleSupplier yFF) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.poseProvider = poseProvider;
     this.goalPoseSupplier = goalPoseSup;
+    this.xFF = xFF;
+    this.yFF = yFF;
 
     xController = new PIDController(DriveConstants.preciseTranslationkP, DriveConstants.preciseTranslationkI,
         DriveConstants.preciseTranslationkD);
@@ -116,8 +151,8 @@ public class DriveToPose extends Command {
 
   public boolean atGoal() {
     return xController.atSetpoint() && yController.atSetpoint() && thetaController.atGoal() 
-      && drivetrainSubsystem.getState().Speeds.vxMetersPerSecond < 0.1
-      && drivetrainSubsystem.getState().Speeds.vyMetersPerSecond < 0.1
+      && drivetrainSubsystem.getState().Speeds.vxMetersPerSecond < 0.05
+      && drivetrainSubsystem.getState().Speeds.vyMetersPerSecond < 0.05
       && drivetrainSubsystem.getState().Speeds.omegaRadiansPerSecond < Units.degreesToRadians(5);
   }
 
@@ -148,6 +183,9 @@ public class DriveToPose extends Command {
     if (thetaController.atGoal()) {
       omegaSpeed = 0;
     }
+
+    xSpeed += xFF.getAsDouble(); //Add user input from joysticks as a feedforward
+    ySpeed += yFF.getAsDouble(); //Should already be in given in terms of desired speed
 
     drivetrainSubsystem.setControl(DriveConstants.APPLY_FIELD_SPEEDS
         .withSpeeds(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed)));
