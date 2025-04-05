@@ -228,8 +228,7 @@ public class RobotContainer {
                 Commands.either(
                     Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.BARGE)), 
                     elevatorPivot.goToBargeThrow()
-                    .alongWith(drivetrain.driveBackwardBarge())
-                    .alongWith(Commands.waitSeconds(0.4).andThen(claw.algeaOuttake()))
+                    .alongWith(Commands.waitSeconds(0.3).andThen(claw.algeaOuttake()))
                     .andThen(// Drive Normally
                         drivetrain.applyRequest(() ->
                             DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)

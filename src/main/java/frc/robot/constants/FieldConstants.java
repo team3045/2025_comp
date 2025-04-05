@@ -117,7 +117,7 @@ public class FieldConstants {
                         new Pose2d(3.845, 2.938, Rotation2d.fromDegrees(60)),
                         new Pose2d(5.119, 2.928, Rotation2d.fromDegrees(120)),
                         new Pose2d(5.75, 4.007, Rotation2d.k180deg),
-                        new Pose2d(5.16, 5.138, Rotation2d.fromDegrees(240)),
+                        new Pose2d(5.14, 5.118, Rotation2d.fromDegrees(240)),
                         new Pose2d(3.87, 5.11, Rotation2d.fromDegrees(300))); // A1, A2... A6
 
         public static final List<Pose2d> flippedAlgeaPoses = algeaPoses.stream()

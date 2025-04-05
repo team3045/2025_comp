@@ -353,7 +353,7 @@ public class AutoScoreFactory {
     };
 
     BooleanSupplier shouldOverride = () -> {
-        return VisionConstants.limelights[leftOrRight].seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+        return VisionConstants.limelights[leftOrRight].seesObject();
     };
 
     DoubleSupplier timestampSupplier = () -> {
@@ -465,75 +465,6 @@ public class AutoScoreFactory {
       targetPoseSupplier, VisionConstants.limelights[0], VisionConstants.limelights[1]);
   }
 
-// public Command pathFindToRightTroughPole() {
-//     Supplier<Pose2d> targetPoseSupplier = () -> {
-//         List<Pose2d> poseList = AutoBuilder.shouldFlip() ? 
-//             AutoScoreConstants.flippedRightScorePoses : 
-//             AutoScoreConstants.rightScorePoses;
-
-//         Pose2d closest = poseList.get(0);
-//         int closestNum = 0;
-
-//         for (int i = 1; i < poseList.size(); i++) {
-//             double currentDiff = Math.abs(poseList.get(i).getRotation()
-//                 .minus(drivetrain.getState().Pose.getRotation()).getRadians());
-//             double closestDiff = Math.abs(closest.getRotation()
-//                 .minus(drivetrain.getState().Pose.getRotation()).getRadians());
-
-//             if (currentDiff < closestDiff) {
-//                 closest = poseList.get(i);
-//                 closestNum = i;
-//             }
-//         }
-
-//         // Adjust X and Y using proper trigonometric calculations
-//         double adjustedX = AutoScoreConstants.rightScorePoses.get(closestNum).getX()
-//             + Math.sin(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
-//         double adjustedY = AutoScoreConstants.rightScorePoses.get(closestNum).getY() 
-//             + Math.cos(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
-
-//         // Properly create the adjusted Pose2d object
-//         Pose2d adjustedPose = new Pose2d(adjustedX, adjustedY, new Rotation2d(closest.getRotation().getRadians()));
-
-//         return adjustedPose; // Return Pose2d, not Supplier<Pose2d>
-//     };
-
-//     return pathFindWithApriltagFeeback(
-//         targetPoseSupplier, VisionConstants.limelights[0], VisionConstants.limelights[1]);
-// }
-
-// public Command pathFindToLeftTroughPole() {
-//   Supplier<Pose2d> targetPoseSupplier = () -> {
-//       List<Pose2d> poseList = AutoBuilder.shouldFlip() ? 
-//           AutoScoreConstants.flippedRightScorePoses : 
-//           AutoScoreConstants.rightScorePoses;
-
-//       Pose2d closest = poseList.get(0);
-//       int closestNum = 0;
-
-//       for (int i = 1; i < poseList.size(); i++) {
-//           double currentDiff = Math.abs(poseList.get(i).getRotation()
-//               .minus(drivetrain.getState().Pose.getRotation()).getRadians());
-//           double closestDiff = Math.abs(closest.getRotation()
-//               .minus(drivetrain.getState().Pose.getRotation()).getRadians());
-
-//           if (currentDiff < closestDiff) {
-//               closest = poseList.get(i);
-//               closestNum = i;
-//           }
-//       }
-
-//       // Adjust X and Y using proper trigonometric calculations
-//       double adjustedX = AutoScoreConstants.rightScorePoses.get(closestNum).getX()
-//           - Math.sin(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
-//       double adjustedY = AutoScoreConstants.rightScorePoses.get(closestNum).getY() 
-//           - Math.cos(closest.getRotation().getRadians()) * AutoScoreConstants.troughOffset;
-
-//       // Properly create the adjusted Pose2d object
-//       Pose2d adjustedPose = new Pose2d(adjustedX, adjustedY, new Rotation2d(closest.getRotation().getRadians()));
-
-//       return adjustedPose; // Return Pose2d, not Supplier<Pose2d>
-//   };
 
   public Command autoScoreLeftPole(){
     return setElevatorHeightIntermediate()

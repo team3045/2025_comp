@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commons.GeomUtil;
 import frc.robot.commons.GremlinLogger;
@@ -153,11 +152,6 @@ public class DriveToPoseV2 extends Command {
     if (currentDistance < driveController.getPositionTolerance()) {
         driveVelocityScalar = 0.0; 
     }
-    
-    // Adjust PID output when feedforward is low (e.g., close to the target)
-    if (ffScaler <= 0.01) { 
-        driveVelocityScalar *= 10.0; // Increase PID effect when FF is low
-    }  
 
     lastSetpointTranslation =
         new Pose2d(

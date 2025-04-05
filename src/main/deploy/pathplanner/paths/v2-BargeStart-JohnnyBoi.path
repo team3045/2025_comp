@@ -3,59 +3,64 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.202663934426229,
-        "y": 5.55343237704918
+        "x": 7.132684426229508,
+        "y": 6.956
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.663517433138454,
-        "y": 6.017618189955184
+        "x": 6.701127049180327,
+        "y": 6.896061475409836
       },
       "isLocked": false,
-      "linkedName": "JohnnyBoi"
+      "linkedName": "ClimbStart"
     },
     {
       "anchor": {
-        "x": 1.343,
-        "y": 7.135809426229507
+        "x": 5.202663934426229,
+        "y": 5.55343237704918
       },
       "prevControl": {
-        "x": 1.8181652191052562,
-        "y": 6.226996127428209
+        "x": 5.756946721311475,
+        "y": 6.148545081967213
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TopIntake"
+      "linkedName": "JohnnyBoi"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "StopLimelights",
+      "name": "StartLimelightLeft",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.5,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -55.0
+    "velocity": 0.5,
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Barge Side",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }
