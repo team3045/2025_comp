@@ -20,6 +20,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
+import static frc.robot.constants.FieldConstants.MT1DistanceTolerance;
 import static frc.robot.constants.FieldConstants.adjustedShopLayout;
 import static frc.robot.constants.FieldConstants.blueReefCenter;
 import static frc.robot.constants.FieldConstants.compLayout;
@@ -293,7 +294,7 @@ public class GremlinApriltagVision extends SubsystemBase {
       Pose2d estimatedPose = poseEstimate.get().pose;
 
       if(estimatedPose.getTranslation().getDistance(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? blueReefCenter
-            : redReefCenter) < reefDistanceTolerance)
+            : redReefCenter) < MT1DistanceTolerance)
       {
         visionUpdates.add(new TimestampedVisionUpdate(
           estimatedPose,

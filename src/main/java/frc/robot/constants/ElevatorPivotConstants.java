@@ -222,8 +222,8 @@ public class ElevatorPivotConstants {
             .withSensorToMechanismRatio(sensorToMechanismRatio);
 
     public static final MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs()
-            .withMotionMagicAcceleration(maxAccelerationRotations)
-            .withMotionMagicCruiseVelocity(maxVelocityRotations); // Consider adding jerk or making it expo
+            .withMotionMagicAcceleration(lowerAccelerationRotations)
+            .withMotionMagicCruiseVelocity(lowerVelocityRotations); // Consider adding jerk or making it expo
 
     public static final MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs()
             .withControlTimesyncFreqHz(timesyncFrequency)

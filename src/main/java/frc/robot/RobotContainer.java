@@ -164,7 +164,7 @@ public class RobotContainer {
             elevatorPivot.stowArm().alongWith(claw.fullHold()));
 
        
-        joystick.square().onTrue(elevatorPivot.stowArm());
+        joystick.square().onTrue(elevatorPivot.zeroElevator().andThen(elevatorPivot.stowArm()));
 
 
         groundAlgaeState.onTrue(
@@ -229,16 +229,16 @@ public class RobotContainer {
                     Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.BARGE)), 
                     elevatorPivot.goToBargeThrow()
                     .alongWith(Commands.waitSeconds(0.3).andThen(claw.algeaOuttake()))
-                    .andThen(// Drive Normally
+                    .andThen(
+                        claw.hold()
+                        .andThen(elevatorPivot.stowArm())
+                        .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))))
+                    .deadlineFor(
                         drivetrain.applyRequest(() ->
                             DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
                                 .withVelocityY(GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed) // Drive left with negative X (left)
-                                .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate) // Drive counterclockwise with negative X (left)
-                    ).alongWith(
-                        claw.hold()
-                        .andThen(elevatorPivot.stowArm())
-                        .andThen(Commands.runOnce(() -> elevatorPivot.raiseElevatorSpeed()))
-                        .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))))),
+                                .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate)) // Drive counterclockwise with negative X (left)
+                    ),
                     bargeState.negate()
                 ));
 
@@ -273,9 +273,8 @@ public class RobotContainer {
         bargeState.onTrue(drivetrain.driveFacingBarge(
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed , 
             () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
-        .alongWith(
-            Commands.runOnce(() -> elevatorPivot.lowerElevatorSpeed())    
-            .andThen(elevatorPivot.goToBargeReady())));
+        .alongWith(    
+            elevatorPivot.goToBargeReady()));
 
         algeaEjectState.onTrue(elevatorPivot.goToProcessor());
 
@@ -392,16 +391,17 @@ public class RobotContainer {
         );
 
         NamedCommands.registerCommand("RdyBarge", 
-            Commands.runOnce(() -> elevatorPivot.lowerElevatorSpeed())    
-            .andThen(elevatorPivot.goToBargeReady()));
+            Commands.runOnce(() -> elevatorPivot.lowerElevatorSpeed())
+            .andThen(elevatorPivot.goToBargeReady())
+            .andThen(Commands.runOnce(() -> elevatorPivot.raiseElevatorSpeed())));
 
         NamedCommands.registerCommand("ThrowBarge", 
             elevatorPivot.goToBargeThrow()
             .alongWith(Commands.waitSeconds(0.3).andThen(claw.algeaOuttake()))
             .andThen(
                 claw.hold()
-                .andThen(elevatorPivot.stowArm()).withTimeout(0.5))
-            .andThen(Commands.runOnce( () -> elevatorPivot.raiseElevatorSpeed()))
+                .andThen(elevatorPivot.stowArm()).withTimeout(0.8))
+                .andThen(elevatorPivot.zeroElevator())
         );
 
         NamedCommands.registerCommand("intakePart2", 
@@ -494,6 +494,8 @@ public class RobotContainer {
             
             vision.setRejectAllUpdates(false);
         }));
+
+        NamedCommands.registerCommand("StowZero", elevatorPivot.stowArm().andThen(elevatorPivot.zeroElevator()));
     }   
 
     public void configureAutoTriggers(){
