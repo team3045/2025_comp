@@ -398,16 +398,16 @@ public class ElevatorPivot extends SubsystemBase {
 
     double tempTargetHeight = heightMeters;
     double tempTargetAngle = angleDegrees;
-    // GremlinLogger.debugLog("first", false);
-    // GremlinLogger.debugLog("second", false);
-    // GremlinLogger.debugLog("third", false);
-    // GremlinLogger.debugLog("4th", false);
+    GremlinLogger.debugLog("Elevator/first", false);
+    GremlinLogger.debugLog("Elevator/second", false);
+    GremlinLogger.debugLog("Elevator/third", false);
+    GremlinLogger.debugLog("Elevator/4th", false);
 
     if (targetAngleDegrees > getPivotAngleDegrees()
         && getPivotAngleDegrees() < maxUpperCollisionAngle && !hasAlgea()) {
       tempTargetAngle = travelAngle;
       tempTargetHeight = heightMeters;
-      // GremlinLogger.debugLog("first", true);
+      GremlinLogger.debugLog("Elevator/first", true);
     }
 
 
@@ -415,17 +415,17 @@ public class ElevatorPivot extends SubsystemBase {
     if (getPivotAngleDegrees() > maxUpperCollisionAngle) {
       tempTargetAngle = travelAngle;
       tempTargetHeight = getHeight();
-      // GremlinLogger.debugLog("second", true);
+      GremlinLogger.debugLog("Elevator/second", true);
     }
 
     if (hasAlgea() && targetAngleDegrees > maxAlgeaCollisionAngle && getHeight() < algeaReadyHeight) {
       tempTargetAngle = algeaTravelAngle;
-      // GremlinLogger.debugLog("4th", true);
+      GremlinLogger.debugLog("Elevator/4th", true);
     };
 
     if (atTargetHeight()) {
       tempTargetAngle = targetAngleDegrees;
-      // GremlinLogger.debugLog("third", true);
+      GremlinLogger.debugLog("Elevator/third", true);
     }
 
    
@@ -735,11 +735,14 @@ public class ElevatorPivot extends SubsystemBase {
     if (GremlinLogger.isDebug())
       updateMechanism2d();
 
-    GremlinLogger.debugLog("Elevator Height", carriageHeight);
-    GremlinLogger.debugLog("Target Heght", targetHeight);
-    GremlinLogger.debugLog("Arm Target", targetAngleDegrees);
-    GremlinLogger.debugLog("Arm Angle", getPivotAngleDegrees());
-    GremlinLogger.debugLog("Elevator Velocity", getVerticalVelocity());
+    GremlinLogger.debugLog("Elevator/Elevator Height", getHeight());
+    GremlinLogger.debugLog("Elevator/Target Heght", targetHeight);
+    GremlinLogger.debugLog("Elevator/Arm Target", targetAngleDegrees);
+    GremlinLogger.debugLog("Elevator/Arm Angle", getPivotAngleDegrees());
+    GremlinLogger.debugLog("Elevator/Elevator Velocity", getVerticalVelocity());
+    GremlinLogger.debugLog("Elevator/At Height", atTargetHeight());
+    GremlinLogger.debugLog("Elevator/At Angle", atTargetAngle());
+    GremlinLogger.debugLog("Elevator/Has Algea", hasAlgea());
 
     SmartDashboard.putBoolean("Has Algea", hasAlgea());
     SmartDashboard.putBoolean("At Height", atTargetHeight());
