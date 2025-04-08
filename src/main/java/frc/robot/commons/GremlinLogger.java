@@ -96,12 +96,9 @@ public class GremlinLogger extends DogLog {
             });
         }
 
-        log(path, new double[]{
-            pose.getX(),
-            pose.getY(),
-            pose.getRotation().getRadians()
-        });
+        log(path, pose);
     }
+
 
     public static boolean isDebug() {
         return DEBUG;

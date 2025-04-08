@@ -732,8 +732,7 @@ public class ElevatorPivot extends SubsystemBase {
     else if (getVerticalVelocity() < -0.2)
       travellingUpward = false;
 
-    if (GremlinLogger.isDebug())
-      updateMechanism2d();
+    updateMechanism2d();
 
     GremlinLogger.debugLog("Elevator/Elevator Height", getHeight());
     GremlinLogger.debugLog("Elevator/Target Heght", targetHeight);
@@ -868,13 +867,24 @@ public class ElevatorPivot extends SubsystemBase {
     double stage3Z = stage3Height - carriageToGround; // The heights of our stages are not the same as their z positions
     double stage2Z = stage2Height - carriageToGround;
 
-    pivotLigament.setAngle(180 - currentAngle);
+    
 
-    componentPosesPublisher.set(new Pose3d[] {
+    if(GremlinLogger.isDebug()){
+      pivotLigament.setAngle(180 - currentAngle);
+
+      componentPosesPublisher.set(new Pose3d[] {
         new Pose3d(0, 0, carriageZ, new Rotation3d()),
         new Pose3d(0, 0, stage3Z, new Rotation3d()),
         new Pose3d(0, 0, stage2Z, new Rotation3d()),
         new Pose3d(pivotOffsetX, pivotOffsetY, carriageZ + pivotOffsetZ, new Rotation3d(0, -getPivotAngleRadians(), 0))
+    });
+    }
+
+    GremlinLogger.log("Elevator/Components", new Pose3d[] {
+      new Pose3d(0, 0, carriageZ, new Rotation3d()),
+      new Pose3d(0, 0, stage3Z, new Rotation3d()),
+      new Pose3d(0, 0, stage2Z, new Rotation3d()),
+      new Pose3d(pivotOffsetX, pivotOffsetY, carriageZ + pivotOffsetZ, new Rotation3d(0, -getPivotAngleRadians(), 0))
     });
   }
 
