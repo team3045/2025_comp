@@ -355,6 +355,27 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("AAGamma", 
             autoScoreFactory.pidToPoleAuto(7).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+
+        NamedCommands.registerCommand("AA2Charlie", 
+            autoScoreFactory.autoAlignToPole(3).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+
+        NamedCommands.registerCommand("AA2Echo", 
+            autoScoreFactory.autoAlignToPole(5).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+
+        NamedCommands.registerCommand("AA2Delta", 
+            autoScoreFactory.autoAlignToPole(4).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+        
+        NamedCommands.registerCommand("AA2JhonnyBoi", 
+            autoScoreFactory.autoAlignToPole(10).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+        
+        NamedCommands.registerCommand("AA2Llama", 
+            autoScoreFactory.autoAlignToPole(12).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+           
+        NamedCommands.registerCommand("AA2Kayla", 
+            autoScoreFactory.autoAlignToPole(11).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
+
+        NamedCommands.registerCommand("AA2Gamma", 
+            autoScoreFactory.autoAlignToPole(7).andThen(claw.clawOutake()).andThen(Commands.waitSeconds(0.2)));
         
         NamedCommands.registerCommand("StartScoreF",
             autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,

@@ -506,4 +506,51 @@ public class AutoScoreFactory {
       () -> drivetrain.getState().Pose, 
       () -> AutoScoreConstants.kScorePoseMap.get(poleNumber));
   }
+
+  public Command autoAlignToPole(int poleNumber){
+    return autoAlignToPole(poleNumber, VisionConstants.limelights[1], VisionConstants.limelights[0]);
+  }
+
+  public Command autoAlignToPole(int poleNumber, GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera){
+    Supplier<Pose2d> feedbackPose = () -> {
+      if (poleNumber % 2 == 0) {
+        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
+            : drivetrain.getState().Pose;
+      } else {
+        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
+            : drivetrain.getState().Pose;
+      }
+    };
+
+    BooleanSupplier shouldOverride = () -> {
+      if (poleNumber % 2 == 0) {
+        return leftFeedbackCamera.seesObject();
+      } else {
+        return rightFeedbackCamera.seesObject();
+      }
+    };
+
+    DoubleSupplier timestampSupplier = () -> {
+      if (poleNumber % 2 == 0) {
+        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+            : Utils.getCurrentTimeSeconds();
+      } else {
+        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+            : Utils.getCurrentTimeSeconds();
+      }
+    };
+
+    return new DynamicPathfindWithFeedback(
+      () -> AutoScoreConstants.kScorePoseMap.get(poleNumber), 
+      () -> 0, 
+      autoScoreConstraints, 
+      drivetrain, 
+      feedbackPose, 
+      shouldOverride, 
+      timestampSupplier);
+  }
 }
