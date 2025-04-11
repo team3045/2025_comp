@@ -227,17 +227,19 @@ public class RobotContainer {
             joystick.options().onTrue(
                 Commands.either(
                     Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.BARGE)), 
-                    elevatorPivot.goToBargeThrow()
+                    Commands.runOnce(() -> elevatorPivot.raiseElevatorSpeed())
+                    .andThen(elevatorPivot.goToBargeThrow()
                     .alongWith(Commands.waitSeconds(0.3).andThen(claw.algeaOuttake()))
                     .andThen(
                         claw.hold()
+                        .andThen(Commands.runOnce(() -> elevatorPivot.lowerElevatorSpeed()))
                         .andThen(elevatorPivot.stowArm())
                         .andThen(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP))))
                     .deadlineFor(
                         drivetrain.applyRequest(() ->
                             DriveConstants.drive.withVelocityX(GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed) // Drive forward with negative Y (forward)
                                 .withVelocityY(GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed) // Drive left with negative X (left)
-                                .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate)) // Drive counterclockwise with negative X (left)
+                                .withRotationalRate(GremlinUtil.squareDriverInput(-joystick.getRightX()) * MaxAngularRate))) // Drive counterclockwise with negative X (left)
                     ),
                     bargeState.negate()
                 ));
@@ -285,7 +287,7 @@ public class RobotContainer {
         );
         //Panic button, raises elevator on first press, zeroes on second
         joystick.povLeft().OnPressTwice(
-            elevatorPivot.goToHeight(() -> firstStageLength + secondStageLength), 
+            elevatorPivot.goToHeight(() -> ElevatorPivotConstants.HeightPositions.L4.getHeight()), 
             elevatorPivot.stowArm().andThen(elevatorPivot.zeroElevator()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
@@ -434,7 +436,7 @@ public class RobotContainer {
         );
 
         NamedCommands.registerCommand("intakePart1", 
-            elevatorPivot.goToIntake()
+            elevatorPivot.goToIntake().withTimeout(4)
                 .andThen(elevatorPivot.zeroElevator())
                 .andThen(elevatorPivot.applyDownwardCurrent())
                 .andThen(elevatorPivot.applyPivotCurrent())
