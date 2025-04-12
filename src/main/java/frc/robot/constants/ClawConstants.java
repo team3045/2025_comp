@@ -62,7 +62,7 @@ public class ClawConstants {
     public static final double updateFrequency = 50; // every 20 ms, this is overridden to 100 Hz when we're in
                                                      // ShortRange100hz mode
 
-    public static final double holdAlgeaVoltage = -0.8;
+    public static final double holdAlgeaVoltage = -1.2;
 
     public static final FovParamsConfigs fovConfigs = new FovParamsConfigs()
             .withFOVCenterX(fovCenterX)
