@@ -51,7 +51,7 @@ public class ClawConstants {
     public static final double fovRangeX = 6.75;
     public static final double fovRangeY = 6.75;
 
-    public static final double minSignalStrength = 0;
+    public static final double minSignalStrength = 2500;
     public static final double proximityHysterisis = 0.01; // 1 cm
     public static final double proximityThreshold = 0.05; // 10cm
 
