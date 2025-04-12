@@ -39,7 +39,6 @@ import frc.robot.vision.apriltag.GremlinApriltagVision;
 import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
-import static frc.robot.constants.DriveConstants.ReducedSpeed;
 import static frc.robot.constants.ElevatorPivotConstants.firstStageLength;
 import static frc.robot.constants.ElevatorPivotConstants.secondStageLength;
 import static frc.robot.constants.FieldConstants.tooCloseDistance;
