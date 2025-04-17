@@ -78,7 +78,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "LowAlgeaSpecial"
+                        "name": "LowAlgea"
                       }
                     }
                   ]
@@ -96,9 +96,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "sequential",
                       "data": {
-                        "name": "RdyBarge"
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 0.5
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RdyBarge"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
