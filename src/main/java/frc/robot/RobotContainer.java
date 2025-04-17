@@ -489,6 +489,16 @@ public class RobotContainer {
             .andThen(claw.fullHold())
         );
 
+        NamedCommands.registerCommand("LowAlgeaSpecial", 
+            elevatorPivot.goToPosition(
+                () -> ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight() + 0.02, 
+                () -> ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle())
+            .alongWith(claw.algeaIntake())
+            .until(ElevatorPivot.hasAlgea)
+            .andThen(Commands.waitUntil(ElevatorPivot.hasAlgea))
+            .andThen(claw.fullHold())
+        );
+
         NamedCommands.registerCommand("HighAlgea", 
             elevatorPivot.goToPosition(
                 () -> ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight(), 
