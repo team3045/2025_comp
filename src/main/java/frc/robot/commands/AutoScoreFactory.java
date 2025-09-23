@@ -28,8 +28,6 @@ import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
-import frc.robot.vision.apriltag.GremlinLimelightCamera;
-import frc.robot.vision.apriltag.VisionConstants;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -79,242 +77,242 @@ public class AutoScoreFactory {
             elevatorPivot.getPivotAngleDegrees()));
   }
 
-  public DynamicPathfindWithFeedback pathfindToScoring(GremlinLimelightCamera rightFeedbackCamera,
-      GremlinLimelightCamera leftFeedbackCamera) {
-    return pathFindWithApriltagFeeback(
-        () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose),
-        rightFeedbackCamera,
-        leftFeedbackCamera);
-  }
+  // public DynamicPathfindWithFeedback pathfindToScoring(GremlinLimelightCamera rightFeedbackCamera,
+  //     GremlinLimelightCamera leftFeedbackCamera) {
+  //   return pathFindWithApriltagFeeback(
+  //       () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose),
+  //       rightFeedbackCamera,
+  //       leftFeedbackCamera);
+  // }
 
-  public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(Supplier<Pose2d> desiredPose,
-      GremlinLimelightCamera rightFeedbackCamera, GremlinLimelightCamera leftFeedbackCamera) {
+  // public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(Supplier<Pose2d> desiredPose,
+  //     GremlinLimelightCamera rightFeedbackCamera, GremlinLimelightCamera leftFeedbackCamera) {
 
-    rightFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
-    leftFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
+  //   rightFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
+  //   leftFeedbackCamera.setValidIDsMT2(AutoScoreConstants.kReefAprilTagIds);
 
-    // Basically we alternate between right or left cameras, depending on the pole
-    // number.
-    // Odd pole numbers use rightCamera, Even pole numbers use leftCamera
-    Supplier<Pose2d> robotPoseSupplier = () -> {
-      int poleNumber = (int) poleNumberSub.get();
+  //   // Basically we alternate between right or left cameras, depending on the pole
+  //   // number.
+  //   // Odd pole numbers use rightCamera, Even pole numbers use leftCamera
+  //   Supplier<Pose2d> robotPoseSupplier = () -> {
+  //     int poleNumber = (int) poleNumberSub.get();
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
-            : drivetrain.getState().Pose;
-      } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
-            : drivetrain.getState().Pose;
-      }
-    };
+  //     if (poleNumber % 2 == 0) {
+  //       return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+  //           ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
+  //           : drivetrain.getState().Pose;
+  //     } else {
+  //       return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+  //           ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
+  //           : drivetrain.getState().Pose;
+  //     }
+  //   };
 
-    BooleanSupplier shouldOverride = () -> {
-      int poleNumber = (int) poleNumberSub.get();
+  //   BooleanSupplier shouldOverride = () -> {
+  //     int poleNumber = (int) poleNumberSub.get();
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
-      } else {
-        return rightFeedbackCamera.seesObject()
-            && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
-      }
-    };
+  //     if (poleNumber % 2 == 0) {
+  //       return leftFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+  //     } else {
+  //       return rightFeedbackCamera.seesObject()
+  //           && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+  //     }
+  //   };
 
-    DoubleSupplier timestampSupplier = () -> {
-      int poleNumber = (int) poleNumberSub.get();
+  //   DoubleSupplier timestampSupplier = () -> {
+  //     int poleNumber = (int) poleNumberSub.get();
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds();
-      } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds();
-      }
-    };
+  //     if (poleNumber % 2 == 0) {
+  //       return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+  //           ? leftFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+  //           : Utils.getCurrentTimeSeconds();
+  //     } else {
+  //       return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+  //           ? rightFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+  //           : Utils.getCurrentTimeSeconds();
+  //     }
+  //   };
 
-    return new DynamicPathfindWithFeedback(
-        desiredPose,
-        () -> 0,
-        DriveConstants.autoScoreConstraints,
-        drivetrain,
-        robotPoseSupplier,
-        shouldOverride,
-        timestampSupplier);
-  }
+  //   return new DynamicPathfindWithFeedback(
+  //       desiredPose,
+  //       () -> 0,
+  //       DriveConstants.autoScoreConstraints,
+  //       drivetrain,
+  //       robotPoseSupplier,
+  //       shouldOverride,
+  //       timestampSupplier);
+  // }
 
-  public Command fullAutoScoreCommand() {
-    return pathfindToScoring(VisionConstants.limelights[0], VisionConstants.limelights[1]) // righ and left
-        .alongWith(setElevatorHeight())
-        .andThen(claw.clawOutake())
-        .andThen(Commands.waitSeconds(0.4))
-        .andThen(drivetrain.driveBack())
-        .finallyDo(() -> {
-          M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
-  }
+  // public Command fullAutoScoreCommand() {
+  //   return pathfindToScoring(VisionConstants.limelights[0], VisionConstants.limelights[1]) // righ and left
+  //       .alongWith(setElevatorHeight())
+  //       .andThen(claw.clawOutake())
+  //       .andThen(Commands.waitSeconds(0.4))
+  //       .andThen(drivetrain.driveBack())
+  //       .finallyDo(() -> {
+  //         M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+  //       }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+  // }
 
-  public Command fullAutoScoreCommand(Supplier<Pose2d> desiredPose, Supplier<Integer> desiredHeight) {
-    return pathFindWithApriltagFeeback(
-        desiredPose, VisionConstants.limelights[0], VisionConstants.limelights[1])
-        .alongWith(setElevatorHeight(desiredHeight))
-        .andThen(claw.clawOutake())
-        .andThen(Commands.waitSeconds(0.4))
-        .andThen(drivetrain.driveBack())
-        .finallyDo(() -> {
-          M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
-  }
+  // public Command fullAutoScoreCommand(Supplier<Pose2d> desiredPose, Supplier<Integer> desiredHeight) {
+  //   return pathFindWithApriltagFeeback(
+  //       desiredPose, VisionConstants.limelights[0], VisionConstants.limelights[1])
+  //       .alongWith(setElevatorHeight(desiredHeight))
+  //       .andThen(claw.clawOutake())
+  //       .andThen(Commands.waitSeconds(0.4))
+  //       .andThen(drivetrain.driveBack())
+  //       .finallyDo(() -> {
+  //         M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+  //       }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
+  // }
 
-  public Command goToNearestAlgea(Supplier<Pose2d> poseSupplier, GremlinLimelightCamera feedbackCamera) {
-    Supplier<Pose2d> targetPoseSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+  // public Command goToNearestAlgea(Supplier<Pose2d> poseSupplier, GremlinLimelightCamera feedbackCamera) {
+  //   Supplier<Pose2d> targetPoseSupplier = () -> {
+  //     List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
 
-      Pose2d closest = poseList.get(0);
-      int closestNum = 0;
+  //     Pose2d closest = poseList.get(0);
+  //     int closestNum = 0;
 
-      for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(poseSupplier.get().getTranslation()) < closest.getTranslation()
-            .getDistance(poseSupplier.get().getTranslation())) {
-          closest = poseList.get(i);
-          closestNum = i;
-        }
-      }
+  //     for (int i = 1; i < poseList.size(); i++) {
+  //       if (poseList.get(i).getTranslation().getDistance(poseSupplier.get().getTranslation()) < closest.getTranslation()
+  //           .getDistance(poseSupplier.get().getTranslation())) {
+  //         closest = poseList.get(i);
+  //         closestNum = i;
+  //       }
+  //     }
 
-      return FieldConstants.algeaPoses.get(closestNum);
-    };
+  //     return FieldConstants.algeaPoses.get(closestNum);
+  //   };
 
-    return new DynamicPathfindWithFeedback(
-        targetPoseSupplier,
-        () -> 0,
-        DriveConstants.autoScoreConstraints,
-        drivetrain,
-        () -> feedbackCamera.getBotPoseEstimateMT2().isPresent() ? feedbackCamera.getBotPoseEstimateMT2().get().pose
-            : drivetrain.getState().Pose,
-        feedbackCamera::seesObject,
-        () -> feedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds());
-  }
+  //   return new DynamicPathfindWithFeedback(
+  //       targetPoseSupplier,
+  //       () -> 0,
+  //       DriveConstants.autoScoreConstraints,
+  //       drivetrain,
+  //       () -> feedbackCamera.getBotPoseEstimateMT2().isPresent() ? feedbackCamera.getBotPoseEstimateMT2().get().pose
+  //           : drivetrain.getState().Pose,
+  //       feedbackCamera::seesObject,
+  //       () -> feedbackCamera.getBotPoseEstimateMT2().isPresent()
+  //           ? feedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+  //           : Utils.getCurrentTimeSeconds());
+  // }
 
-  public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera, DoubleSupplier xSpeeds,
-      DoubleSupplier ySpeeds) {
-    DoubleSupplier heightSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+  // public Command getAlgeaRemoveCommand(GremlinLimelightCamera feedbackCamera, DoubleSupplier xSpeeds,
+  //     DoubleSupplier ySpeeds) {
+  //   DoubleSupplier heightSupplier = () -> {
+  //     List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
 
-      Pose2d closest = poseList.get(0);
-      int closestNum = 0;
+  //     Pose2d closest = poseList.get(0);
+  //     int closestNum = 0;
 
-      for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
-            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
-          closest = poseList.get(i);
-          closestNum = i;
-        }
-      }
+  //     for (int i = 1; i < poseList.size(); i++) {
+  //       if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
+  //           .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
+  //         closest = poseList.get(i);
+  //         closestNum = i;
+  //       }
+  //     }
 
-      if (closestNum % 2 == 0) {
-        return ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight();
-      } else {
-        return ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight();
-      }
-    };
+  //     if (closestNum % 2 == 0) {
+  //       return ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight();
+  //     } else {
+  //       return ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight();
+  //     }
+  //   };
 
-    DoubleSupplier AngleSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
+  //   DoubleSupplier AngleSupplier = () -> {
+  //     List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
 
-      Pose2d closest = poseList.get(0);
-      int closestNum = 0;
+  //     Pose2d closest = poseList.get(0);
+  //     int closestNum = 0;
 
-      for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
-            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
-          closest = poseList.get(i);
-          closestNum = i;
-        }
-      }
+  //     for (int i = 1; i < poseList.size(); i++) {
+  //       if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
+  //           .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
+  //         closest = poseList.get(i);
+  //         closestNum = i;
+  //       }
+  //     }
 
-      if (closestNum % 2 == 0) {
-        return ElevatorPivotConstants.AnglePositions.HIGH_ALGEA.getAngle();
-      } else {
-        return ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle();
-      }
-    };
+  //     if (closestNum % 2 == 0) {
+  //       return ElevatorPivotConstants.AnglePositions.HIGH_ALGEA.getAngle();
+  //     } else {
+  //       return ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle();
+  //     }
+  //   };
 
-    // return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
-    // .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
-    // .alongWith(claw.algeaIntake())
-    // .until(ElevatorPivot.hasAlgea)
-    // .andThen(drivetrain.driveBackAlgea());
+  //   // return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
+  //   // .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
+  //   // .alongWith(claw.algeaIntake())
+  //   // .until(ElevatorPivot.hasAlgea)
+  //   // .andThen(drivetrain.driveBackAlgea());
 
-    return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
-        .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
-        .alongWith(claw.algeaIntake())
-        .until(ElevatorPivot.hasAlgea)
-        .andThen(drivetrain.driveBackAlgea());
-  }
+  //   return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
+  //       .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
+  //       .alongWith(claw.algeaIntake())
+  //       .until(ElevatorPivot.hasAlgea)
+  //       .andThen(drivetrain.driveBackAlgea());
+  // }
 
-  public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, Supplier<Integer> poleNumSupplier,
-      GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera) {
-    // Basically we alternate between right or left cameras, depending on the pole
-    // number.
-    // Odd pole numbers use rightCamera, Even pole numbers use leftCamera
-    Supplier<Pose2d> robotPoseSupplier = () -> {
-      int poleNumber = (int) poleNumSupplier.get();
+//   public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, Supplier<Integer> poleNumSupplier,
+//       GremlinLimelightCamera leftFeedbackCamera, GremlinLimelightCamera rightFeedbackCamera) {
+//     // Basically we alternate between right or left cameras, depending on the pole
+//     // number.
+//     // Odd pole numbers use rightCamera, Even pole numbers use leftCamera
+//     Supplier<Pose2d> robotPoseSupplier = () -> {
+//       int poleNumber = (int) poleNumSupplier.get();
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
-            : drivetrain.getState().Pose;
-      } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
-            : drivetrain.getState().Pose;
-      }
-    };
+//       if (poleNumber % 2 == 0) {
+//         return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+//             ? leftFeedbackCamera.getBotPoseEstimateMT2().get().pose
+//             : drivetrain.getState().Pose;
+//       } else {
+//         return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+//             ? rightFeedbackCamera.getBotPoseEstimateMT2().get().pose
+//             : drivetrain.getState().Pose;
+//       }
+//     };
 
-    BooleanSupplier shouldOverride = () -> {
-      int poleNumber = (int) poleNumberSub.get();
+//     BooleanSupplier shouldOverride = () -> {
+//       int poleNumber = (int) poleNumberSub.get();
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
-      } else {
-        return rightFeedbackCamera.seesObject()
-            && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
-      }
-    };
+//       if (poleNumber % 2 == 0) {
+//         return leftFeedbackCamera.seesObject() && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+//       } else {
+//         return rightFeedbackCamera.seesObject()
+//             && drivetrain.withinDistanceOfReef(FieldConstants.reefDistanceTolerance);
+//       }
+//     };
 
-    DoubleSupplier timestampSupplier = () -> {
-      int poleNumber = (int) poleNumberSub.get();
+//     DoubleSupplier timestampSupplier = () -> {
+//       int poleNumber = (int) poleNumberSub.get();
 
-      if (poleNumber % 2 == 0) {
-        return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? leftFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds();
-      } else {
-        return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
-            ? rightFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
-            : Utils.getCurrentTimeSeconds();
-      }
-    };
+//       if (poleNumber % 2 == 0) {
+//         return leftFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+//             ? leftFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+//             : Utils.getCurrentTimeSeconds();
+//       } else {
+//         return rightFeedbackCamera.getBotPoseEstimateMT2().isPresent()
+//             ? rightFeedbackCamera.getBotPoseEstimateMT2().get().timestampSeconds
+//             : Utils.getCurrentTimeSeconds();
+//       }
+//     };
 
-    return Commands.run(
-        () -> {
-          boolean used = false;
+//     return Commands.run(
+//         () -> {
+//           boolean used = false;
 
-          if (shouldOverride.getAsBoolean()) {
-            if (robotPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 3) {
-              drivetrain.addVisionMeasurement(
-                  robotPoseSupplier.get(),
-                  Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
-                  VecBuilder.fill(0.0001, 0.0001, 0.001));
-              used = true;
-            }
-          }
+//           if (shouldOverride.getAsBoolean()) {
+//             if (robotPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 3) {
+//               drivetrain.addVisionMeasurement(
+//                   robotPoseSupplier.get(),
+//                   Utils.fpgaToCurrentTime(timestampSupplier.getAsDouble()),
+//                   VecBuilder.fill(0.0001, 0.0001, 0.001));
+//               used = true;
+//             }
+//           }
 
-          SmartDashboard.putBoolean("Used", used);
-        }).alongWith(setElevatorHeight(heightSup));
-  }
+//           SmartDashboard.putBoolean("Used", used);
+//         }).alongWith(setElevatorHeight(heightSup));
+//   }
 }

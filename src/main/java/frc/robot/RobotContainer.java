@@ -31,8 +31,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
-import frc.robot.vision.apriltag.GremlinApriltagVision;
-import frc.robot.vision.apriltag.VisionConstants;
+import frc.robot.vision.VisionSubsystem;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
 import static frc.robot.constants.DriveConstants.drive;
@@ -48,15 +47,13 @@ public class RobotContainer {
     private final GremlinPS4Controller joystick = new GremlinPS4Controller(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final GremlinApriltagVision vision = new GremlinApriltagVision(VisionConstants.cameras,
-        () -> drivetrain.getState().Pose, 
-        VisionConstants.limelights,
-        (drivetrain::addVisionMeasurements));
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
 
     /*Auto Score Stuff */
     public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
+
+    public final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
     /*Triggers */
     public final Trigger isAuton = new Trigger(() -> DriverStation.isAutonomous());
@@ -104,13 +101,10 @@ public class RobotContainer {
         joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
         joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
         
-        scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
+        // scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
 
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
-        
-        disableGlobalEstimation.onTrue(Commands.runOnce(() -> vision.setRejectAllUpdates(true)));
-        disableGlobalEstimation.onFalse(Commands.runOnce(() -> vision.setRejectAllUpdates(false)));
 
         joystick.L1().onTrue(
             new ConditionalCommand(
@@ -118,15 +112,15 @@ public class RobotContainer {
                 Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
                 algeaState.negate()));
 
-        algeaState.whileTrue(
-            autoScoreFactory.getAlgeaRemoveCommand(
-                VisionConstants.limelights[0],
-                () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed,
-                () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
-            .finallyDo(() -> {
-                M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-                }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER REMOVAL
-        );
+        // algeaState.whileTrue(
+        //     autoScoreFactory.getAlgeaRemoveCommand(
+        //         VisionConstants.limelights[0],
+        //         () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed,
+        //         () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
+        //     .finallyDo(() -> {
+        //         M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
+        //         }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER REMOVAL
+        // );
 
         algeaState.onFalse(
             elevatorPivot.stowArm().alongWith(claw.fullHold()));
@@ -206,25 +200,25 @@ public class RobotContainer {
             claw.clawOutake()
             .andThen(Commands.waitSeconds(0.4)).withName("Score Coral"));
         
-        NamedCommands.registerCommand("StartScoreF",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
-            VisionConstants.limelights[1], 
-            VisionConstants.limelights[0]).withName("StartScoreF"));
+        // NamedCommands.registerCommand("StartScoreF",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
+        //     VisionConstants.limelights[1], 
+        //     VisionConstants.limelights[0]).withName("StartScoreF"));
 
-        NamedCommands.registerCommand("StartScoreE",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5,
-            VisionConstants.limelights[1], 
-            VisionConstants.limelights[0]).withName("StartScoreE"));
+        // NamedCommands.registerCommand("StartScoreE",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5,
+        //     VisionConstants.limelights[1], 
+        //     VisionConstants.limelights[0]).withName("StartScoreE"));
 
-        NamedCommands.registerCommand("StartScoreD",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4,
-            VisionConstants.limelights[1], 
-            VisionConstants.limelights[0]).withName("StartScoreE"));
+        // NamedCommands.registerCommand("StartScoreD",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4,
+        //     VisionConstants.limelights[1], 
+        //     VisionConstants.limelights[0]).withName("StartScoreE"));
 
-        NamedCommands.registerCommand("StartScoreC",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3,
-            VisionConstants.limelights[1], 
-            VisionConstants.limelights[0]).withName("StartScoreE"));
+        // NamedCommands.registerCommand("StartScoreC",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3,
+        //     VisionConstants.limelights[1], 
+        //     VisionConstants.limelights[0]).withName("StartScoreE"));
         
         NamedCommands.registerCommand("StartIntake", 
             elevatorPivot.goToIntake()
@@ -257,15 +251,15 @@ public class RobotContainer {
     }   
 
     public void configureAutoTriggers(){
-        new EventTrigger("StartScoreF").onTrue(
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
-            VisionConstants.limelights[1], 
-            VisionConstants.limelights[0]));
+        // new EventTrigger("StartScoreF").onTrue(
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
+        //     VisionConstants.limelights[1], 
+        //     VisionConstants.limelights[0]));
 
-        new EventTrigger("StartScoreE").onTrue(
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5, 
-            VisionConstants.limelights[1], 
-            VisionConstants.limelights[0]));
+        // new EventTrigger("StartScoreE").onTrue(
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5, 
+        //     VisionConstants.limelights[1], 
+        //     VisionConstants.limelights[0]));
 
         new EventTrigger("StartIntake").onTrue(
             elevatorPivot.goToIntake()

@@ -48,7 +48,6 @@ import frc.robot.commons.TimestampedVisionUpdate;
 import frc.robot.constants.FieldConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.vision.apriltag.VisionConstants;
 
 import static frc.robot.constants.DriveConstants.*;
 import static frc.robot.constants.FieldConstants.blueReefCenter;
@@ -537,9 +536,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-
-        VisionConstants.limelights[0].setRobotHeading(getState().Pose.getRotation().getDegrees());
-        VisionConstants.limelights[1].setRobotHeading(getState().Pose.getRotation().getDegrees());
     }
 
     private void startSimThread() {
