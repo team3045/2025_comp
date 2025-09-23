@@ -17,7 +17,7 @@ import com.ctre.phoenix6.signals.UpdateModeValue;
 
 public class ClawConstants {
     public static final int clawID = 15;
-    public static final int canRangeId = 17;
+    public static final int canRangeId = 31;
     public static final int hopperId = 20;
     public static final String canbus = "Canivore 3045";
 

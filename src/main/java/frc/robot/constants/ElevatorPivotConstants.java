@@ -34,7 +34,7 @@ public class ElevatorPivotConstants {
     public static final int leftMotorId = 12;
     public static final int pivotMotorId = 14;
     public static final int pivotCancoderId = 16;
-    public static final int canRangeId = 18;
+    public static final int canRangeId = 30;
     public static final String canbus = "Canivore 3045";
 
     public static final String elevatorTable = "elevator";

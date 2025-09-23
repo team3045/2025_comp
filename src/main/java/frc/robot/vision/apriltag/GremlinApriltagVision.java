@@ -234,13 +234,15 @@ public class GremlinApriltagVision extends SubsystemBase {
         double xyStdDev = 0.0;
         double thetaStdDev = 0.0;
 
-        if (shouldUseMultiTag) {
-          xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * stabilityModifier * multiTagModifier;
-          thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * stabilityModifier * multiTagModifier;
-        } else {
-          xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * stabilityModifier;
-          thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * stabilityModifier;
-        }
+        // if (shouldUseMultiTag) {
+        //   xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * stabilityModifier * multiTagModifier;
+        //   thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * stabilityModifier * multiTagModifier;
+        // } else {
+        //   xyStdDev = XY_STDDEV_MODEL.predict(avgDistance) * stabilityModifier;
+        //   thetaStdDev = THETA_STDDEV_MODEL.predict(avgDistance) * stabilityModifier;
+        // }
+        xyStdDev = 0.000001;
+        thetaStdDev = 0.000001;
 
         Vector<N3> stdDevs = VecBuilder.fill(
             xyStdDev,
