@@ -200,25 +200,17 @@ public class RobotContainer {
             claw.clawOutake()
             .andThen(Commands.waitSeconds(0.4)).withName("Score Coral"));
         
-        // NamedCommands.registerCommand("StartScoreF",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
-        //     VisionConstants.limelights[1], 
-        //     VisionConstants.limelights[0]).withName("StartScoreF"));
+        NamedCommands.registerCommand("StartScoreF",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6).withName("StartScoreF"));
 
-        // NamedCommands.registerCommand("StartScoreE",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5,
-        //     VisionConstants.limelights[1], 
-        //     VisionConstants.limelights[0]).withName("StartScoreE"));
+        NamedCommands.registerCommand("StartScoreE",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5).withName("StartScoreE"));
 
-        // NamedCommands.registerCommand("StartScoreD",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4,
-        //     VisionConstants.limelights[1], 
-        //     VisionConstants.limelights[0]).withName("StartScoreE"));
+        NamedCommands.registerCommand("StartScoreD",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4).withName("StartScoreE"));
 
-        // NamedCommands.registerCommand("StartScoreC",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3,
-        //     VisionConstants.limelights[1], 
-        //     VisionConstants.limelights[0]).withName("StartScoreE"));
+        NamedCommands.registerCommand("StartScoreC",
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3).withName("StartScoreE"));
         
         NamedCommands.registerCommand("StartIntake", 
             elevatorPivot.goToIntake()
@@ -251,15 +243,11 @@ public class RobotContainer {
     }   
 
     public void configureAutoTriggers(){
-        // new EventTrigger("StartScoreF").onTrue(
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6,
-        //     VisionConstants.limelights[1], 
-        //     VisionConstants.limelights[0]));
+        new EventTrigger("StartScoreF").onTrue(
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6));
 
-        // new EventTrigger("StartScoreE").onTrue(
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5, 
-        //     VisionConstants.limelights[1], 
-        //     VisionConstants.limelights[0]));
+        new EventTrigger("StartScoreE").onTrue(
+            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5));
 
         new EventTrigger("StartIntake").onTrue(
             elevatorPivot.goToIntake()

@@ -9,9 +9,11 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class VisionSubsystem extends SubsystemBase {
   /** Creates a new VisionSubsystem. */
-  ShitCam camRight;
+  public static ShitCam camRight;
+  public static ShitCam camLeft;
   public VisionSubsystem(CommandSwerveDrivetrain drivetrain) {
     camRight = new ShitCam(0, drivetrain);
+    camLeft = null;
   }
 
   @Override

@@ -7,13 +7,23 @@ package frc.robot.vision;
 import static frc.robot.constants.DriveConstants.drive;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LimelightHelpers;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 import static frc.robot.vision.VisionConstants.*;
+
+import java.lang.reflect.Field;
+
+import com.pathplanner.lib.util.GeometryUtil;
+
 
 /** Add your docs here. */
 public class ShitCam {
@@ -27,11 +37,11 @@ public class ShitCam {
     }
     
     public void process() {
-        LimelightHelpers.SetRobotOrientation(names[idx], drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
-            mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(names[idx]);
-        } else {
-            mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(names[idx]);
+        LimelightHelpers.SetRobotOrientation(names[idx], drivetrain.getState().Pose.getRotation().getDegrees() - 180, 0, 0, 0, 0, 0);
+        mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(names[idx]);
+        if (mostRecentPoseEstimate == null) return;
+        if (DriverStation.getAlliance().get() == Alliance.Red) {
+            mostRecentPoseEstimate.pose = new Pose2d(new Translation2d(FieldConstants.redReefCenter.getX() - (mostRecentPoseEstimate.pose.getTranslation().getX() - FieldConstants.blueReefCenter.getX()), FieldConstants.compFieldWidth - mostRecentPoseEstimate.pose.getTranslation().getY()), mostRecentPoseEstimate.pose.getRotation());
         }
     }
 
@@ -43,7 +53,8 @@ public class ShitCam {
         }
         SmartDashboard.putNumberArray("LimelightPose", new Double[]{mostRecentPoseEstimate.pose.getTranslation().getX(), mostRecentPoseEstimate.pose.getTranslation().getY(), mostRecentPoseEstimate.pose.getRotation().getDegrees()});
         SmartDashboard.putBoolean("SeesApriltag", true);
-        drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 999999.0));
-        drivetrain.addVisionMeasurement(mostRecentPoseEstimate.pose, mostRecentPoseEstimate.timestampSeconds);
+        // drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 999999.0));
+        // drivetrain.addVisionMeasurement(mostRecentPoseEstimate.pose, mostRecentPoseEstimate.timestampSeconds);
+        drivetrain.resetPose(new Pose2d(mostRecentPoseEstimate.pose.getTranslation(), drivetrain.getState().Pose.getRotation()));
     }
 }
