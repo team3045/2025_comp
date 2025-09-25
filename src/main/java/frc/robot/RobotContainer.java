@@ -51,7 +51,7 @@ public class RobotContainer {
     public final Claw claw = new Claw();
 
     /*Auto Score Stuff */
-    public final AutoScoreFactory autoScoreFactory = new AutoScoreFactory(drivetrain, elevatorPivot, claw);
+    public final AutoScoreFactory autoScore = new AutoScoreFactory(drivetrain, elevatorPivot, claw, () -> 20, () -> 2);
 
     public final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
@@ -106,11 +106,7 @@ public class RobotContainer {
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
 
-        joystick.L1().onTrue(
-            new ConditionalCommand(
-                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.ALGEA)), 
-                Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)), 
-                algeaState.negate()));
+        joystick.L1().onTrue(autoScore.autoScore());
 
         // algeaState.whileTrue(
         //     autoScoreFactory.getAlgeaRemoveCommand(
@@ -200,17 +196,17 @@ public class RobotContainer {
             claw.clawOutake()
             .andThen(Commands.waitSeconds(0.4)).withName("Score Coral"));
         
-        NamedCommands.registerCommand("StartScoreF",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6).withName("StartScoreF"));
+        // NamedCommands.registerCommand("StartScoreF",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6).withName("StartScoreF"));
 
-        NamedCommands.registerCommand("StartScoreE",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5).withName("StartScoreE"));
+        // NamedCommands.registerCommand("StartScoreE",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5).withName("StartScoreE"));
 
-        NamedCommands.registerCommand("StartScoreD",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4).withName("StartScoreE"));
+        // NamedCommands.registerCommand("StartScoreD",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4).withName("StartScoreE"));
 
-        NamedCommands.registerCommand("StartScoreC",
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3).withName("StartScoreE"));
+        // NamedCommands.registerCommand("StartScoreC",
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3).withName("StartScoreE"));
         
         NamedCommands.registerCommand("StartIntake", 
             elevatorPivot.goToIntake()
@@ -243,11 +239,11 @@ public class RobotContainer {
     }   
 
     public void configureAutoTriggers(){
-        new EventTrigger("StartScoreF").onTrue(
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6));
+        // new EventTrigger("StartScoreF").onTrue(
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6));
 
-        new EventTrigger("StartScoreE").onTrue(
-            autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5));
+        // new EventTrigger("StartScoreE").onTrue(
+        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5));
 
         new EventTrigger("StartIntake").onTrue(
             elevatorPivot.goToIntake()

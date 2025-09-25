@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 
 public class AutoScoreConstants {
     public static final double kElevatorHeights[] = { 0, 0, 0, 0 };
@@ -47,7 +49,10 @@ public class AutoScoreConstants {
         kScorePoseMap.put(5, new Pose2d(5.023, 2.76, Rotation2d.fromDegrees(120)));
         kScorePoseMap.put(6, new Pose2d(5.287, 2.928, Rotation2d.fromDegrees(120)));
         kScorePoseMap.put(7, new Pose2d(5.811, 3.854, Rotation2d.k180deg));
-        kScorePoseMap.put(8, new Pose2d(5.811, 4.187, Rotation2d.k180deg)); // TODO: flip all these based on alliance
+        kScorePoseMap.put(8, new Pose2d(5.811, 4.187, Rotation2d.k180deg));
+        for (int i = 13; i < 26; i ++) {
+            kScorePoseMap.put(i, new Pose2d(new Translation2d(FieldConstants.redReefCenter.getX() - (kScorePoseMap.get(i - 12).getTranslation().getX() - FieldConstants.blueReefCenter.getX()), FieldConstants.compFieldWidth - kScorePoseMap.get(i - 12).getTranslation().getY()), new Rotation2d(Units.degreesToRadians(kScorePoseMap.get(i - 12).getRotation().getDegrees() - 180))));
+        }
                                                                             // color
 
         kScoreHeightMap.put(1, ElevatorPivotConstants.HeightPositions.L2.getHeight());

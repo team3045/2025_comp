@@ -4,234 +4,54 @@
 
 package frc.robot.commands;
 
-import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.Utils;
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.IntegerSubscriber;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.GremlinRobotState;
-import frc.robot.GremlinRobotState.DriveState;
-import frc.robot.constants.AutoScoreConstants;
-import frc.robot.constants.DriveConstants;
-import frc.robot.constants.ElevatorPivotConstants;
-import frc.robot.constants.FieldConstants;
-import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorPivot;
-import frc.robot.vision.ShitCam;
-import frc.robot.vision.VisionSubsystem;
+import frc.robot.constants.AutoScoreConstants;
+import frc.robot.subsystems.Claw;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/** Add your docs here. */
 public class AutoScoreFactory {
-  public static final GremlinRobotState M_ROBOT_STATE = GremlinRobotState.getRobotState();
-  private CommandSwerveDrivetrain drivetrain;
-  private ElevatorPivot elevatorPivot;
-  private Claw claw;
+    private static CommandSwerveDrivetrain drivetrain;
+    private static ElevatorPivot elevatorPivot;
+    private static Claw claw;
+    private static Supplier<Integer> poleNumSub;
+    private static Supplier<Integer> heightSub;
 
-  private IntegerSubscriber poleNumberSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
-      .getIntegerTopic("Pole").subscribe(0);
-  private IntegerSubscriber heightSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
-      .getIntegerTopic("Height").subscribe(0);
+    public AutoScoreFactory(CommandSwerveDrivetrain Drivetrain, ElevatorPivot ElevatorPivot, Claw Claw, Supplier<Integer> PoleNumSub, Supplier<Integer> HeightSub) {
+        drivetrain = Drivetrain;
+        elevatorPivot = ElevatorPivot;
+        claw = Claw;
+        poleNumSub = PoleNumSub;
+        heightSub = HeightSub;
+    }
 
-  /** Creates a new FullAutoScore. */
-  public AutoScoreFactory(CommandSwerveDrivetrain drivetrain, ElevatorPivot elevatorPivot, Claw clawRef) {
-    this.drivetrain = drivetrain;
-    this.elevatorPivot = elevatorPivot;
-    this.claw = clawRef;
+    public Command driveToScorePose() {
+        return new DriveToPose(drivetrain, () -> drivetrain.getState().Pose, () -> AutoScoreConstants.kScorePoseMap.get(poleNumSub.get()));
+    }
 
-  }
+    public Command elevatorPivotGoToPose() {
+        return elevatorPivot.goToPosition(() -> AutoScoreConstants.kScoreHeightMap.get(heightSub.get()), () -> AutoScoreConstants.kScoreAngleMap.get(heightSub.get()));
+    }
+    
+    public Command ejectCoral() {
+        return claw.clawOutake();
+    }
 
-  public Command getPathFindCommand() {
-    // Get values from GUI application
-    return drivetrain.pathFindToPose(
-        () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose),
-        () -> 0);
-  }
+    public Command stopClaw() {
+        return claw.stop();
+    }
 
-  public Command getPrecisePidCommand() {
-    return drivetrain.preciseTargetPose(
-        () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose));
-  }
+    public Command stow() {
+        return elevatorPivot.stowArm();
+    }
 
-  public Command setElevatorHeight() {
-    return elevatorPivot.goToPosition(
-        () -> AutoScoreConstants.kScoreHeightMap.getOrDefault((int) heightSub.get(), elevatorPivot.getHeight()),
-        () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightSub.get(),
-            elevatorPivot.getPivotAngleDegrees()));
-  }
-
-  public Command setElevatorHeight(Supplier<Integer> heightLevel) {
-    return elevatorPivot.goToPosition(
-        () -> AutoScoreConstants.kScoreHeightMap.getOrDefault((int) heightLevel.get(), elevatorPivot.getHeight()),
-        () -> AutoScoreConstants.kScoreAngleMap.getOrDefault((int) heightLevel.get(),
-            elevatorPivot.getPivotAngleDegrees()));
-  }
-
-  public DynamicPathfindWithFeedback pathfindToScoring() {
-    return pathFindWithApriltagFeeback(
-        () -> AutoScoreConstants.kScorePoseMap.getOrDefault((int) poleNumberSub.get(), drivetrain.getState().Pose));
-  }
-
-  public DynamicPathfindWithFeedback pathFindWithApriltagFeeback(Supplier<Pose2d> desiredPose) {
-
-    // Basically we alternate between right or left cameras, depending on the pole
-    // number.
-    // Odd pole numbers use rightCamera, Even pole numbers use leftCamera
-    Supplier<Pose2d> robotPoseSupplier = () -> {
-      return drivetrain.getState().Pose;
-    };
-
-    return new DynamicPathfindWithFeedback(
-        desiredPose,
-        () -> 0,
-        DriveConstants.autoScoreConstraints,
-        drivetrain,
-        robotPoseSupplier,
-        () -> {return false;},
-        () -> {return Utils.getCurrentTimeSeconds();});
-  }
-
-  public Command fullAutoScoreCommand() {
-    return pathfindToScoring() // righ and left
-        .alongWith(setElevatorHeight())
-        .andThen(claw.clawOutake())
-        .andThen(Commands.waitSeconds(0.4))
-        .andThen(drivetrain.driveBack())
-        .finallyDo(() -> {
-          M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
-  }
-
-  public Command fullAutoScoreCommand(Supplier<Pose2d> desiredPose, Supplier<Integer> desiredHeight) {
-    return pathFindWithApriltagFeeback(
-        desiredPose)
-        .alongWith(setElevatorHeight(desiredHeight))
-        .andThen(claw.clawOutake())
-        .andThen(Commands.waitSeconds(0.4))
-        .andThen(drivetrain.driveBack())
-        .finallyDo(() -> {
-          M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-        }); // REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER SCORE
-  }
-
-  public Command goToNearestAlgea(Supplier<Pose2d> poseSupplier, ShitCam feedbackCamera) {
-    Supplier<Pose2d> targetPoseSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
-
-      Pose2d closest = poseList.get(0);
-      int closestNum = 0;
-
-      for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(poseSupplier.get().getTranslation()) < closest.getTranslation()
-            .getDistance(poseSupplier.get().getTranslation())) {
-          closest = poseList.get(i);
-          closestNum = i;
-        }
-      }
-
-      return FieldConstants.algeaPoses.get(closestNum);
-    };
-
-    return new DynamicPathfindWithFeedback(
-        targetPoseSupplier,
-        () -> 0,
-        DriveConstants.autoScoreConstraints,
-        drivetrain,
-        () -> drivetrain.getState().Pose,
-        () -> false,
-        () -> Utils.getCurrentTimeSeconds());
-  }
-
-  public Command getAlgeaRemoveCommand(ShitCam feedbackCamera, DoubleSupplier xSpeeds,
-      DoubleSupplier ySpeeds) {
-    DoubleSupplier heightSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
-
-      Pose2d closest = poseList.get(0);
-      int closestNum = 0;
-
-      for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
-            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
-          closest = poseList.get(i);
-          closestNum = i;
-        }
-      }
-
-      if (closestNum % 2 == 0) {
-        return ElevatorPivotConstants.HeightPositions.HIGH_ALGEA.getHeight();
-      } else {
-        return ElevatorPivotConstants.HeightPositions.LOW_ALGEA.getHeight();
-      }
-    };
-
-    DoubleSupplier AngleSupplier = () -> {
-      List<Pose2d> poseList = AutoBuilder.shouldFlip() ? FieldConstants.flippedAlgeaPoses : FieldConstants.algeaPoses;
-
-      Pose2d closest = poseList.get(0);
-      int closestNum = 0;
-
-      for (int i = 1; i < poseList.size(); i++) {
-        if (poseList.get(i).getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < closest
-            .getTranslation().getDistance(drivetrain.getState().Pose.getTranslation())) {
-          closest = poseList.get(i);
-          closestNum = i;
-        }
-      }
-
-      if (closestNum % 2 == 0) {
-        return ElevatorPivotConstants.AnglePositions.HIGH_ALGEA.getAngle();
-      } else {
-        return ElevatorPivotConstants.AnglePositions.LOW_ALGEA.getAngle();
-      }
-    };
-
-    // return drivetrain.driveFacingAlgea(xSpeeds, ySpeeds)
-    // .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
-    // .alongWith(claw.algeaIntake())
-    // .until(ElevatorPivot.hasAlgea)
-    // .andThen(drivetrain.driveBackAlgea());
-
-    return goToNearestAlgea(() -> drivetrain.getState().Pose, feedbackCamera)
-        .alongWith(elevatorPivot.goToPosition(heightSupplier, AngleSupplier))
-        .alongWith(claw.algeaIntake())
-        .until(ElevatorPivot.hasAlgea)
-        .andThen(drivetrain.driveBackAlgea());
-  }
-
-  public Command AutonomousPeriodAutoScore(Supplier<Integer> heightSup, Supplier<Integer> poleNumSupplier) {
-    // Basically we alternate between right or left cameras, depending on the pole
-    // number.
-    // Odd pole numbers use rightCamera, Even pole numbers use leftCamera
-    Supplier<Pose2d> robotPoseSupplier = () -> {
-      return drivetrain.getState().Pose;
-    };
-
-    return Commands.run(
-        () -> {
-          boolean used = false;
-
-          if (robotPoseSupplier.get().getTranslation().getDistance(drivetrain.getState().Pose.getTranslation()) < 3) {
-            drivetrain.addVisionMeasurement(
-                robotPoseSupplier.get(),
-                Utils.fpgaToCurrentTime(Utils.getCurrentTimeSeconds()),
-                VecBuilder.fill(0.0001, 0.0001, 0.001));
-            used = true;
-          }
-
-          SmartDashboard.putBoolean("Used", used);
-        }).alongWith(setElevatorHeight(heightSup));
-  }
+    public Command autoScore() {
+        return driveToScorePose().alongWith(elevatorPivotGoToPose()).andThen(ejectCoral()).andThen(stow()).andThen(stopClaw());
+    }
 }
