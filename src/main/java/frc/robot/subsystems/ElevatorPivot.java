@@ -52,6 +52,10 @@ public class ElevatorPivot extends SubsystemBase {
   private CANcoder pivotCancoder = new CANcoder(pivotCancoderId, canbus);
   private static CANrange algeaSensor = new CANrange(canRangeId, canbus);
 
+  public int scoreHeight;
+  public int scorePole;
+  public boolean isRight;
+
   private double targetHeight;
   private double targetAngleDegrees;
   private double voltage = 0;

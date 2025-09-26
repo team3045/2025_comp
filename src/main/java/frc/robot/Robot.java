@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     PathfindingCommand.warmupCommand().schedule();
+    m_robotContainer.configButtonBoard();
   }
 
   @Override

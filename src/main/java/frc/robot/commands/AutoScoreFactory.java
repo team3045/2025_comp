@@ -9,6 +9,8 @@ import static frc.robot.constants.DriveConstants.drive;
 import java.util.function.Supplier;
 
 import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,8 +39,16 @@ public class AutoScoreFactory {
         return new DriveToPose(drivetrain, () -> drivetrain.getState().Pose, () -> AutoScoreConstants.kScorePoseMap.get(poleNumSub.get()));
     }
 
+    public Command driveToScorePoseCustom(int poleNum) {
+        return new DriveToPose(drivetrain, () -> drivetrain.getState().Pose, () -> AutoScoreConstants.kScorePoseMap.get(poleNum));
+    }
+
     public Command elevatorPivotGoToPose() {
         return elevatorPivot.goToPosition(() -> AutoScoreConstants.kScoreHeightMap.get(heightSub.get()), () -> AutoScoreConstants.kScoreAngleMap.get(heightSub.get()));
+    }
+
+    public Command elevatorPivotGoToPoseCustom(int height) {
+        return elevatorPivot.goToPosition(() -> AutoScoreConstants.kScoreHeightMap.get(height), () -> AutoScoreConstants.kScoreAngleMap.get(height));
     }
     
     public Command ejectCoral() {
@@ -54,6 +64,14 @@ public class AutoScoreFactory {
     }
 
     public Command autoScore() {
-        return driveToScorePose().alongWith(elevatorPivotGoToPose()).andThen().andThen(ejectCoral()).andThen(drivetrain.driveBack()).andThen(stow()).andThen(stopClaw());
+        return elevatorPivotGoToPose().alongWith(driveToScorePose()).andThen().andThen(claw.driveBack()).andThen(ejectCoral()).andThen(drivetrain.driveBack()).andThen(stow()).andThen(stopClaw());
     }
+
+    // public Command autoScoreCustom(int height, int poleNum) {
+    //     if (DriverStation.getAlliance().get() == Alliance.Blue) {
+    //         return driveToScorePoseCustom(poleNum).alongWith(elevatorPivotGoToPoseCustom(height)).andThen().andThen(claw.driveBack());
+    //     } else {
+    //         return driveToScorePoseCustom(poleNum + 12).alongWith(elevatorPivotGoToPoseCustom(height)).andThen().andThen(claw.driveBack());
+    //     }
+    // }
 }

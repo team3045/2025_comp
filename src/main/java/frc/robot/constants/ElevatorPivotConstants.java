@@ -151,7 +151,7 @@ public class ElevatorPivotConstants {
     public static final SensorDirectionValue pivotEncoderSensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     public enum HeightPositions {
-        L4(1.985),
+        L4(2.000),
         L3(1.187),
         L2(0.77),
         LOW_ALGEA(1.032),

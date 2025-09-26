@@ -10,6 +10,9 @@ import com.pathplanner.lib.events.EventTrigger;
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,14 +22,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.GremlinRobotState.DriveState;
 import frc.robot.commands.AutoScoreFactory;
 import frc.robot.commons.GremlinAutoBuilder;
 import frc.robot.commons.GremlinLogger;
 import frc.robot.commons.GremlinPS4Controller;
 import frc.robot.commons.GremlinUtil;
+import frc.robot.constants.AutoScoreConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.ElevatorPivotConstants;
 import frc.robot.constants.FieldConstants;
@@ -55,21 +59,28 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
+    private final CommandGenericHID buttonBoard = new CommandGenericHID(1);
 
-    private IntegerSubscriber poleNumberSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
-      .getIntegerTopic("Pole").subscribe(0);
-    private IntegerSubscriber heightSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
-      .getIntegerTopic("Height").subscribe(0);
-    private Supplier<Integer> poleNumSub = () -> {
-        if (DriverStation.getAlliance().get() == Alliance.Blue)
-        return (int) poleNumberSub.get();
-        else
-        return (int) poleNumberSub.get() + 12;
-    };
+    // private IntegerSubscriber poleNumberSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
+    //   .getIntegerTopic("Pole").subscribe(0);
+    // private IntegerSubscriber heightSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
+    //   .getIntegerTopic("Height").subscribe(0);
+    // private Supplier<Integer> poleNumSub = () -> {
+    //     if (DriverStation.getAlliance().get() == Alliance.Blue)
+    //     return (int) poleNumberSub.get();
+    //     else
+    //     return (int) poleNumberSub.get() + 12;
+    // };
+
+    // public static final IntegerPublisher heightPublisher = NetworkTableInstance.getDefault().getTable("Scoring Location")
+    //   .getIntegerTopic("Height").publish();
+
+    
 
     /*Auto Score Stuff */
     
-    public final AutoScoreFactory autoScore = new AutoScoreFactory(drivetrain, elevatorPivot, claw, () -> poleNumSub.get(), () -> (int) heightSub.get());
+    // public final AutoScoreFactory autoScore = new AutoScoreFactory(drivetrain, elevatorPivot, claw, () -> poleNumSub.get(), () -> (int) heightSub.get());
+    public final AutoScoreFactory autoScore = new AutoScoreFactory(drivetrain, elevatorPivot, claw, () -> elevatorPivot.scorePole, () -> elevatorPivot.scoreHeight);
 
     public final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
@@ -123,7 +134,9 @@ public class RobotContainer {
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
 
-        joystick.L1().onTrue(autoScore.autoScore().onlyWhile(() -> joystick.L1().getAsBoolean()));
+        joystick.L1().onTrue(elevatorPivot.runOnce(() -> {elevatorPivot.isRight = false; elevatorPivot.scorePole = getPoleNum();}).andThen(autoScore.autoScore().onlyWhile(() -> joystick.L1().getAsBoolean())));
+        joystick.R1().onTrue(elevatorPivot.runOnce(() -> {elevatorPivot.isRight = true; elevatorPivot.scorePole = getPoleNum();}).andThen(autoScore.autoScore().onlyWhile(() -> joystick.R1().getAsBoolean())));
+
 
         algeaState.onFalse(
             elevatorPivot.stowArm().alongWith(claw.fullHold()));
@@ -204,16 +217,16 @@ public class RobotContainer {
             .andThen(Commands.waitSeconds(0.4)).withName("Score Coral"));
         
         // NamedCommands.registerCommand("StartScoreF",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6).withName("StartScoreF"));
+        //     autoScore.autoScoreCustom(3,6).withName("StartScoreF"));
 
         // NamedCommands.registerCommand("StartScoreE",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 5).withName("StartScoreE"));
+        //     autoScore.autoScoreCustom(3,5).withName("StartScoreE"));
 
         // NamedCommands.registerCommand("StartScoreD",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 4).withName("StartScoreE"));
+        //     autoScore.autoScoreCustom(3,4).withName("StartScoreE"));
 
         // NamedCommands.registerCommand("StartScoreC",
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 3).withName("StartScoreE"));
+        //     autoScore.autoScoreCustom(3,3).withName("StartScoreE"));
         
         NamedCommands.registerCommand("StartIntake", 
             elevatorPivot.goToIntake()
@@ -247,10 +260,10 @@ public class RobotContainer {
 
     public void configureAutoTriggers(){
         // new EventTrigger("StartScoreF").onTrue(
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3,() -> 6));
+        //     autoScore.autoScoreCustom(3,6));
 
         // new EventTrigger("StartScoreE").onTrue(
-        //     autoScoreFactory.AutonomousPeriodAutoScore(() -> 3, () -> 5));
+        //     autoScore.autoScoreCustom(3, 5));
 
         new EventTrigger("StartIntake").onTrue(
             elevatorPivot.goToIntake()
@@ -263,5 +276,60 @@ public class RobotContainer {
         );
         
     }
+    public void configButtonBoard(){
+        buttonBoard.button(1).onTrue(elevatorPivot.runOnce(() -> {
+            elevatorPivot.scoreHeight = 3;
+        }));
+        buttonBoard.button(2).onTrue(elevatorPivot.runOnce(() -> {
+            elevatorPivot.scoreHeight = 2;
+        }));
+        buttonBoard.button(3).onTrue(elevatorPivot.runOnce(() -> {
+            elevatorPivot.scoreHeight = 1;
+        }));
+        buttonBoard.button(7).onTrue(elevatorPivot.runOnce(() -> {
+            elevatorPivot.scoreHeight = 3;
+        }));
+        buttonBoard.button(8).onTrue(elevatorPivot.runOnce(() -> {
+            elevatorPivot.scoreHeight = 2;
+        }));
+        buttonBoard.button(9).onTrue(elevatorPivot.runOnce(() -> {
+            elevatorPivot.scoreHeight = 1;
+        }));
+    }
 
+    public int getPoleNum() {
+        int poleNum = 1;
+        double dist = 100000;
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            for (int i = 0; i <= 5; i ++) {
+                double distNew = drivetrain.getState().Pose.getTranslation().getDistance(getMedian(AutoScoreConstants.kScorePoseMap.get(2 * i + 1).getTranslation(), AutoScoreConstants.kScorePoseMap.get(2 * i + 2).getTranslation()));
+                if (distNew < dist) {
+                    dist = distNew;
+                    if (elevatorPivot.isRight) {
+                        poleNum = 2 * i + 2;
+                    } else {
+                        poleNum = 2 * i + 1;
+                    }
+                }
+            }
+        } else {
+            for (int i = 6; i <= 11; i ++) {
+                double distNew = drivetrain.getState().Pose.getTranslation().getDistance(getMedian(AutoScoreConstants.kScorePoseMap.get(2 * i + 1).getTranslation(), AutoScoreConstants.kScorePoseMap.get(2 * i + 2).getTranslation()));
+                if (distNew < dist) {
+                    dist = distNew;
+                    if (elevatorPivot.isRight) {
+                        poleNum = 2 * i + 2;
+                    } else {
+                        poleNum = 2 * i + 1;
+                    }
+                }
+            }
+        }
+        SmartDashboard.putNumber("PoleNum", poleNum);
+        return poleNum;
+    }
+
+    public Translation2d getMedian(Translation2d pose1, Translation2d pose2) {
+        return pose1.interpolate(pose2, 0.5);
+    }
 }
