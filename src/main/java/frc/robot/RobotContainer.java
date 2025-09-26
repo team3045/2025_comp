@@ -10,7 +10,10 @@ import com.pathplanner.lib.events.EventTrigger;
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.networktables.IntegerSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,6 +38,9 @@ import frc.robot.vision.VisionSubsystem;
 
 import static frc.robot.constants.DriveConstants.MaxSpeed;
 import static frc.robot.constants.DriveConstants.drive;
+
+import java.util.function.Supplier;
+
 import static frc.robot.constants.DriveConstants.MaxAngularRate;;
 
 
@@ -50,8 +56,20 @@ public class RobotContainer {
     public final ElevatorPivot elevatorPivot = new ElevatorPivot();
     public final Claw claw = new Claw();
 
+    private IntegerSubscriber poleNumberSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
+      .getIntegerTopic("Pole").subscribe(0);
+    private IntegerSubscriber heightSub = NetworkTableInstance.getDefault().getTable("Scoring Location")
+      .getIntegerTopic("Height").subscribe(0);
+    private Supplier<Integer> poleNumSub = () -> {
+        if (DriverStation.getAlliance().get() == Alliance.Blue)
+        return (int) poleNumberSub.get();
+        else
+        return (int) poleNumberSub.get() + 12;
+    };
+
     /*Auto Score Stuff */
-    public final AutoScoreFactory autoScore = new AutoScoreFactory(drivetrain, elevatorPivot, claw, () -> 20, () -> 2);
+    
+    public final AutoScoreFactory autoScore = new AutoScoreFactory(drivetrain, elevatorPivot, claw, () -> poleNumSub.get(), () -> (int) heightSub.get());
 
     public final VisionSubsystem vision = new VisionSubsystem(drivetrain);
 
@@ -98,25 +116,14 @@ public class RobotContainer {
         // Note that each routine should be run exactly once in a single log.
         joystick.options().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        joystick.R1().onTrue(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.AUTOSCORE)));
-        joystick.R1().onFalse(Commands.runOnce(() -> M_ROBOT_STATE.setDriveState(DriveState.TELEOP)));
+        joystick.R3().onTrue(claw.clawOutake());
         
         // scoringState.whileTrue(autoScoreFactory.fullAutoScoreCommand());
 
         teleopState.and(isAuton.negate()).whileTrue(
             elevatorPivot.stowArm().alongWith(claw.stop())); //STOW ARM AND STOP CLAW AFTER SCORING
 
-        joystick.L1().onTrue(autoScore.autoScore());
-
-        // algeaState.whileTrue(
-        //     autoScoreFactory.getAlgeaRemoveCommand(
-        //         VisionConstants.limelights[0],
-        //         () -> GremlinUtil.squareDriverInput(-joystick.getLeftY()) * MaxSpeed,
-        //         () -> GremlinUtil.squareDriverInput(-joystick.getLeftX()) * MaxSpeed)
-        //     .finallyDo(() -> {
-        //         M_ROBOT_STATE.setDriveState(DriveState.TELEOP);
-        //         }) //REDENDUNCY TO ALWAYS SET BACK TO TELEOP AFTER REMOVAL
-        // );
+        joystick.L1().onTrue(autoScore.autoScore().onlyWhile(() -> joystick.L1().getAsBoolean()));
 
         algeaState.onFalse(
             elevatorPivot.stowArm().alongWith(claw.fullHold()));

@@ -11,7 +11,7 @@ import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
 public class VisionConstants {
-    public static String[] names = new String[]{"limelight-right"};
+    public static String[] names = new String[]{"limelight-right", "limelight-left"};
     public static Pose3d[] poses = new Pose3d[]{
         new Pose3d( // right
             new Translation3d(

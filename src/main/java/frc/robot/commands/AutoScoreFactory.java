@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import static frc.robot.constants.DriveConstants.drive;
+
 import java.util.function.Supplier;
 
 import edu.wpi.first.networktables.IntegerSubscriber;
@@ -52,6 +54,6 @@ public class AutoScoreFactory {
     }
 
     public Command autoScore() {
-        return driveToScorePose().alongWith(elevatorPivotGoToPose()).andThen(ejectCoral()).andThen(stow()).andThen(stopClaw());
+        return driveToScorePose().alongWith(elevatorPivotGoToPose()).andThen().andThen(ejectCoral()).andThen(drivetrain.driveBack()).andThen(stow()).andThen(stopClaw());
     }
 }

@@ -5,6 +5,7 @@
 package frc.robot.commons;
 
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -16,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 @SuppressWarnings("MethodName")
 public class GremlinPS4Controller extends GremlinCommandGenericHID {
-  private final PS4Controller m_hid;
+  private final PS5Controller m_hid;
 
   /**
    * Construct an instance of a device.
@@ -26,7 +27,7 @@ public class GremlinPS4Controller extends GremlinCommandGenericHID {
    */
   public GremlinPS4Controller(int port) {
     super(port);
-    m_hid = new PS4Controller(port);
+    m_hid = new PS5Controller(port);
   }
 
   /**
@@ -35,7 +36,7 @@ public class GremlinPS4Controller extends GremlinCommandGenericHID {
    * @return the wrapped GenericHID object
    */
   @Override
-  public PS4Controller getHID() {
+  public PS5Controller getHID() {
     return m_hid;
   }
 
@@ -300,7 +301,7 @@ public class GremlinPS4Controller extends GremlinCommandGenericHID {
    *         loop.
    */
   public GremlinTrigger share(EventLoop loop) {
-    return m_hid.share(loop).castTo(GremlinTrigger::new);
+    return m_hid.create(loop).castTo(GremlinTrigger::new);
   }
 
   /**

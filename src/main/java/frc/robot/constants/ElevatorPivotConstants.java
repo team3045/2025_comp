@@ -153,7 +153,7 @@ public class ElevatorPivotConstants {
     public enum HeightPositions {
         L4(1.985),
         L3(1.187),
-        L2(0.82),
+        L2(0.77),
         LOW_ALGEA(1.032),
         HIGH_ALGEA(1.487);
 

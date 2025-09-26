@@ -481,7 +481,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command driveBack() {
-        return applyRequest(() -> driveBack).withTimeout(0.2);
+        return applyRequest(() -> driveBack).withTimeout(0.05);
     }
 
     public Command driveBackAlgea() {

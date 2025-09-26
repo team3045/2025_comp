@@ -13,6 +13,7 @@ public class VisionSubsystem extends SubsystemBase {
   public static ShitCam camLeft;
   public VisionSubsystem(CommandSwerveDrivetrain drivetrain) {
     camRight = new ShitCam(0, drivetrain);
+    // camLeft = new ShitCam(1, drivetrain);
     camLeft = null;
   }
 
@@ -21,5 +22,7 @@ public class VisionSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     camRight.process();
     camRight.addVisionMeasurement();
+    // camLeft.process();
+    // camLeft.addVisionMeasurement();
   }
 }

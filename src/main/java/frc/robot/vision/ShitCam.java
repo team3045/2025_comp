@@ -37,11 +37,15 @@ public class ShitCam {
     }
     
     public void process() {
-        LimelightHelpers.SetRobotOrientation(names[idx], drivetrain.getState().Pose.getRotation().getDegrees() - 180, 0, 0, 0, 0, 0);
         mostRecentPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(names[idx]);
         if (mostRecentPoseEstimate == null) return;
         if (DriverStation.getAlliance().get() == Alliance.Red) {
             mostRecentPoseEstimate.pose = new Pose2d(new Translation2d(FieldConstants.redReefCenter.getX() - (mostRecentPoseEstimate.pose.getTranslation().getX() - FieldConstants.blueReefCenter.getX()), FieldConstants.compFieldWidth - mostRecentPoseEstimate.pose.getTranslation().getY()), mostRecentPoseEstimate.pose.getRotation());
+            mostRecentPoseEstimate.pose = mostRecentPoseEstimate.pose.rotateAround(FieldConstants.redReefCenter, new Rotation2d(Units.degreesToRadians(4)));
+            LimelightHelpers.SetRobotOrientation(names[idx], drivetrain.getState().Pose.getRotation().getDegrees() - 180, 0, 0, 0, 0, 0);
+        } else {
+            mostRecentPoseEstimate.pose = mostRecentPoseEstimate.pose.rotateAround(FieldConstants.blueReefCenter, new Rotation2d(Units.degreesToRadians(4)));
+            LimelightHelpers.SetRobotOrientation(names[idx], drivetrain.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         }
     }
 
